@@ -1,6 +1,15 @@
 TEMPLATE	= app
 TARGET		= browsersort
-CONFIG		+= warn_on qt
+CONFIG(Debug, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt warn_on Debug
+    QMAKE_POST_LINK = " "
+}
+CONFIG(Release, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt Release
+    QMAKE_POST_LINK = " "
+}
 INCLUDEPATH += ../../src
 HEADERS		= ./UmlActivityPin.h \
 		  ./TransitionBehavior.h \
@@ -322,15 +331,13 @@ SOURCES		= ./UmlActivityPin.cpp \
 #The following line was inserted by qt3to4
 QT += network  qt3support 
 QMAKE_CXXFLAGS += -std=gnu++11
-CONFIG(release){
-    MOC_DIR = ../../bin/MOC_release/sort/
-    OBJECTS_DIR = ../../bin/Obj_release/sort
+DESTDIR = ../../bin
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/browsersort
+    OBJECTS_DIR = $${DESTDIR}/obj_release/browsersort
 }
 
-CONFIG(debug){
-    MOC_DIR = ../../bin/MOC_debug/sort/
-    OBJECTS_DIR = ../../bin/Obj_debug/sort
-
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/browsersort
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/browsersort
 }
-
-    DESTDIR = ../../bin

@@ -361,67 +361,19 @@ void EnvDialog::accept()
         return;
     }
 
-    // note : QFile fp(QDir::home().absFilePath(".doumlrc")) doesn't work
-    // if the path contains non latin1 characters, for instance cyrillic !
-    QString s = homeDir().absFilePath(".doumlrc");
-    FILE * fp = fopen((const char *) s, "w");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    if (fp == 0) {
-        QMessageBox::critical(this, "Douml", "cannot write in '" + s + "'");
-
-        if (conversion)
-            exit(-1);
-        else
-            return;
-    }
-
-    fprintf(fp, "ID %d\n", id);
-
-    if (! ed_doc->text().isEmpty())
-        fprintf(fp, "MANUAL %s\n", (const char *) ed_doc->text());
-
-    if (! ed_navigator->text().isEmpty())
-        fprintf(fp, "NAVIGATOR %s\n", (const char *) ed_navigator->text());
-
-    if (! ed_template->text().isEmpty())
-        fprintf(fp, "TEMPLATE %s\n", (const char *) ed_template->text());
-
-    if (! ed_editor->text().isEmpty())
-        fprintf(fp, "EDITOR %s\n", (const char *) ed_editor->text());
-
-    if (! ed_lang->text().isEmpty())
-        fprintf(fp, "LANG %s\n", (const char *) ed_lang->text());
-    else
-        fputs("NOLANG\n", fp);
-
-    if (! cb_charset->currentText().isEmpty())
-        fprintf(fp, "CHARSET %s\n", (const char *) cb_charset->currentText());
-
-    if (!ed_xmin->text().isEmpty() &&
-        !ed_xmax->text().isEmpty() &&
-        !ed_ymin->text().isEmpty() &&
-        !ed_ymax->text().isEmpty()) {
-        fprintf(fp, "DESKTOP %d %d %d %d\n", l, t, r, b);
-    }
-
-    fclose(fp);
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "DoUML", "settings");
+    settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
+    settings.setValue("Main/id", id);
+    settings.setValue("Main/manual", ed_doc->text());
+    settings.setValue("Main/navigator", ed_navigator->text());
+    settings.setValue("Main/template", ed_template->text());
+    settings.setValue("Main/editor", ed_editor->text());
+    settings.setValue("Main/lang", ed_lang->text());
+    settings.setValue("Main/encoding", cb_charset->currentText());
+    settings.setValue("Desktop/left", l);
+    settings.setValue("Desktop/right", r);
+    settings.setValue("Desktop/top", t);
+    settings.setValue("Desktop/bottom", b);
 
     QDialog::accept();
 }
@@ -484,26 +436,6 @@ void EnvDialog::editor_browse()
 static QString lang_file()
 {
     QString lang;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     lang = getenv("LANG");
 
@@ -574,7 +506,7 @@ void EnvDialog::lang_browse()
 
 //
 
-static void propose_lang()
+/*static void propose_lang()
 {
     // note : QFile fp(QDir::home().absFilePath(".doumlrc")) doesn't work
     // if the path contains non latin1 characters, for instance cyrillic !
@@ -601,79 +533,34 @@ static void propose_lang()
         else
             fclose(fp);
     }
-}
+}*/
 
 int read_doumlrc()
 {
-    // note : QFile fp(QDir::home().absFilePath(".doumlrc")) doesn't work
-    // if the path contains non latin1 characters, for instance cyrillic !
-    QString s = QDir::home().absFilePath(".doumlrc");
-    FILE * fp = fopen((const char *) s, "r");
-
-    if (fp == 0) {
-        QMessageBox::critical(0, "Douml", TR("cannot read '%1'", s));
-        exit(-1);
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "DoUML", "settings");
+    settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
+    int id = settings.value("Main/id", -1).toInt();
+    set_manual_dir(settings.value("Main/manual", "").toString());
+    set_navigator_path(settings.value("Main/navigator", "").toString());
+    set_editor(settings.value("Main/editor", "").toString());
+    set_template_project(settings.value("Main/template", "").toString());
+    set_lang(settings.value("Main/lang").toString());
+    QString s = settings.value("Main/encoding", "UTF-8").toString();
+    set_codec(s);
+    QTextCodec::setCodecForTr(QTextCodec::codecForName(s));
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName(s));
+    int l, t, r, b;
+    l = settings.value("Desktop/left", -1).toInt();
+    r = settings.value("Desktop/right", -1).toInt();
+    t = settings.value("Desktop/top", -1).toInt();
+    b = settings.value("Desktop/bottom", -1).toInt();
+    if(l != -1 && r != -1 && t != -1 && b != -1)
+    {
+      UmlDesktop::set_limits(l, t, r, b);
     }
-
-    set_manual_dir("");
-    set_navigator_path("");
-    set_template_project("");
-    set_editor("");
-    set_codec("UTF-8");
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
-
-    UmlDesktop::set_limits(0, 0, 0, 0);
-
-    int id = -1;
-    char line[512];
-    bool lang_set = FALSE;
-    bool nolang = FALSE;
-
-    while (fgets(line, sizeof(line) - 1, fp) != 0) {
-        remove_crlf(line);
-
-        if (!strncmp(line, "ID ", 3))
-            sscanf(line + 3, "%d", &id);
-        else if (!strncmp(line, "MANUAL ", 7))
-            set_manual_dir(line + 7);
-        else if (!strncmp(line, "NAVIGATOR ", 10))
-            set_navigator_path(line + 10);
-        else if (!strncmp(line, "TEMPLATE ", 9))
-            set_template_project(line + 9);
-        else if (!strncmp(line, "EDITOR ", 7))
-            set_editor(line + 7);
-        else if (!strncmp(line, "CHARSET ", 8))
-        {
-            set_codec(line + 8);
-            QSettings settings("settings.ini", QSettings::IniFormat);
-            settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
-            settings.setValue("Main/encoding", QString(line + 8));
-            settings.sync();
-            QTextCodec::setCodecForTr(QTextCodec::codecForName(line + 8));
-            QTextCodec::setCodecForLocale(QTextCodec::codecForName(line + 8));
-        }
-        else if (!strncmp(line, "DESKTOP ", 8)) {
-            int l, t, r, b;
-
-            if (sscanf(line + 8, "%d %d %d %d", &l, &t, &r, &b) == 4)
-                UmlDesktop::set_limits(l, t, r, b);
-        }
-        else if (!strncmp(line, "LANG ", 5)) {
-            set_lang(line + 5);
-            lang_set = TRUE;
-        }
-        else if (!strncmp(line, "NOLANG", 6)) {
-            nolang = TRUE;
-        }
-    }
-
-    fclose(fp);
-
-    if (! lang_set) {
-        set_lang("");
-
-        if (! nolang)
-            propose_lang();
+    else
+    {
+      UmlDesktop::set_limits(0, 0, 0, 0);
     }
 
     if (id == -1) {

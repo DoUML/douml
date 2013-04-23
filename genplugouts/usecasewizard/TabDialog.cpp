@@ -56,63 +56,26 @@ TabDialog::TabDialog(UmlUseCase * u) : Q3TabDialog(0, ""), uc(u)
 
     setCancelButton();
 
-    QString cs;
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "DoUML", "settings");
+    settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
+    int l, t, r, b;
+    l = settings.value("Desktop/left", -1).toInt();
+    r = settings.value("Desktop/right", -1).toInt();
+    t = settings.value("Desktop/top", -1).toInt();
+    b = settings.value("Desktop/bottom", -1).toInt();
 
-    // note : QFile fp(QDir::home().absFilePath(".doumlrc")) doesn't work
-    // if the path contains non latin1 characters, for instance cyrillic !
-    QString s = QDir::home().absFilePath(".doumlrc");
-    FILE * fp = fopen((const char *) s, "r");
-
-#ifdef WIN32
-
-    if (fp == 0) {
-        QString hd = getenv("USERPROFILE");
-
-        if (! hd.isEmpty()) {
-            QDir d(hd);
-            QString s2 = d.absFilePath(".doumlrc");
-
-            fp = fopen((const char *) s2, "r");
-        }
+    if(l != -1 && r != -1 && t != -1 && b != -1)
+    {
+      if (!((r == 0) && (t == 0) && (r == 0) && (b == 0)) &&
+          !((r < 0) || (t < 0) || (r < 0) || (b < 0)) &&
+          !((r <= l) || (b <= t)))
+      {
+        desktopCenter.setX((r + l) / 2);
+        desktopCenter.setY((t + b) / 2);
+      }
     }
 
-#endif
-
-    if (fp == 0)
-        cs = getenv("BOUML_CHARSET");
-    else {
-        char line[512];
-
-        while (fgets(line, sizeof(line) - 1, fp) != 0) {
-            if (!strncmp(line, "CHARSET ", 8)) {
-                int len = strlen(line);
-
-                if (len != 0) {
-                    if (line[len - 1] == '\n')
-                        line[--len] = 0;
-
-                    if ((len != 0) && (line[len - 1] == '\r'))
-                        line[len - 1] = 0;
-                }
-
-                cs = line + 8;
-            }
-            else if (!strncmp(line, "DESKTOP ", 8)) {
-                int l, t, r, b;
-
-                if (sscanf(line + 8, "%d %d %d %d", &l, &t, &r, &b) == 4) {
-                    if (!((r == 0) && (t == 0) && (r == 0) && (b == 0)) &&
-                        !((r < 0) || (t < 0) || (r < 0) || (b < 0)) &&
-                        !((r <= l) || (b <= t))) {
-                        desktopCenter.setX((r + l) / 2);
-                        desktopCenter.setY((t + b) / 2);
-                    }
-                }
-            }
-        }
-
-        fclose(fp);
-    }
+    QString cs = settings.value("Main/encoding", "UTF-8").toString();
 
     Codec = 0;
 

@@ -556,41 +556,24 @@ UmlWindow::UmlWindow(bool ) : QMainWindow(0, "DoUML", Qt::WDestructiveClose)
     //
     // read historic
     //
-
-    // note : QFile fp(QDir::home().absFilePath(".douml")) doesn't work
-    // if the path contains non latin1 characters, for instance cyrillic !
-    QString s = homeDir().absFilePath(".douml");
-    FILE * fp = fopen((const char *) s, "r");
-
-    if (fp != 0) {
-        char line[512];
-
-        while (fgets(line, sizeof(line) - 1, fp) != 0) {
-            remove_crlf(line);
-
-            if (!strncmp(line, "compteur d utilisation ", 23)) {
-                Counter = atoi(line + 23);
-                break;
-            }
-            else
-                historic.append(line);
-        }
-
-        fclose(fp);
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "DoUML", "settings");
+    settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
+    settings.beginGroup("Recent_Files");
+    for(int i = 1; i <= 10; ++i)
+    {
+      const QString line = settings.value(tr("File%1").arg(i)).toString();
+      if(!line.isEmpty())
+      {
+        historic.append(line);
+      }
+      else
+      {
+        break;
+      }
     }
-
-    // and do not enable it back
-    //    if (!batch && ((Counter++ % 30) == 0)) {
-    //        GreetingsDialog d;
-
-    //        d.exec();
-    //    }
-
-    //
+    settings.endGroup();
 
     clear_select_historic();
-
-    //
 
     statusBar()->message(TR("Ready"), 2000);
 }
@@ -712,14 +695,12 @@ void UmlWindow::projectMenuAboutToShow()
         // historic
 
         projectMenu->insertSeparator();
-        QString whats = TR("to open this project.<br><br>The historic is saved in <i>%1</i>",
-                           homeDir().absFilePath(".douml"));
 
         for (int i(0); i < historic.size(); ++i)
         {
             id = projectMenu->insertItem(historic.at(i), this, SLOT(historicActivated(int)));
             projectMenu->setItemParameter(id, i);
-            projectMenu->setWhatsThis(id, whats);
+            projectMenu->setWhatsThis(id, TR("to open this project.<br><br>The historic is saved in <i>settings.ini</i>"));
         }
     }
     else
@@ -860,7 +841,7 @@ void UmlWindow::set_commented(BrowserNode * bn)
         UmlWindow * him = the;
         bool same = (him->commented == bn);
 
-        the = 0;	// to do nothing in comment_changed() which is called
+        the = 0;    // to do nothing in comment_changed() which is called
 
         him->commented = bn;
 
@@ -1002,25 +983,22 @@ void UmlWindow::historic_add(QString fn)
 
     the->historic.prepend(fn);
 
-    // note : QFile fp(QDir::home().absFilePath(".douml")) doesn't work
-    // if the path contains non latin1 characters, for instance cyrillic !
-    QString s = homeDir().absFilePath(".douml");
-    FILE * fp = fopen((const char *) s, "w");
-
-    if (fp != 0) {
-        int rank;
-
-        for (it = the->historic.begin(), rank = 0;
-             (it != the->historic.end()) && (rank != 10);
-             ++it, rank += 1) {
-            (void) fputs((const char *) *it, fp);
-            fputc('\n', fp);
-        }
-
-        fprintf(fp, "compteur d utilisation %d\n", Counter);
-
-        fclose(fp);
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "DoUML", "settings");
+    settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
+    settings.beginGroup("Recent_Files");
+    for(int i = 0; i < 10; i++)
+    {
+      QString s;
+      if(i < the->historic.size())
+      {
+        settings.setValue(tr("File%1").arg(i+1), the->historic.at(i));
+      }
+      else
+      {
+        break;
+      }
     }
+    settings.endGroup();
 }
 
 void UmlWindow::load_it()
@@ -1057,7 +1035,7 @@ void UmlWindow::load(QString fn, bool forcesaveas)
     int nameLength = fi.fileName().length();
     QString filename = fi.fileName().left(nameLength - (nameLength - pos));
 
-    //s.truncate(s.length() - 4);	// QFileInfo::baseName remove all after first dot
+    //s.truncate(s.length() - 4);   // QFileInfo::baseName remove all after first dot
 
     if (di.dirName() != filename) {
         msg_critical("Uml",
@@ -1112,7 +1090,7 @@ void UmlWindow::load(QString fn, bool forcesaveas)
                     "A <i>save-as</i> is forced now to save the result "
                     "in a new project, then the project will be closed");
         saveAs();
-        close_it();		// write access of added items not ok
+        close_it();     // write access of added items not ok
     }
     else if (format < 22) {
         QString new_st = GenerationSettings::new_java_enums();

@@ -1,6 +1,15 @@
 TEMPLATE    = app
 TARGET        = cpp_util
-CONFIG        +=  warn_on qt
+CONFIG(Debug, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt warn_on Debug
+    QMAKE_POST_LINK = " "
+}
+CONFIG(Release, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt Release
+    QMAKE_POST_LINK = " "
+}
 DEFINES        = WITHCPP TRACE
 INCLUDEPATH += ../../src
 HEADERS        = ./UmlBasePackage.h \
@@ -411,20 +420,16 @@ SOURCES        = ./UmlBasePackage.cpp \
 
 #The following line was inserted by qt3to4
 QT += network  qt3support 
-
-Release{
-
-
-    MOC_DIR = bin/douml/MOC_release
-    OBJECTS_DIR = bin/douml/Obj_release
+DESTDIR = ../../bin
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/cpp_util
+    OBJECTS_DIR = $${DESTDIR}/obj_release/cpp_util
 }
 
-Debug{
-    MOC_DIR = bin/douml/MOC_Debug
-    OBJECTS_DIR = bin/douml/Obj_Debug
-
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/cpp_util
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/cpp_util
 }
-    UI_DIR = src/ui
-    DESTDIR = ../../bin
+UI_DIR = src/ui
 
 QMAKE_CXXFLAGS += -std=gnu++11

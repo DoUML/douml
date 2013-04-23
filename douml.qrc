@@ -1,0 +1,9 @@
+<RCC>
+  <qresource>
+    <file>douml.16.png</file>
+    <file>douml.32.png</file>
+    <file>douml.48.png</file>
+    <file>douml.64.png</file>
+    <file>douml.png</file>
+  </qresource>
+</RCC>

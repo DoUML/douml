@@ -1,6 +1,15 @@
 TEMPLATE    = app
 TARGET        = ixmi2
-CONFIG        += debug warn_on qt
+CONFIG(Debug, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt warn_on Debug precompile_header
+    QMAKE_POST_LINK = " "
+}
+CONFIG(Release, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt Release precompile_header
+    QMAKE_POST_LINK = " "
+}
 DEFINES        = WITHCPP WITHJAVA WITHIDL WITHPHP WITHPYTHON BooL=bool
 PRECOMPILED_HEADER += ../../src/misc/mystr.h
 HEADERS        = ./UmlActivityPartition.h \
@@ -423,19 +432,16 @@ QT += network  qt3support
 
 INCLUDEPATH += ../../src
 CONFIG += qtestlib
-Release{
-
-
-    MOC_DIR = bin/douml/xmi2import/MOC_release
-    OBJECTS_DIR = bin/douml/xmi2import/Obj_release
-}
-
-Debug{
-    MOC_DIR = bin/douml/xmi2import/MOC_Debug
-    OBJECTS_DIR = bin/douml/xmi2import/Obj_Debug
-
-}
-    UI_DIR = src/ui
-    DESTDIR = ../../bin
-
 QMAKE_CXXFLAGS += -std=gnu++11
+UI_DIR = src/ui
+DESTDIR = ../../bin
+
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/$${TARGET}
+    OBJECTS_DIR = $${DESTDIR}/obj_release/$${TARGET}
+}
+
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/$${TARGET}
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/$${TARGET}
+}

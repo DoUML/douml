@@ -1,5 +1,14 @@
 TEMPLATE      = app
-CONFIG          += qt warn_on
+CONFIG(Debug, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt warn_on Debug
+    QMAKE_POST_LINK = " "
+}
+CONFIG(Release, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt Release
+    QMAKE_POST_LINK = " "
+}
 SOURCES          = UmlClassItem.cpp UmlAttribute.cpp \
         UmlClass.cpp UmlClassDiagram.cpp UmlClassMember.cpp \
         UmlExtraClassMember.cpp UmlArtifact.cpp \
@@ -96,18 +105,17 @@ SOURCES          = UmlClassItem.cpp UmlAttribute.cpp \
 TARGET          = php_generator
 DEFINES          = WITHPHP
 INCLUDEPATH   = ../Tools ../PhpGenerator ../
-DESTDIR = ../../bin
 #The following line was inserted by qt3to4
 QT += network  qt3support 
 
 QMAKE_CXXFLAGS += -std=gnu++11
-Release{
-    MOC_DIR = ../../bin/MOC_release/php_gen
-    OBJECTS_DIR = ../../bin/Obj_release/php_gen
+DESTDIR = ../../bin
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/php_generator
+    OBJECTS_DIR = $${DESTDIR}/obj_release/php_generator
 }
 
-Debug{
-    MOC_DIR = ../../bin/MOC_debug/php_gen
-    OBJECTS_DIR = ../../bin/Obj_debug/php_gen
-
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/php_generator
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/php_generator
 }

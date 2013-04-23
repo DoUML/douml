@@ -158,7 +158,7 @@ void Tool::defaults()
 
 QList<QString> SetupFailingTools()
 {
-    QSettings settings("settings.ini", QSettings::IniFormat);
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "DoUML", "settings");
     settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
     return settings.value("Failing_Tools/Tools").toString().split(",");
 }

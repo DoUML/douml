@@ -12,7 +12,6 @@ release
 object_script.*
 minimal.supp
 minimalraw.log
-
 *moc_*.cpp*
 *.~*
 *.pro.*
@@ -24,6 +23,7 @@ makefile.*
 Makefile.*
 Makefile*
 makefile*
+!/Makefile
 include/Libs*
 .cproject
 .project
@@ -106,3 +106,7 @@ src/ui/ui_*.h
 bin/douml
 qrc_*.cpp
 src/CppReverse/cpp_reverse
+/bin/
+!/bin/settings.ini
+!src/settings_ini.h
+/install/

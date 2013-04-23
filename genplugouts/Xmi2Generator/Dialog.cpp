@@ -17,7 +17,7 @@
 //Added by qt3to4:
 #include "misc/mystr.h"
 #include <Q3VBoxLayout>
-
+#include <QSettings>
 #include "SmallPushButton.h"
 
 Dialog::Dialog(WrapperStr & path, WrapperStr & encoding, WrapperStr & nomodel, WrapperStr & genview, WrapperStr & uml20, WrapperStr & pk, WrapperStr & vis, WrapperStr & primitivetype, WrapperStr & genextension, WrapperStr & geneclipse, WrapperStr & commentexporter, WrapperStr & linefeed, Language & lang)
@@ -250,51 +250,25 @@ void Dialog::polish()
 {
     QDialog::polish();
 
-    // try to read .doumlrc
-    // note : QFile fp(QDir::home().absFilePath(".doumlrc")) doesn't work
-    // if the path contains non latin1 characters, for instance cyrillic !
-    QString s = QDir::home().absFilePath(".doumlrc");
-    FILE * fp = fopen((const char *) s, "r");
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "DoUML", "settings");
+    settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
+    int l, t, r, b;
+    l = settings.value("Desktop/left", -1).toInt();
+    r = settings.value("Desktop/right", -1).toInt();
+    t = settings.value("Desktop/top", -1).toInt();
+    b = settings.value("Desktop/bottom", -1).toInt();
 
-#ifdef WIN32
+    if(l != -1 && r != -1 && t != -1 && b != -1)
+    {
+      if (!((r == 0) && (t == 0) && (r == 0) && (b == 0)) &&
+          !((r < 0) || (t < 0) || (r < 0) || (b < 0)) &&
+          !((r <= l) || (b <= t)))
+      {
+        int cx = (r + l) / 2;
+        int cy = (t + b) / 2;
 
-    if (fp == 0) {
-        QString hd = getenv("USERPROFILE");
-
-        if (! hd.isEmpty()) {
-            QDir d(hd);
-            QString s2 = d.absFilePath(".doumlrc");
-
-            fp = fopen((const char *) s2, "r");
-        }
-    }
-
-#endif
-
-    if (fp != 0) {
-        char line[512];
-
-        while (fgets(line, sizeof(line) - 1, fp) != 0) {
-            if (!strncmp(line, "DESKTOP ", 8)) {
-                int l, t, r, b;
-
-                if (sscanf(line + 8, "%d %d %d %d", &l, &t, &r, &b) == 4) {
-                    if (!((r == 0) && (t == 0) && (r == 0) && (b == 0)) &&
-                        !((r < 0) || (t < 0) || (r < 0) || (b < 0)) &&
-                        !((r <= l) || (b <= t))) {
-                        int cx = (r + l) / 2;
-                        int cy = (t + b) / 2;
-
-                        move(x() + cx - (x() + width() / 2),
-                             y() + cy - (y() + height() / 2));
-                    }
-                }
-
-                break;
-            }
-        }
-
-        fclose(fp);
+        move(x() + cx - (x() + width() / 2), y() + cy - (y() + height() / 2));
+      }
     }
 }
 

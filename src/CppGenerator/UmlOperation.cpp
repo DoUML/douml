@@ -657,7 +657,7 @@ const char * UmlOperation::generate_body(QTextStream & fs,
     while (*p != '$')
         indent += toLocale(p);
 
-    QSettings settings("settings.ini", QSettings::IniFormat);
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "DoUML", "settings");
     settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
     int compat = settings.value("Main/compatibility_save").toInt();
 
@@ -712,7 +712,7 @@ const char * UmlOperation::generate_body(QTextStream & fs,
         if (add_nl)
             fs << '\n';
 
-        QSettings settings("settings.ini", QSettings::IniFormat);
+        QSettings settings(QSettings::IniFormat, QSettings::UserScope, "DoUML", "settings");
         settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
         int compat = settings.value("Main/compatibility_save").toInt();
 

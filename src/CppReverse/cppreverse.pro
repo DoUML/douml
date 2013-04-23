@@ -1,5 +1,14 @@
 TEMPLATE      = app
-CONFIG          += qt warn_on
+CONFIG(Debug, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt warn_on Debug
+    QMAKE_POST_LINK = " "
+}
+CONFIG(Release, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt Release
+    QMAKE_POST_LINK = " "
+}
 SOURCES          = UmlClassItem.cpp UmlAttribute.cpp UmlArtifact.cpp \
         UmlClass.cpp UmlClassDiagram.cpp UmlClassMember.cpp \
         UmlExtraClassMember.cpp \
@@ -107,20 +116,17 @@ CONFIG += qtestlib
 #The following line was inserted by qt3to4
 QT += network  qt3support 
 
-release{
-
-
-    MOC_DIR = bin/douml/cppreverse/MOC_release
-    OBJECTS_DIR = bin/douml/cppreverse/Obj_release
+DESTDIR = ../../bin
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/cpp_reverse
+    OBJECTS_DIR = $${DESTDIR}/obj_release/cpp_reverse
 }
 
-Debug{
-    MOC_DIR = bin/douml/cppreverse/MOC_Debug
-    OBJECTS_DIR = bin/douml/cppreverse/Obj_Debug
-
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/cpp_reverse
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/cpp_reverse
 }
-    UI_DIR = src/ui
-    DESTDIR = ../../bin
+UI_DIR = src/ui
 
 QMAKE_CXXFLAGS += -std=gnu++11
 

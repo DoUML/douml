@@ -10,15 +10,13 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = UniversalModels
 TEMPLATE = lib
-CONFIG+= build_all
+CONFIG+= build_all staticlib
 TARGET = $$qtLibraryTarget(UniversalModels)
-
 
 INCLUDEPATH += include \
             ../L_UniversalModels
 
 QMAKE_CXXFLAGS += -std=gnu++11
-
 
 DEFINES += L_TREE_CONTROLLER_LIBRARY
 
@@ -44,18 +42,14 @@ SOURCES += src/TreeModel.cpp \
     src/treeviewtemplatefunctions.cpp \
     src/genericeventfilter.cpp
 
-Debug{
-    MOC_DIR = .../.././build/MOC_debug/UniversalModels
-    OBJECTS_DIR = ../../../build/Obj_debug/UniversalModels
-    RCC_DIR = ../../../build/RCC_debug/UniversalModels
+DESTDIR = ../../../bin
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/UniversalModels
+    OBJECTS_DIR = $${DESTDIR}/obj_release/UniversalModels
 }
 
-Release{
-    MOC_DIR = ../../../build/MOC_release/UniversalModels
-    OBJECTS_DIR = ../../../build/Obj_release/UniversalModels
-    RCC_DIR = ../../../build/RCC_release/UniversalModels
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/UniversalModels
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/UniversalModels
 }
-
-
-    UI_DIR = UI
-    DESTDIR = ../../../bin
+UI_DIR = UI

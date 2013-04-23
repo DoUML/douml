@@ -1,5 +1,14 @@
 TEMPLATE      = app
-CONFIG          += qt warn_on
+CONFIG(Debug, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt warn_on Debug
+    QMAKE_POST_LINK = " "
+}
+CONFIG(Release, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt Release
+    QMAKE_POST_LINK = " "
+}
 HEADERS          = 
 SOURCES          = main.cpp BrowserNode.cpp Statistic.cpp \
         ../JavaCat/UmlClassItem.cpp ../JavaCat/UmlArtifact.cpp \
@@ -110,16 +119,14 @@ QT += network  qt3support
 
 
 QMAKE_CXXFLAGS += -std=gnu++11
-release{
-    MOC_DIR = ../../bin/MOC_release/java_round
-    OBJECTS_DIR = ../../bin/Obj_release/java_round
+DESTDIR = ../../bin
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/java_roundtrip
+    OBJECTS_DIR = $${DESTDIR}/obj_release/java_roundtrip
 }
 
-Debug{
-    MOC_DIR = ../../bin/MOC_debug/java_round
-    OBJECTS_DIR = ../../bin/Obj_debug/java_round
-
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/java_roundtrip
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/java_roundtrip
 }
-
-    DESTDIR = ../../bin
 

@@ -1,6 +1,15 @@
 TEMPLATE	= app
 TARGET		= deplcl
-CONFIG		+= warn_on qt qxt
+CONFIG(Debug, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt warn_on Debug qxt
+    QMAKE_POST_LINK = " "
+}
+CONFIG(Release, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt Release qxt
+    QMAKE_POST_LINK = " "
+}
 QXT += core
 DEFINES		= WITHCPP WITHJAVA WITHPHP WITHPYTHON WITHIDL TRACE BooL=bool
 HEADERS		= ./UmlBaseExpansionRegion.h \
@@ -407,19 +416,16 @@ SOURCES		= ./UmlBaseExpansionRegion.cpp \
 QT += network  qt3support
 INCLUDEPATH += ../../src
 CONFIG += qtestlib
-Release{
-
-
-    MOC_DIR = bin/douml/deploy/MOC_release
-    OBJECTS_DIR = bin/douml/deploy/Obj_release
+DESTDIR = ../../bin
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/deplcl
+    OBJECTS_DIR = $${DESTDIR}/obj_release/deplcl
 }
 
-Debug{
-    MOC_DIR = bin/douml/deploy/MOC_Debug
-    OBJECTS_DIR = bin/douml/deploy/Obj_Debug
-
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/deplcl
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/deplcl
 }
-    UI_DIR = src/ui
-    DESTDIR = ../../bin
+UI_DIR = src/ui
 
 QMAKE_CXXFLAGS += -std=gnu++11

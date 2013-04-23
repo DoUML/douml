@@ -1,5 +1,14 @@
 TEMPLATE      = app
-CONFIG          += qt warn_on
+CONFIG(Debug, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt warn_on Debug
+    QMAKE_POST_LINK = " "
+}
+CONFIG(Release, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt Release
+    QMAKE_POST_LINK = " "
+}
 SOURCES          = main.cpp util.cpp \
         UmlClassItem.cpp UmlAttribute.cpp \
         UmlClass.cpp UmlClassDiagram.cpp UmlClassMember.cpp \
@@ -103,19 +112,16 @@ INCLUDEPATH   = ../Tools ../RoundtripBody
 QT += network  qt3support 
 INCLUDEPATH += ../../src
 CONFIG += qtestlib
-Release{
-
-
-    MOC_DIR = bin/douml/rtrip_body/MOC_release
-    OBJECTS_DIR = bin/douml/rtrip_body/Obj_release
+DESTDIR = ../../bin
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/roundtrip_body
+    OBJECTS_DIR = $${DESTDIR}/obj_release/roundtrip_body
 }
 
-Debug{
-    MOC_DIR = bin/douml/rtrip_body/MOC_Debug
-    OBJECTS_DIR = bin/douml/rtrip_body/Obj_Debug
-
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/roundtrip_body
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/roundtrip_body
 }
-    UI_DIR = src/ui
-    DESTDIR = ../../bin
+UI_DIR = src/ui
 
 QMAKE_CXXFLAGS += -std=gnu++11

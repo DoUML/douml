@@ -1,5 +1,14 @@
 TEMPLATE      = app
-CONFIG          += qt warn_on
+CONFIG(Debug, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt warn_on Debug
+    QMAKE_POST_LINK = " "
+}
+CONFIG(Release, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt Release
+    QMAKE_POST_LINK = " "
+}
 HEADERS          = 
 SOURCES          = main.cpp BrowserNode.cpp Statistic.cpp \
         ../JavaCat/UmlClassItem.cpp ../JavaCat/UmlArtifact.cpp \
@@ -109,16 +118,14 @@ INCLUDEPATH   = ../Tools ../JavaReverse ../JavaCat ../
 QT += network  qt3support 
 
 QMAKE_CXXFLAGS += -std=gnu++11
-Release{
-    MOC_DIR = ../../bin/MOC_release/java_rev
-    OBJECTS_DIR = ../../bin/Obj_release/java_rev
+DESTDIR = ../../bin
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/java_reverse
+    OBJECTS_DIR = $${DESTDIR}/obj_release/java_reverse
 }
 
-Debug{
-    MOC_DIR = ../../bin/MOC_debug/java_rev/
-    OBJECTS_DIR = ../../bin/Obj_debug/java_rev
-
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/java_reverse
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/java_reverse
 }
-
-    DESTDIR = ../../bin
 

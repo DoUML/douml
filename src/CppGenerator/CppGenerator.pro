@@ -1,5 +1,14 @@
 TEMPLATE      = app
-CONFIG          += qt warn_on
+CONFIG(Debug, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt warn_on Debug
+    QMAKE_POST_LINK = " "
+}
+CONFIG(Release, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt Release
+    QMAKE_POST_LINK = " "
+}
 SOURCES          = UmlClassItem.cpp CppRefType.cpp UmlAttribute.cpp \
         UmlClass.cpp UmlClassDiagram.cpp UmlClassMember.cpp \
         UmlExtraClassMember.cpp UmlArtifact.cpp \
@@ -105,18 +114,18 @@ INCLUDEPATH   = ../Tools ../CppGenerator ../
 #The following line was inserted by qt3to4
 QT += network  qt3support testlib console
 QMAKE_CXXFLAGS += -std=gnu++11
-Release{
-    MOC_DIR = ../../bin/MOC_release/gen/
-    OBJECTS_DIR = ../../bin/Obj_release/gen
+DESTDIR = ../../bin
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/cpp_generator
+    OBJECTS_DIR = $${DESTDIR}/obj_release/cpp_generator
 }
 
-Debug{
-    MOC_DIR = ../../bin/MOC_debug/gen/
-    OBJECTS_DIR = ../../bin/Obj_debug/gen
-
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/cpp_generator
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/cpp_generator
 }
 
-    DESTDIR = ../../bin
+
 
 HEADERS += \
     Logging/QsLogDest.h \

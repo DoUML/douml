@@ -1,6 +1,14 @@
 TEMPLATE      = app
-CONFIG          += qt warn_on
-
+CONFIG(Debug, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt warn_on Debug
+    QMAKE_POST_LINK = " "
+}
+CONFIG(Release, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt Release
+    QMAKE_POST_LINK = " "
+}
 SOURCES          = UmlClassItem.cpp UmlAttribute.cpp UmlArtifact.cpp \
         UmlClass.cpp UmlClassDiagram.cpp UmlClassMember.cpp \
         UmlExtraClassMember.cpp \
@@ -105,16 +113,14 @@ DESTDIR = ../../bin
 QT += network  qt3support 
 
 QMAKE_CXXFLAGS += -std=gnu++11
-Release{
-    MOC_DIR = ../../bin/MOC_release/idl_gen
-    OBJECTS_DIR = ../../bin/Obj_release/idl_gen
+DESTDIR = ../../bin
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/idl_generator
+    OBJECTS_DIR = $${DESTDIR}/obj_release/idl_generator
 }
 
-Debug{
-    MOC_DIR = ../../bin/MOC_debug/idl_gen
-    OBJECTS_DIR = ../../bin/Obj_debug/idl_gen
-
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/idl_generator
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/idl_generator
 }
-
-    DESTDIR = ../../bin
 

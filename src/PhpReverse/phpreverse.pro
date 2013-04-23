@@ -1,5 +1,14 @@
 TEMPLATE      = app
-CONFIG          += qt warn_on
+CONFIG(Debug, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt warn_on Debug
+    QMAKE_POST_LINK = " "
+}
+CONFIG(Release, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt Release
+    QMAKE_POST_LINK = " "
+}
 HEADERS          = 
 SOURCES          = main.cpp \
         UmlClassItem.cpp UmlArtifact.cpp \
@@ -110,19 +119,15 @@ QT += network  qt3support
 
 INCLUDEPATH += ../../src
 CONFIG += qtestlib
-Release{
-
-
-    MOC_DIR = bin/douml/php_rev/MOC_release
-    OBJECTS_DIR = bin/douml/php_rev/Obj_release
+DESTDIR = ../../bin
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/php_reverse
+    OBJECTS_DIR = $${DESTDIR}/obj_release/php_reverse
 }
 
-Debug{
-    MOC_DIR = bin/douml/php_rev/MOC_Debug
-    OBJECTS_DIR = bin/douml/php_rev/Obj_Debug
-
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/php_reverse
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/php_reverse
 }
-    UI_DIR = src/ui
-    DESTDIR = ../../bin
-
+UI_DIR = src/ui
 QMAKE_CXXFLAGS += -std=gnu++11

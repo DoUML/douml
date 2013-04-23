@@ -970,7 +970,7 @@ void ToolCom::processFinished()
 {
     QLOG_TRACE() << "Disconnecting external process signals";
 
-    if (errno != 0) {
+    /*if (errno != 0) {
         msg_critical("Douml",
                      "error while executing '" + QString(cmd) + "'\n"
                      "perhaps you must specify its absolute path"
@@ -985,8 +985,7 @@ void ToolCom::processFinished()
         }
 
         //else
-    }
-
+    }*/
 
 }
 

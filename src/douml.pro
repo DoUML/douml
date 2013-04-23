@@ -1,16 +1,15 @@
 TEMPLATE  =  app
 INCLUDEPATH    += browser data diagram dialog misc tool xpm
 DEPENDPATH += browser data diagram dialog misc tool xpm
-INCLUDEPATH += boost src ui .. $$PWD Libs/L_UniversalModels
-#CONFIG        += qt warn_on debug
-CONFIG(debug, debug|release) {
-    CONFIG -= debug release
-    CONFIG += qt warn_on debug
+INCLUDEPATH += boost src ui ..  Libs/L_UniversalModels
+CONFIG(Debug, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt warn_on Debug
     QMAKE_POST_LINK = " "
 }
-CONFIG(release, debug|release) {
-    CONFIG -= debug release
-    CONFIG += qt release
+CONFIG(Release, Debug|Release) {
+    CONFIG -= Debug Release
+    CONFIG += qt Release
     QMAKE_POST_LINK = " "
 }
 HEADERS        = \
@@ -534,57 +533,25 @@ DEFINES = BooL=bool DEBUGCOM
 #The following line was inserted by qt3to4
 QT += core gui network  qt3support
 
-#release{
-#    MOC_DIR = bin/douml/MOC_release
-#    OBJECTS_DIR = bin/douml/OBJ_release
-#}
-#
-#debug{
-#    MOC_DIR = bin/douml/MOC_debug
-#    OBJECTS_DIR = bin/douml/OBJ_debug
-#}
-
-win32{
-    Release:
-        MOC_DIR = $$PWD/../bin/release/win32/$$TARGET
-        OBJECTS_DIR = $$PWD/../bin/release/win32/$$TARGET
-        DESTDIR = $$PWD/../bin/release/win32/$$TARGET
-    Debug:
-        MOC_DIR = $$PWD/../bin/debug/win32/$$TARGET
-        OBJECTS_DIR = $$PWD/../bin/debug/win32/$$TARGET
-        DESTDIR = $$PWD/../bin/debug/win32/$$TARGET
-}
-macx{
-    Release:
-        MOC_DIR = $$PWD/../bin/release/macx/$$TARGET
-        OBJECTS_DIR = $$PWD/../bin/release/macx/$$TARGET
-        DESTDIR = $$PWD/../bin/release/macx/$$TARGET
-    Debug:
-        MOC_DIR = $$PWD/../bin/debug/macx/$$TARGET
-        OBJECTS_DIR = $$PWD/../bin/debug/macx/$$TARGET
-        DESTDIR = $$PWD/../bin/debug/macx/$$TARGET
-}
-unix{
-    Release:
-        MOC_DIR = $$PWD/../bin/release/unix/$$TARGET
-        OBJECTS_DIR = $$PWD/../bin/release/unix/$$TARGET
-        DESTDIR = $$PWD/../bin/release/unix/$$TARGET
-    Debug:
-        MOC_DIR = $$PWD/../bin/debug/unix/$$TARGET
-        OBJECTS_DIR = $$PWD/../bin/debug/unix/$$TARGET
-        DESTDIR = $$PWD/../bin/debug/unix/$$TARGET
-}
-
 UI_DIR = ui
 DESTDIR = ../bin
 
+Release {
+    MOC_DIR = $${DESTDIR}/moc_release/douml
+    OBJECTS_DIR = $${DESTDIR}/obj_release/douml
+}
+
+Debug {
+    MOC_DIR = $${DESTDIR}/moc_debug/douml
+    OBJECTS_DIR = $${DESTDIR}/obj_debug/douml
+}
+
 QMAKE_CXXFLAGS += -std=gnu++11
 LIBS += -L../bin -lUniversalModels
-RESOURCES += icons.qrc
+RESOURCES += icons.qrc ../douml.qrc
 
 FORMS += \
     ui/operationwidgetcpp.ui \
     ui/constructorinitializerdialog.ui \
     ui/catalogwidget.ui \
     ui/quickedit.ui
-
