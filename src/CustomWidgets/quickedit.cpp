@@ -616,7 +616,7 @@ void QuickEdit::Show(BrowserNode * node)
     };
 
     TreeFunctions::ExpandAllSatisfying<TreeItemInterface>(check, ui->tvEditor, treeModel, QModelIndex());
-    QSettings settings("settings.ini", QSettings::IniFormat);
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "DoUML", "settings");
     settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
     QByteArray arr = settings.value("headers/quickedit", QByteArray()).toByteArray();
     if(!arr.isNull())
@@ -653,7 +653,7 @@ bool QuickEdit::ValidType(BrowserNode * node)
 
 void QuickEdit::closeEvent(QCloseEvent *)
 {
-    QSettings settings("settings.ini", QSettings::IniFormat);
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "DoUML", "settings");
     settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
     if(ui->tvEditor->header()->count() > 0)
     {

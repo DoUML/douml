@@ -148,7 +148,7 @@ Compiling
 	
 Webpage
 -------
-  http://sourceforge.net/projects/DoUML/
+  http://sourceforge.net/projects/douml/
 
 Contact email: 
 -------------

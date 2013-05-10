@@ -3376,7 +3376,7 @@ void OperationData::save(QTextStream & st, bool ref, QString & warning) const
         if (cpp_const)
             st << "const ";
 
-        QSettings settings("settings.ini", QSettings::IniFormat);
+        QSettings settings(QSettings::IniFormat, QSettings::UserScope, "DoUML", "settings");
         settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
         if(settings.value("Main/compatibility_save").toInt() != 1)
         {
