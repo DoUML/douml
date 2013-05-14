@@ -47,7 +47,6 @@
 #endif
 #include <q3whatsthis.h>
 #include <qapplication.h>
-#include <q3filedialog.h>
 #include <qfileinfo.h>
 #include <qwindowsstyle.h>
 #include <qmotifstyle.h>
@@ -60,6 +59,7 @@
 #include <QLabel>
 #include <QKeyEvent>
 #include <QStyle>
+#include <QFileDialog>
 //#include <qcdestyle.h>
 //#include <qsgistyle.h>
 
@@ -124,10 +124,6 @@ void set_template_project(QString s)
 {
     TemplateProject = s;
 }
-
-//
-
-static int Counter;
 
 UmlWindow * UmlWindow::the;
 
@@ -918,35 +914,36 @@ void UmlWindow::set_images_root_dir(QString s)
 void UmlWindow::newProject()
 {
     abort_line_construction();
+    if (BrowserNode::edition_active())
+        return;
 
-    if (!BrowserNode::edition_active()) {
-        close();
+    close();
+    if (browser->get_project() == 0) {
+        QString f = QFileDialog::getSaveFileName(
+                    this,
+                    tr("Enter a folder name, this folder will be created and will name the new project"),
+                    last_used_directory());
 
-        if (browser->get_project() == 0) {
-            QString f = Q3FileDialog::getSaveFileName(last_used_directory(), "*", this,
-                        0, TR("Enter a folder name, this folder will be created and will name the new project"));
+        if (!f.isEmpty()) {
+            set_last_used_directory(f);
 
-            if (!f.isEmpty()) {
-                set_last_used_directory(f);
+            QDir di;
 
-                QDir di;
+            if (di.mkdir(f)) {
+                di.cd(f);
+                browser->set_project(di);
+                Tool::defaults();
+                browser->get_project()->BrowserPackage::save_all(FALSE);
 
-                if (di.mkdir(f)) {
-                    di.cd(f);
-                    browser->set_project(di);
-                    Tool::defaults();
-                    browser->get_project()->BrowserPackage::save_all(FALSE);
-
-                    msg_warning(TR("New project"),
-                                TR("Do not forget to set the target languages list\n"
-                                   "through the 'Languages' menu\n"
-                                   "\n"
-                                   "If you program in Java, the Java Catalog plug-out\n"
-                                   "will help you, use it !"));
-                }
-                else
-                    msg_critical(TR("New project"), TR("Cannot create directory ") + f);
+                msg_warning(TR("New project"),
+                            TR("Do not forget to set the target languages list\n"
+                               "through the 'Languages' menu\n"
+                               "\n"
+                               "If you program in Java, the Java Catalog plug-out\n"
+                               "will help you, use it !"));
             }
+            else
+                msg_critical(TR("New project"), TR("Cannot create directory ") + f);
         }
     }
 }
@@ -969,7 +966,8 @@ void UmlWindow::load()
         close();
 
         if (browser->get_project() == 0) {
-            QString fn = Q3FileDialog::getOpenFileName(last_used_directory(), "*.prj", this);
+            QString fn = QFileDialog::getOpenFileName(
+                        this, tr("Select BoUML project file"), last_used_directory(), QLatin1String("*.prj"));
 
             if (!fn.isEmpty()) {
                 set_last_used_directory(fn);
@@ -1179,53 +1177,55 @@ void UmlWindow::saveAs()
 
 bool UmlWindow::saveas_it()
 {
-    if (the->browser->get_project() && !BrowserNode::edition_active()) {
-        for (;;) {
-            QString f = Q3FileDialog::getSaveFileName(last_used_directory(), "*", the,
-                        0, TR("Enter a folder name, this folder will be created and will name the new project"));
+    if (!the->browser->get_project() || BrowserNode::edition_active())
+        return false;
 
-            if (!f.isEmpty()) {
-                set_last_used_directory(f);
+    for (;;) {
+        QString f = QFileDialog::getSaveFileName(
+                    the,
+                    tr("Enter a folder name, this folder will be created and will name the new project"),
+                    last_used_directory());
 
-                QDir d(f);
+        if (!f.isEmpty()) {
+            set_last_used_directory(f);
 
-                if (d.dirName() == "empty")
-                    msg_critical("Error", TR("'empty' is reserved to the empty plug-out"));
-                else {
-                    QDir di;
+            QDir d(f);
 
-                    while (!di.mkdir(f)) {
-                        if (msg_critical("Error", TR("Cannot create directory\n") + f,
-                                         QMessageBox::Retry, QMessageBox::Abort)
-                            != QMessageBox::Retry) {
-                            if (!strcmp(the->browser->get_project()->get_name(), "empty"))
-                                exit(0);
+            if (d.dirName() == "empty")
+                msg_critical("Error", TR("'empty' is reserved to the empty plug-out"));
+            else {
+                QDir di;
 
-                            return FALSE;
-                        }
+                while (!di.mkdir(f)) {
+                    if (msg_critical("Error", TR("Cannot create directory\n") + f,
+                                     QMessageBox::Retry, QMessageBox::Abort)
+                        != QMessageBox::Retry) {
+                        if (!strcmp(the->browser->get_project()->get_name(), "empty"))
+                            exit(0);
+
+                        return false;
                     }
-
-                    QApplication::setOverrideCursor(::Qt::waitCursor);
-                    di.cd(f);
-                    the->ws->hide();
-
-                    if (the->browser->save_as(di))
-                        BrowserPackage::save_all(FALSE);
-
-                    the->ws->show();
-                    QApplication::restoreOverrideCursor();
-                    the->setCaption("DoUML : " + f);
-                    return TRUE;
                 }
-            }
-            else if (!strcmp(the->browser->get_project()->get_name(), "empty"))
-                exit(0);
-            else
-                return FALSE;
-        }
-    }
 
-    return FALSE;
+                QApplication::setOverrideCursor(::Qt::waitCursor);
+                di.cd(f);
+                the->ws->hide();
+
+                if (the->browser->save_as(di))
+                    BrowserPackage::save_all(FALSE);
+
+                the->ws->show();
+                QApplication::restoreOverrideCursor();
+                the->setCaption("DoUML : " + f);
+                return true;
+            }
+        }
+        else if (!strcmp(the->browser->get_project()->get_name(), "empty"))
+            exit(0);
+        else
+            return false;
+    }
+    return false;
 }
 
 
@@ -1797,9 +1797,8 @@ void UmlWindow::edit_env()
 
 void UmlWindow::edit_image_root_dir()
 {
-    QString s =
-        Q3FileDialog::getExistingDirectory(img_root_dir, 0, 0,
-                                           TR("Select images root directory"));
+    QString s = QFileDialog::getExistingDirectory(
+                this, tr("Select images root directory"), img_root_dir);
 
     if (! s.isEmpty()) {
         img_root_dir = s;
