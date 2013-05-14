@@ -112,7 +112,7 @@ INCLUDEPATH   = ../Tools ../CppGenerator ../
 
 
 #The following line was inserted by qt3to4
-QT += network qt3support testlib console
+QT += network qt3support testlib
 QMAKE_CXXFLAGS += -std=gnu++11
 DESTDIR = ../../bin
 Release {
