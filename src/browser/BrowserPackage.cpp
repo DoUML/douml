@@ -38,7 +38,6 @@
 #include <QPixmap>
 #include <QTextStream>
 #include <QDropEvent>
-#include <QFileDialog>
 #include <QDragMoveEvent>
 
 #include "BrowserPackage.h"
@@ -1304,7 +1303,7 @@ BrowserPackage * BrowserPackage::import_project(QString fn, bool aslib, int id)
     bool manual = fn.isEmpty();
 
     if (manual) {
-        fn = QFileDialog::getOpenFileName(last_used_directory(), "*.prj");
+        fn = Q3FileDialog::getOpenFileName(last_used_directory(), "*.prj");
 
         if (fn.isEmpty())
             return 0;

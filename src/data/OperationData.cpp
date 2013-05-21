@@ -3945,24 +3945,18 @@ void OperationData::read(char *& st, char *& k)
 }
 bool operator==(const OperationData & origin, const OperationData & another)
 {
-    bool paramsResult = true;
-
-    if(origin.params.size() != another.params.size())
-        paramsResult = false;
-    else
-    {
-        int i = -1;
-        auto it = origin.params.begin();
-        while(it != origin.params.end())
-        {
-            it++;i++;
-            if(*origin.params[i].get() == *another.params[i].get() )
-                continue;
-            paramsResult = false;
-            break;
-        }
-    }
-
+    bool paramsResult = false;
+//    if(origin.params.isEmpty() && another.params.isEmpty())
+//        paramsResult = true;
+//    else if(origin.params != another.params)
+//    {
+//        if(origin.params.isEmpty())
+//            return false;
+//        else if(another.params.isEmpty() == nullptr)
+//            return false;
+//         paramsResult = *origin.params == *another.params;
+//    }
+    paramsResult = origin.params == another.params;
     if(!paramsResult)
         return false;
     if(origin.uml_visibility != another.uml_visibility ||
@@ -4045,7 +4039,7 @@ bool PropagationEquality(const OperationData & origin, const OperationData & ano
         paramsResult = false;
     else
     {
-        int i = -1;
+        int i = 0;
         auto it = origin.params.begin();
         while(it != origin.params.end())
         {

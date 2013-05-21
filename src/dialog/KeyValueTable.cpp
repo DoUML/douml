@@ -148,11 +148,6 @@ void KeyValuesTable::remove(const char * key)
 
 void KeyValuesTable::Init(HaveKeyValueData *kvData, bool isReadOnly)
 {
-    if(!kvData)
-    {
-        this->setEnabled(false);
-        return;
-    }
     AdjustColumnCount(isReadOnly);
     AdjustRowCount(kvData, isReadOnly);
     SetupTableText(kvData, isReadOnly);

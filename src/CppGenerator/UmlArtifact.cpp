@@ -152,10 +152,16 @@ void UmlArtifact::generate()
 
         if (!hdef.isEmpty()) {
 
+
+            //headerFile->append("Test DAta");
+
             QLOG_INFO() << "openign file for writing: ";
+            //QTextStream f_h(file.data()); //[lgfreitas] Now QTextStream receives a pointer to a byte array...
             QSharedPointer<QByteArray> headerFile(new QByteArray());
             QTextStream f_h(headerFile.data(), QFile::WriteOnly);
             f_h.setCodec(QTextCodec::codecForLocale());
+            //QTextStream f_h(headerFile.data(), QIODevice::WriteOnly);
+            //QString h_copy = QString(hdef.operator QString());
             const char * p = hdef;
             const char * pp = 0;
 

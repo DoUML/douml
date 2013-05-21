@@ -52,8 +52,8 @@ WrapperStr current_indent(const char * p, const char * begin)
 
     while ((p != begin) && ((p[-1] == ' ') || (p[-1] == '\t')))
         indent.prepend(*--p);
-    QByteArray temp = indent.toAscii();
-    return WrapperStr(temp.constData());
+
+    return WrapperStr(indent.toAscii().constData());
 }
 
 const char * name_spec(const char * spec)

@@ -131,8 +131,8 @@ Compiling
 #### Under Linux:
   
  * dependencies: libqt4-dev, libqt4-qt3support, libboost-dev, libfile-fcntllock-perl, vim-common, g++ (>=4.7)
- * make
- * make install or make install DESTDIR=[path]
+ * `make`
+ * `make install` default directory is ${PWD}/install or `make install LOCAL_DESTDIR=[path]`
     
   
 #### Under Windows:

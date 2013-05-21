@@ -1256,7 +1256,6 @@ BrowserNode * BrowserClass::duplicate(BrowserNode * p, QString name)
     // duplicates the sub elts
     for (child = firstChild(); n != 0; child = child->nextSibling(), n -= 1)
     {
-        BrowserNode* nodeCopy;
         if (!((BrowserNode *) child)->deletedp())
         {
             if (IsaRelation(((BrowserNode *) child)->get_type()))
@@ -1265,16 +1264,10 @@ BrowserNode * BrowserClass::duplicate(BrowserNode * p, QString name)
                         ((BrowserNode *) child)->get_data();
 
                 if ((rd->get_start_class() != this) || (rd->get_end_class() != this) || rd->is_a((BrowserRelation *) child))
-                    nodeCopy = ((BrowserNode *) child)->duplicate(result);
+                    ((BrowserNode *) child)->duplicate(result);
             }
             else
-                nodeCopy =  ((BrowserNode *) child)->duplicate(result);
-        }
-        nodeCopy->set_n_keys(static_cast<BrowserNode*>(child)->get_n_keys());
-        for(int i(0); i < static_cast<BrowserNode*>(child)->get_n_keys(); i++)
-        {
-            nodeCopy->set_key(i, static_cast<BrowserNode*>(child)->get_key(i));
-            nodeCopy->set_value(i, static_cast<BrowserNode*>(child)->get_value(i));
+                ((BrowserNode *) child)->duplicate(result);
         }
     }
 

@@ -57,9 +57,7 @@ int main(int argc, char ** argv)
     QTextCodec::setCodecForLocale(codec);
 
     QLOG_INFO() << " STARTING CPP_GENERATOR";
-
 #endif
-    //QTest::qSleep(7000);
     int port_index;
 
     if (argc == 2) {
