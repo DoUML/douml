@@ -60,7 +60,7 @@ public:
 # ifdef ROUNDTRIP
     virtual void upload(ClassContainer * cnt);
     virtual bool set_roundtrip_expected();
-    virtual void mark_useless(Q3PtrList<UmlItem> & l);
+    virtual void mark_useless(QList<UmlItem *> & l);
     virtual void scan_it(int & n);
     virtual void send_it(int n);
     bool is_created() const {
@@ -73,7 +73,7 @@ public:
         return the_class;
     }
     UmlItem * search_for_att_rel(const WrapperStr & name);
-    void reorder(Q3PtrList<UmlItem> & expected_order);
+    void reorder(QList<UmlItem *> & expected_order);
 # endif
 #endif
     static void manage_generic(WrapperStr & form, UmlTypeSpec & typespec,

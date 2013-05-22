@@ -128,7 +128,7 @@ bool BrowserTransition::undelete(bool, QString & warning, QString & renamed)
     return TRUE;
 }
 
-void BrowserTransition::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserTransition::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
 
@@ -136,7 +136,7 @@ void BrowserTransition::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
         BrowserStateDiagram::compute_referenced_by(l, this, "transitioncanvas", "transition_ref");
 }
 
-void BrowserTransition::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserTransition::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserNode * target)
 {
     IdIterator<BrowserTransition> it(all);

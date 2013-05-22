@@ -43,7 +43,7 @@
 #include "myio.h"
 #include "translate.h"
 
-Q3PtrList<DiagramItem> DiagramItem::Undefined;
+QList<DiagramItem *> DiagramItem::Undefined;
 
 DiagramItem::DiagramItem(int id, UmlCanvas * canvas)
     : Labeled<DiagramItem>(canvas->get_all_items(), id)
@@ -70,20 +70,16 @@ void DiagramItem::remove(bool)
 
 void DiagramItem::hide_lines()
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    for (; it.current(); ++it)
-        it.current()->hide();
+    foreach (ArrowCanvas *canvas, lines)
+        canvas->hide();
 }
 
 void DiagramItem::update_show_lines()
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    for (; it.current(); ++it) {
-        it.current()->update_pos();
-        it.current()->show();
-        it.current()->update_geometry();
+    foreach (ArrowCanvas *canvas, lines) {
+        canvas->update_pos();
+        canvas->show();
+        canvas->update_geometry();
     }
 }
 
@@ -99,10 +95,8 @@ void DiagramItem::check_line(ArrowCanvas *)
 
 bool DiagramItem::attached_to(const ArrowCanvas * l) const
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    for (; it.current(); ++it)
-        if (it.current() == l)
+    foreach (ArrowCanvas *canvas, lines)
+        if (canvas == l)
             return TRUE;
 
     return FALSE;
@@ -188,8 +182,9 @@ void DiagramItem::remove_if_already_present()
 
 void DiagramItem::post_load()
 {
-    while (! Undefined.isEmpty())
-        Undefined.take()->delete_it();
+    foreach (DiagramItem *item, Undefined)
+        item->delete_it();
+    Undefined.clear();
 }
 
 BasicData * DiagramItem::add_relation(UmlCode t, DiagramItem * end)
@@ -208,29 +203,18 @@ BasicData * DiagramItem::add_relation(UmlCode t, DiagramItem * end)
 bool DiagramItem::has_relation(BasicData * def) const
 {
     // manage only SimpleRelations
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    while (it.current()) {
-        if (IsaSimpleRelation(it.current()->type()) &&
-            (it.current()->get_data() == def))
+    foreach (ArrowCanvas *canvas, lines)
+        if (IsaSimpleRelation(canvas->type()) && (canvas->get_data() == def))
             return TRUE;
-
-        ++it;
-    }
 
     return FALSE;
 }
 
 bool DiagramItem::has_relation(UmlCode t, BasicData * def) const
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    while (it.current()) {
-        if ((it.current()->type() == t) &&
-            (it.current()->get_data() == def))
+    foreach (ArrowCanvas *canvas, lines) {
+        if ((canvas->type() == t) && (canvas->get_data() == def))
             return TRUE;
-
-        ++it;
     }
 
     return FALSE;
@@ -253,10 +237,8 @@ bool DiagramItem::move_with(UmlCode) const
 
 void DiagramItem::select_associated()
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    for (; it.current(); ++it)
-        it.current()->select_associated();
+    foreach (ArrowCanvas *canvas, lines)
+        canvas->select_associated();
 }
 
 void DiagramItem::unassociate(DiagramItem *)
@@ -400,13 +382,14 @@ bool DiagramItem::has_drawing_settings() const
     return FALSE;
 }
 
-void DiagramItem::edit_drawing_settings(Q3PtrList<DiagramItem> &)
+void DiagramItem::edit_drawing_settings(QList<DiagramItem *> &)
 {
     // never called
 }
 
-void DiagramItem::same_drawing_settings(Q3PtrList<DiagramItem> &)
+void DiagramItem::clone_drawing_settings(const DiagramItem *src)
 {
+    Q_UNUSED(src);
     // never called
 }
 
@@ -437,11 +420,13 @@ DiagramItemList::~DiagramItemList()
 {
 }
 
-int DiagramItemList::compareItems(Q3PtrCollection::Item i1,
-                                  Q3PtrCollection::Item i2)
+void DiagramItemList::sort()
 {
-    // i1 <> i2 !
-    return (((DiagramItem *) i1)->get_ident() >
-            ((DiagramItem *) i2)->get_ident())
-           ? 1 : -1;
+    qSort(begin(), end(), lessThan);
+}
+
+bool DiagramItemList::lessThan(DiagramItem *a, DiagramItem *b)
+{
+    // a <> b !
+    return a->get_ident() > b->get_ident();
 }

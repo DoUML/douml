@@ -91,7 +91,7 @@ protected:
 
     static bool show_stereotypes;
     static unsigned edition_number;
-    static Q3PtrList<BrowserNode> marked_list;
+    static QList<BrowserNode *> marked_list;
     static bool popup_menu_active;
     static QList<UmlCode> generatable_types;
     static SaveProgress * save_progress;
@@ -137,18 +137,12 @@ public:
     bool markedp() const {
         return is_marked;
     }
-    static const Q3PtrList<BrowserNode> & marked_nodes() {
+    static const QList<BrowserNode *> & marked_nodes() {
         return marked_list;
     }
     static const QList<BrowserNode*>  get_marked_nodes()
     {
-        Q3PtrListIterator<BrowserNode> it(marked_list);
-        QList<BrowserNode*> result;
-        for (; it.current() != 0; ++it)
-        {
-            result.append(it.current());
-        }
-        return result;
+        return marked_list;
     }
 
     static void setup_generatable_types();
@@ -184,7 +178,7 @@ public:
     const char * get_stereotype() const;
     virtual QString stereotypes_properties() const;
     bool may_contains(BrowserNode *, bool rec) const;
-    virtual bool may_contains_them(const Q3PtrList<BrowserNode> &,
+    virtual bool may_contains_them(const QList<BrowserNode *> &,
                                    BooL & duplicable) const;
     bool may_contains_it(BrowserNode * bn) const;
     virtual void move(BrowserNode *, BrowserNode * after);
@@ -256,7 +250,7 @@ public:
     virtual const QStringList & default_stereotypes(UmlCode, const BrowserNode *) const; // non class rel
     virtual BrowserNode * get_associated() const;
     virtual BasicData * add_relation(UmlCode, BrowserNode *);
-    virtual Q3PtrList<BrowserNode> parents() const;
+    virtual QList<BrowserNode *> parents() const;
     BrowserNode * get_container(UmlCode) const;
     virtual BrowserNode * container(UmlCode) const; // container for class, state machine and activity
     virtual QString check_inherit(const BrowserNode * parent) const;
@@ -266,7 +260,7 @@ public:
     virtual void member_cpp_def(const QString & prefix,
                                 const QString & prefix_tmplop,
                                 QString & s, bool templ) const;
-    virtual void referenced_by(Q3PtrList<BrowserNode> &, bool ondelete = FALSE);
+    virtual void referenced_by(QList<BrowserNode *> &, bool ondelete = FALSE);
     virtual AType class_association() const;
     virtual const char * constraint() const;
 
@@ -338,11 +332,8 @@ inline QString BrowserNode::fullname(QString & s, bool rev) const
 
 // a sortable list of BrowserNode
 
-class BrowserNodeList : public Q3PtrList<BrowserNode>
+class BrowserNodeList : public QList<BrowserNode *>
 {
-protected:
-    virtual int compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2);
-
 public:
     void search(BrowserNode * bn, UmlCode k, const QString & s,
                 bool cs, bool even_deleted, bool for_name,
@@ -354,6 +345,10 @@ public:
     void full_names(QStringList & list) const;
     void full_defs(QStringList & list) const;
     void sort_it();
+    void sort();
+
+private:
+    static bool lessThan(BrowserNode *a, BrowserNode *b);
 };
 
 

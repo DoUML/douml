@@ -49,7 +49,7 @@ public:
                         const WrapperStr & value,	WrapperStr comment,
                         WrapperStr description
 #ifdef ROUNDTRIP
-                        , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                        , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                        );
 #ifdef ROUNDTRIP

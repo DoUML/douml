@@ -1043,7 +1043,7 @@ bool ActivityActionCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void ActivityActionCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void ActivityActionCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         StateSpecVector st(1);
@@ -1062,18 +1062,17 @@ void ActivityActionCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if (dialog.exec() == QDialog::Accepted) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
+            foreach (DiagramItem *item, l) {
+                ActivityActionCanvas *canvas = (ActivityActionCanvas *)item;
                 if (!st[0].name.isEmpty())
-                    ((ActivityActionCanvas *) it.current())->show_opaque_action_definition =
+                    canvas->show_opaque_action_definition =
                         show_opaque_action_definition;
 
                 if (!co[0].name.isEmpty())
-                    ((ActivityActionCanvas *) it.current())->itscolor = itscolor;
+                    canvas->itscolor = itscolor;
 
-                ((ActivityActionCanvas *) it.current())->settings.set(st, 1);
-                ((ActivityActionCanvas *) it.current())->modified();	// call package_modified()
+                canvas->settings.set(st, 1);
+                canvas->modified();
             }
         }
 
@@ -1082,20 +1081,13 @@ void ActivityActionCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void ActivityActionCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void ActivityActionCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    ActivityActionCanvas * x = (ActivityActionCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        ActivityActionCanvas * o = (ActivityActionCanvas *) it.current();
-
-        o->show_opaque_action_definition = x->show_opaque_action_definition;
-        o->itscolor = x->itscolor;
-        o->settings = x->settings;
-        o->modified();	// call package_modified()
-    }
+    ActivityActionCanvas *srcCanvas = (ActivityActionCanvas *)src;
+    show_opaque_action_definition = srcCanvas->show_opaque_action_definition;
+    itscolor = srcCanvas->itscolor;
+    settings = srcCanvas->settings;
+    modified();
 }
 
 bool ActivityActionCanvas::get_show_stereotype_properties() const

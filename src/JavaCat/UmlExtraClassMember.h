@@ -51,7 +51,7 @@ public:
 
 #ifdef ROUNDTRIP
     static void add_init(UmlClass * cl, WrapperStr def, bool roundtrip,
-                         Q3PtrList<UmlItem> & expected_order);
+                         QList<UmlItem *> & expected_order);
 #endif
 };
 

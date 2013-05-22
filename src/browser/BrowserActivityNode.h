@@ -98,7 +98,7 @@ public:
     virtual bool tool_cmd(ToolCom * com, const char * args);
     virtual bool api_compatible(unsigned v) const;
 
-    virtual void referenced_by(Q3PtrList<BrowserNode> &, bool ondelete = FALSE);
+    virtual void referenced_by(QList<BrowserNode *> &, bool ondelete = FALSE);
     bool target_of_flow() const;
 
     virtual bool allow_empty() const;

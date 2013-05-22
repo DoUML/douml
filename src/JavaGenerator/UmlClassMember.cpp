@@ -114,7 +114,7 @@ void UmlClassMember::generate_visibility(QTextStream & f, const char * parent_st
 }
 
 /*
-bool UmlClassMember::compute_dependency(Q3PtrList<JavaRefType> & dependencies,
+bool UmlClassMember::compute_dependency(QList<JavaRefType *> & dependencies,
 					WrapperStr decl, const UmlTypeSpec & t)
 {
   remove_comments(decl);

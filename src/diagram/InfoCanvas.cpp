@@ -225,7 +225,7 @@ bool InfoCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void InfoCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void InfoCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         ColorSpecVector co(1);
@@ -238,11 +238,10 @@ void InfoCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if ((dialog.exec() == QDialog::Accepted) && !co[0].name.isEmpty()) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
-                ((InfoCanvas *) it.current())->itscolor = itscolor;
-                ((InfoCanvas *) it.current())->modified();	// call package_modified()
+            foreach (DiagramItem *item, l) {
+                InfoCanvas *canvas = (InfoCanvas *)item;
+                canvas->itscolor = itscolor;
+                canvas->modified();	// call package_modified()
             }
         }
 
@@ -251,18 +250,11 @@ void InfoCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void InfoCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void InfoCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    InfoCanvas * x = (InfoCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        InfoCanvas * o = (InfoCanvas *) it.current();
-
-        o->itscolor = x->itscolor;
-        o->modified();	// call package_modified()
-    }
+    const InfoCanvas * x = (const InfoCanvas *) src;
+    itscolor = x->itscolor;
+    modified();
 }
 
 void InfoCanvas::save(QTextStream & st, bool ref, QString &) const

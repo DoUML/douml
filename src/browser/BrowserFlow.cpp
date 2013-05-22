@@ -129,7 +129,7 @@ bool BrowserFlow::undelete(bool, QString & warning, QString & renamed)
     return TRUE;
 }
 
-void BrowserFlow::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserFlow::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
 
@@ -137,7 +137,7 @@ void BrowserFlow::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
         BrowserActivityDiagram::compute_referenced_by(l, this, "flowcanvas", "flow_ref");
 }
 
-void BrowserFlow::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserFlow::compute_referenced_by(QList<BrowserNode *> & l,
                                         const BrowserNode * target)
 {
     IdIterator<BrowserFlow> it(all);

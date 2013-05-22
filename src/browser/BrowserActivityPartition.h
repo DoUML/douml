@@ -62,7 +62,7 @@ public:
     BrowserActivityPartition(const BrowserActivityPartition * model, BrowserNode * p);
     virtual ~BrowserActivityPartition();
 
-    virtual bool may_contains_them(const Q3PtrList<BrowserNode> & l,
+    virtual bool may_contains_them(const QList<BrowserNode *> & l,
                                    BooL & duplicable) const;
     virtual BrowserNode * duplicate(BrowserNode * p,
                                     QString name = QString());
@@ -94,7 +94,7 @@ public:
     static BrowserNode * get_it(const char * k, int id);
     static void post_load();
 
-    virtual void referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete);
+    virtual void referenced_by(QList<BrowserNode *> & l, bool ondelete);
 
     static void clear(bool old);
     static void update_idmax_for_root();

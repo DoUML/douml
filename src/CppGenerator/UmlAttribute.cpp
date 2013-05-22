@@ -40,7 +40,7 @@
 #include "util.h"
 #include "misc/codec.h"
 
-void UmlAttribute::compute_dependency(Q3PtrList<CppRefType> & dependency,
+void UmlAttribute::compute_dependency(QList<CppRefType *> & dependency,
                                       const WrapperStr & cl_stereotype,
                                       bool all_in_h)
 {

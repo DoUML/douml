@@ -37,7 +37,7 @@
 #include "ArrowPointCanvas.h"
 #include "BrowserDiagram.h"
 
-static Q3PtrList<UmlCanvas> All;
+static QList<UmlCanvas *> All;
 
 static const struct {
     int w;
@@ -94,7 +94,7 @@ UmlCanvas::UmlCanvas(CanvasFormat f, BrowserDiagram * br_diag)
 
 UmlCanvas::~UmlCanvas()
 {
-    All.removeRef(this);
+    All.remove(this);
 }
 
 void UmlCanvas::set_view(DiagramView * v)
@@ -302,9 +302,7 @@ void UmlCanvas::show_limits(bool y)
 
 void UmlCanvas::update_global_settings()
 {
-    UmlCanvas * c;
-
-    for (c = All.first(); c != 0; c = All.next()) {
+    foreach (UmlCanvas *c, All) {
         c->br_diagram->update_drawing_settings();
         c->show_shadow = c->br_diagram->get_shadow();
         c->draw_all_relations = c->br_diagram->get_draw_all_relations();

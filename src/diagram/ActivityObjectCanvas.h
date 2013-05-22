@@ -86,8 +86,8 @@ public:
     virtual void remove(bool from_model);
 
     virtual bool has_drawing_settings() const;
-    virtual void edit_drawing_settings(Q3PtrList<DiagramItem> &);
-    virtual void same_drawing_settings(Q3PtrList<DiagramItem> &);
+    virtual void edit_drawing_settings(QList<DiagramItem *> &);
+    virtual void clone_drawing_settings(const DiagramItem *src);
 
     virtual void apply_shortcut(QString s);
     void edit_drawing_settings();

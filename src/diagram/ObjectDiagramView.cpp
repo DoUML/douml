@@ -247,7 +247,6 @@ void ObjectDiagramView::save(QTextStream & st, QString & warning,
                              bool copy) const
 {
     DiagramItemList items(canvas()->allItems());
-    DiagramItem * di;
 
     if (!copy)
         // sort is useless for a copy
@@ -257,7 +256,7 @@ void ObjectDiagramView::save(QTextStream & st, QString & warning,
 
     // save first the packages fragment, classes instances, notes, icons and text
 
-    for (di = items.first(); di != 0; di = items.next()) {
+    foreach (DiagramItem *di, items) {
         switch (di->type()) {
         case UmlPackage:
         case UmlFragment:
@@ -277,7 +276,7 @@ void ObjectDiagramView::save(QTextStream & st, QString & warning,
 
     // then save links
 
-    for (di = items.first(); di != 0; di = items.next()) {
+    foreach (DiagramItem *di, items) {
         UmlCode k = di->type();
 
         if (IsaRelation(k) || (k == UmlObjectLink)) {
@@ -288,7 +287,7 @@ void ObjectDiagramView::save(QTextStream & st, QString & warning,
 
     // then save anchors
 
-    for (di = items.first(); di != 0; di = items.next())
+    foreach (DiagramItem *di, items)
         if ((!copy || di->copyable()) && (di->type() == UmlAnchor))
             di->save(st, FALSE, warning);
 

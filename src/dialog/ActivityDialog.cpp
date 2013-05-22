@@ -122,7 +122,7 @@ ActivityDialog::ActivityDialog(ActivityData * d)
         edspecification->insertStringList(list);
         edspecification->setCurrentItem((activity->get_specification() == 0)
                                         ? 0
-                                        : opers.findRef(activity->get_specification()) + 1);
+                                        : opers.indexOf(activity->get_specification()) + 1);
     }
 
     new QLabel(grid);
@@ -274,8 +274,9 @@ ActivityDialog::~ActivityDialog()
     activity->browser_node->edit_end();
     previous_size = size();
 
-    while (!edits.isEmpty())
-        edits.take(0)->close();
+    foreach (BodyDialog *dialog, edits)
+        dialog->close();
+    edits.clear();
 
     close_dialog(this);
 }

@@ -48,7 +48,7 @@ class BrowserPackage : public BrowserNode, public Labeled<BrowserPackage>
     friend class StereotypesDialog;
 
 protected:
-    static Q3PtrList<BrowserPackage> removed;
+    static QList<BrowserPackage *> removed;
     static IdDict<BrowserPackage> all;
 
     static QStringList its_default_stereotypes;
@@ -115,7 +115,7 @@ public:
     virtual QString get_stype() const;
     virtual int get_identifier() const;
     virtual const char * help_topic() const;
-    virtual bool may_contains_them(const Q3PtrList<BrowserNode> &,
+    virtual bool may_contains_them(const QList<BrowserNode *> &,
                                    BooL & duplicable) const;
     virtual BasicData * get_data() const;
     virtual const QStringList & default_stereotypes(UmlCode, const BrowserNode *) const; // non class rel
@@ -134,7 +134,7 @@ public:
     virtual QString check_inherit(const BrowserNode * parent) const;
     QString may_connect(UmlCode & l, const BrowserNode * dest) const;
 
-    virtual void referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete);
+    virtual void referenced_by(QList<BrowserNode *> & l, bool ondelete);
 
     virtual bool tool_cmd(ToolCom * com, const char * args);
     static bool tool_global_cmd(ToolCom * com, const char * args);

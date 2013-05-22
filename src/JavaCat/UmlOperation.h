@@ -59,7 +59,7 @@ public:
                         const WrapperStr & array,	WrapperStr comment,
                         WrapperStr description, WrapperStr annotation
 #ifdef ROUNDTRIP
-                        , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                        , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                        );
 

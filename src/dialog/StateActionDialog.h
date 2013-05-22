@@ -55,7 +55,7 @@ protected:
     StateActionData * action;
     Q3ComboBox * edstereotype;
     MultiLineEdit * comment;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
 
     QWidget * umltab;
     QWidget * cppTab;

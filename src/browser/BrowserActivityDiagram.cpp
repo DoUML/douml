@@ -55,7 +55,7 @@
 #include "mu.h"
 #include "translate.h"
 
-Q3PtrList<BrowserActivityDiagram> BrowserActivityDiagram::imported;
+QList<BrowserActivityDiagram *> BrowserActivityDiagram::imported;
 Q3ValueList<int> BrowserActivityDiagram::imported_ids;
 QStringList BrowserActivityDiagram::its_default_stereotypes;	// unicode
 
@@ -162,14 +162,12 @@ void BrowserActivityDiagram::import()
 {
     Q3ValueList<int>::Iterator it = imported_ids.begin();
 
-    while (!imported.isEmpty()) {
-        QString warning;
-        BrowserActivityDiagram * d = imported.take(0);
-
+    foreach (BrowserActivityDiagram *d, imported) {
         (new ActivityDiagramWindow(d->full_name(), d, *it))->close(TRUE);
         it = imported_ids.remove(it);
         d->is_modified = TRUE;
     }
+    imported.clear();
 }
 
 void BrowserActivityDiagram::renumber(int phase)
@@ -613,7 +611,7 @@ const QStringList & BrowserActivityDiagram::default_stereotypes()
     return its_default_stereotypes;
 }
 
-void BrowserActivityDiagram::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserActivityDiagram::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserNode * bn,
         char const * kc,
         char const * kr)

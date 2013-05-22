@@ -619,7 +619,7 @@ bool DeploymentNodeCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void DeploymentNodeCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void DeploymentNodeCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         StateSpecVector st(2);
@@ -637,21 +637,20 @@ void DeploymentNodeCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if (dialog.exec() == QDialog::Accepted) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
+            foreach (DiagramItem *item, l) {
+                DeploymentNodeCanvas *canvas = (DeploymentNodeCanvas *)item;
                 if (!st[0].name.isEmpty())
-                    ((DeploymentNodeCanvas *) it.current())->write_horizontally =
+                    canvas->write_horizontally =
                         write_horizontally;
 
                 if (!st[1].name.isEmpty())
-                    ((DeploymentNodeCanvas *) it.current())->show_stereotype_properties =
+                    canvas->show_stereotype_properties =
                         show_stereotype_properties;
 
                 if (!co[0].name.isEmpty())
-                    ((DeploymentNodeCanvas *) it.current())->itscolor = itscolor;
+                    canvas->itscolor = itscolor;
 
-                ((DeploymentNodeCanvas *) it.current())->modified();	// call package_modified()
+                canvas->modified();
             }
         }
 
@@ -660,20 +659,13 @@ void DeploymentNodeCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void DeploymentNodeCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void DeploymentNodeCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    DeploymentNodeCanvas * x = (DeploymentNodeCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        DeploymentNodeCanvas * o = (DeploymentNodeCanvas *) it.current();
-
-        o->write_horizontally = x->write_horizontally;
-        o->show_stereotype_properties = x->show_stereotype_properties;
-        o->itscolor = x->itscolor;
-        o->modified();	// call package_modified()
-    }
+    const DeploymentNodeCanvas * x = (const DeploymentNodeCanvas *) src;
+    write_horizontally = x->write_horizontally;
+    show_stereotype_properties = x->show_stereotype_properties;
+    itscolor = x->itscolor;
+    modified();
 }
 
 bool DeploymentNodeCanvas::get_show_stereotype_properties() const

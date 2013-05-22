@@ -85,11 +85,8 @@ CodAddMsgDialog::CodAddMsgDialog(CodObjCanvas * from, CodObjCanvas * to,
 
     from->get_all_in_all_out(all_in, all_out);
 
-    ColMsg * m;
     QStringList new_ones;
-    Q3PtrListIterator<ColMsg> itout(all_out);
-
-    for (; (m = itout.current()) != 0; ++itout) {
+    foreach (ColMsg *m, all_out) {
         QString s = m->next_hierarchical_rank();
 
         if ((s.find('.') != - 1) && (ColMsg::find(s, all_out) == 0)) {
@@ -98,9 +95,7 @@ CodAddMsgDialog::CodAddMsgDialog(CodObjCanvas * from, CodObjCanvas * to,
         }
     }
 
-    Q3PtrListIterator<ColMsg> itin(all_in);
-
-    for (; (m = itin.current()) != 0; ++itin) {
+    foreach (ColMsg *m, all_in) {
         QString s = m->get_hierarchical_rank() + ".1";
 
         if ((ColMsg::find(s, all_out) == 0) && (new_ones.findIndex(s) == -1)) {

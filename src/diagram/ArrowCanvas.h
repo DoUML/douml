@@ -84,10 +84,10 @@ protected:
     float decenter_end;		// fixed geometry. < 0 means don't care
 
     // to remove temporary arrows
-    static Q3PtrList<ArrowCanvas> RelsToDel;
+    static QList<ArrowCanvas *> RelsToDel;
 
     // to remove redondant relation made by release 2.22
-    static Q3PtrList<ArrowCanvas> RelsToCheck;
+    static QList<ArrowCanvas *> RelsToCheck;
 
 public:
     ArrowCanvas(UmlCanvas * canvas, DiagramItem * b, DiagramItem * e,

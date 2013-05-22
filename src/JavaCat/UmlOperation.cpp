@@ -66,7 +66,7 @@ bool UmlOperation::new_one(Class * container, const WrapperStr & name,
                            const WrapperStr & array, WrapperStr comment,
                            WrapperStr description, WrapperStr annotation
 #ifdef ROUNDTRIP
-                           , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                           , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                           )
 {
@@ -958,7 +958,7 @@ UmlOperation * UmlOperation::already_exist(Class * container, const WrapperStr &
     const Q3PtrVector<UmlItem> & ch = container->get_uml()->UmlItem::children();
     UmlItem ** v = ch.data();
     UmlItem ** const vsup = v + ch.size();
-    Q3PtrList<UmlOperation> opers;
+    QList<UmlOperation *> opers;
 
     for (; v != vsup; v += 1)
         if (((*v)->kind() == anOperation) &&
@@ -973,17 +973,16 @@ UmlOperation * UmlOperation::already_exist(Class * container, const WrapperStr &
     case 1:
         // suppose it is this one
         // even don't know if it is placed later in file
-        return opers.getFirst();
+        return opers.first();
 
     default:
         break;
     }
 
-    UmlOperation * op;
-    Q3PtrList<UmlOperation> same_names;
+    QList<UmlOperation *> same_names;
 
     // search for operation having the same params name and number
-    for (op = opers.first(); op != 0; op = opers.next()) {
+    foreach (UmlOperation *op, opers) {
         Q3ValueList<UmlParameter> ps = op->params();
         Q3ValueList<UmlParameter>::ConstIterator it1;
         Q3ValueList<UmlParameter>::ConstIterator it2;
@@ -1020,7 +1019,7 @@ UmlOperation * UmlOperation::already_exist(Class * container, const WrapperStr &
         // only one having the same number of param
         // and same param names (type changed)
         // suppose this one
-        return same_names.getFirst();
+        return same_names.first();
     }
 
     // suppose not find

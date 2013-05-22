@@ -79,8 +79,8 @@ public:
     virtual void history_hide();
 
     virtual bool has_drawing_settings() const;
-    virtual void edit_drawing_settings(Q3PtrList<DiagramItem> &);
-    virtual void same_drawing_settings(Q3PtrList<DiagramItem> &);
+    virtual void edit_drawing_settings(QList<DiagramItem *> &);
+    virtual void clone_drawing_settings(const DiagramItem *src);
     virtual bool get_show_stereotype_properties() const;
 
     virtual void apply_shortcut(QString s);

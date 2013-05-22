@@ -1436,7 +1436,7 @@ bool StateCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void StateCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void StateCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         StateSpecVector st(3);
@@ -1457,25 +1457,24 @@ void StateCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if (dialog.exec() == QDialog::Accepted) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
+            foreach (DiagramItem *item, l) {
+                StateCanvas *canvas = (StateCanvas *)item;
                 if (!st[0].name.isEmpty())
-                    ((StateCanvas *) it.current())->settings.show_activities =
+                    canvas->settings.show_activities =
                         show_activities;
 
                 if (!st[1].name.isEmpty())
-                    ((StateCanvas *) it.current())->settings.region_horizontally =
+                    canvas->settings.region_horizontally =
                         region_horizontally;
 
                 if (!st[2].name.isEmpty())
-                    ((StateCanvas *) it.current())->settings.drawing_language =
+                    canvas->settings.drawing_language =
                         language;
 
                 if (!co[0].name.isEmpty())
-                    ((StateCanvas *) it.current())->itscolor = itscolor;
+                    canvas->itscolor = itscolor;
 
-                ((StateCanvas *) it.current())->modified();	// call package_modified()
+                canvas->modified();
             }
         }
 
@@ -1484,19 +1483,12 @@ void StateCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void StateCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void StateCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    StateCanvas * x = (StateCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        StateCanvas * o = (StateCanvas *) it.current();
-
-        o->settings = x->settings;
-        o->itscolor = x->itscolor;
-        o->modified();	// call package_modified()
-    }
+    const StateCanvas * x = (const StateCanvas *) src;
+    settings = x->settings;
+    itscolor = x->itscolor;
+    modified();
 }
 
 bool StateCanvas::get_show_stereotype_properties() const

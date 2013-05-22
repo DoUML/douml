@@ -260,8 +260,9 @@ ActivityActionDialog::~ActivityActionDialog()
     act->browser_node->edit_end();
     previous_size = size();
 
-    while (!edits.isEmpty())
-        edits.take(0)->close();
+    foreach (BodyDialog *dialog, edits)
+        dialog->close();
+    edits.clear();
 
     close_dialog(this);
 }
@@ -606,7 +607,7 @@ void AnyActionDialog::get_cond(QString & ocl_pre, QString & ocl_post,
 // opaque
 
 void OpaqueDialog::init(Q3TabDialog * t, ActivityActionData * act,
-                        OpaqueAction * d, Q3PtrList<BodyDialog> & e, bool visit)
+                        OpaqueAction * d, QList<BodyDialog *> & e, bool visit)
 {
     edits = &e;
     td = t;
@@ -832,7 +833,7 @@ bool AcceptEventDialog::update(AcceptEventAction * a)
 
 void ValueSpecificationDialog::init(Q3TabDialog * t, ActivityActionData * act,
                                     ValueSpecificationAction * d,
-                                    Q3PtrList<BodyDialog> & e, bool visit)
+                                    QList<BodyDialog *> & e, bool visit)
 {
     edits = &e;
     td = t;
@@ -1487,11 +1488,11 @@ void WithBehaviorDialog::init(BrowserNode * beh)
         behavior_co->insertItem("");
         behavior_co->setAutoCompletion(completion());
 
-        Q3PtrListIterator<BrowserNode> iter_node(*nodes);
         QStringList::Iterator iter_str = node_names->begin();
-
-        for (; iter_node.current(); ++iter_node, ++iter_str)
-            behavior_co->insertItem(*(iter_node.current()->pixmap(0)), *iter_str);
+        foreach (BrowserNode *node, *nodes) {
+            behavior_co->insertItem(*(node->pixmap(0)), *iter_str);
+            ++iter_str;
+        }
 
         if (beh != 0)
             behavior_co->setCurrentItem(node_names->findIndex(beh->full_name(TRUE)) + 1);

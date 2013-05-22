@@ -195,15 +195,10 @@ void DiagramCanvas::moveBy(double dx, double dy)
 
 void DiagramCanvas::moveSelfRelsBy(double dx, double dy)
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    while (it.current()) {
-        if (it.current()->get_start() == it.current()->get_end())
+    foreach (ArrowCanvas *canvas, lines)
+        if (canvas->get_start() == canvas->get_end())
             // self relation
-            it.current()->move_self_points(dx, dy); // move only if first segment => not done 2 times
-
-        ++it;
-    }
+            canvas->move_self_points(dx, dy); // move only if first segment => not done 2 times
 }
 
 void DiagramCanvas::setSelected(bool yes)
@@ -426,14 +421,10 @@ void DiagramCanvas::prepare_for_move(bool on_resize)
 {
     if (! on_resize) {
         // select self relations
-        Q3PtrListIterator<ArrowCanvas> it(lines);
-
-        while (it.current()) {
-            if (it.current()->get_start() == it.current()->get_end())
+        foreach (ArrowCanvas *canvas, lines) {
+            if (canvas->get_start() == canvas->get_end())
                 // note : selected 2 times (from the start and the end)
-                it.current()->select_associated();
-
-            ++it;
+                canvas->select_associated();
         }
     }
 }
@@ -452,7 +443,6 @@ bool DiagramCanvas::move_with(UmlCode k) const
 
 void DiagramCanvas::force_self_rel_visible()
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
     QRect r = rect();
 
     // add a marging
@@ -461,12 +451,10 @@ void DiagramCanvas::force_self_rel_visible()
     r.setTop(r.top() - 5);
     r.setBottom(r.bottom() + 5);
 
-    while (it.current()) {
-        if (it.current()->get_start() == it.current()->get_end())
+    foreach (ArrowCanvas *canvas, lines) {
+        if (canvas->get_start() == canvas->get_end())
             // self relation
-            it.current()->move_outside(r);
-
-        ++it;
+            canvas->move_outside(r);
     }
 }
 
@@ -490,11 +478,8 @@ void DiagramCanvas::upper()
 
         nz += 1;
 
-        Q3PtrListIterator<ArrowCanvas> it(lines);
-
-        while (it.current()) {
-            it.current()->go_up(nz);
-            ++it;
+        foreach (ArrowCanvas *canvas, lines) {
+            canvas->go_up(nz);
         }
     }
 }
@@ -564,12 +549,8 @@ void DiagramCanvas::z_up()
 
         set_z(next_z);
 
-        Q3PtrListIterator<ArrowCanvas> it(lines);
-
-        while (it.current()) {
-            it.current()->go_up(next_z);
-            ++it;
-        }
+        foreach (ArrowCanvas *canvas, lines)
+            canvas->go_up(next_z);
     }
 }
 
@@ -836,14 +817,10 @@ double DiagramCanvas::compute_angle(double delta_x, double delta_y)
 
 bool DiagramCanvas::has_simple_relation(BasicData * def) const
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    while (it.current()) {
-        if (IsaSimpleRelation(it.current()->type()) &&
-            (((SimpleRelationCanvas *) it.current())->get_data() == def))
+    foreach (ArrowCanvas *canvas, lines) {
+        if (IsaSimpleRelation(canvas->type()) &&
+            (((SimpleRelationCanvas *) canvas)->get_data() == def))
             return TRUE;
-
-        ++it;
     }
 
     return FALSE;
@@ -913,14 +890,10 @@ void DiagramCanvas::draw_all_simple_relations(DiagramCanvas * end)
 
 bool DiagramCanvas::has_flow(BasicData * def) const
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    while (it.current()) {
-        if ((it.current()->type() == UmlFlow) &&
-            (((FlowCanvas *) it.current())->get_data() == def))
+    foreach (ArrowCanvas *canvas, lines) {
+        if ((canvas->type() == UmlFlow) &&
+            (((FlowCanvas *) canvas)->get_data() == def))
             return TRUE;
-
-        ++it;
     }
 
     return FALSE;
@@ -989,14 +962,10 @@ void DiagramCanvas::draw_all_flows(DiagramCanvas * end)
 
 bool DiagramCanvas::has_transition(BasicData * def) const
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    while (it.current()) {
-        if ((it.current()->type() == UmlTransition) &&
-            (((TransitionCanvas *) it.current())->get_data() == def))
+    foreach (ArrowCanvas *canvas, lines) {
+        if ((canvas->type() == UmlTransition) &&
+            (((TransitionCanvas *) canvas)->get_data() == def))
             return TRUE;
-
-        ++it;
     }
 
     return FALSE;

@@ -118,7 +118,7 @@ void BrowserParameterSet::prepare_update_lib() const
     all.memo_id_oid(get_ident(), original_id);
 }
 
-void BrowserParameterSet::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserParameterSet::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
 

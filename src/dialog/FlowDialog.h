@@ -67,7 +67,7 @@ protected:
     LineEdit * edname;
     Q3ComboBox * edstereotype;
     MultiLineEdit * comment;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
 
     FlDialog uml;
     FlDialog cpp;

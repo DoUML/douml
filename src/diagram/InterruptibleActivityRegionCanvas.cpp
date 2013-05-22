@@ -401,7 +401,7 @@ bool InterruptibleActivityRegionCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void InterruptibleActivityRegionCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void InterruptibleActivityRegionCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         ColorSpecVector co(1);
@@ -414,11 +414,10 @@ void InterruptibleActivityRegionCanvas::edit_drawing_settings(Q3PtrList<DiagramI
         dialog.raise();
 
         if ((dialog.exec() == QDialog::Accepted) && !co[0].name.isEmpty()) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
-                ((InterruptibleActivityRegionCanvas *) it.current())->itscolor = itscolor;
-                ((InterruptibleActivityRegionCanvas *) it.current())->modified();	// call package_modified()
+            foreach (DiagramItem *item, l) {
+                InterruptibleActivityRegionCanvas *canvas = (InterruptibleActivityRegionCanvas *)item;
+                canvas->itscolor = itscolor;
+                canvas->modified();
             }
         }
 
@@ -427,18 +426,11 @@ void InterruptibleActivityRegionCanvas::edit_drawing_settings(Q3PtrList<DiagramI
     }
 }
 
-void InterruptibleActivityRegionCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void InterruptibleActivityRegionCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    InterruptibleActivityRegionCanvas * x = (InterruptibleActivityRegionCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        InterruptibleActivityRegionCanvas * o = (InterruptibleActivityRegionCanvas *) it.current();
-
-        o->itscolor = x->itscolor;
-        o->modified();	// call package_modified()
-    }
+    const InterruptibleActivityRegionCanvas * x = (const InterruptibleActivityRegionCanvas *) src;
+    itscolor = x->itscolor;
+    modified();
 }
 
 QString InterruptibleActivityRegionCanvas::may_start(UmlCode & l) const

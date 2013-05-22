@@ -44,7 +44,7 @@ class ToolCom;
 class SdLifeLineCanvas : public DiagramCanvas, public SdDurationSupport
 {
 protected:
-    Q3PtrList<SdDurationCanvas> durations;
+    QList<SdDurationCanvas *> durations;
     SdObjCanvas * obj;
     int end; // 0 if masked by user, LIFE_LINE_HEIGHT if not mortal
 
@@ -103,8 +103,8 @@ public:
     virtual void history_load(QBuffer &);
 
     static void send(ToolCom * com, const Q3CanvasItemList & l,
-                     Q3PtrList<FragmentCanvas> & fragments,
-                     Q3PtrList<FragmentCanvas> & refs);
+                     QList<FragmentCanvas *> & fragments,
+                     QList<FragmentCanvas *> & refs);
 };
 
 #endif

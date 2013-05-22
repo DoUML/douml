@@ -44,7 +44,7 @@ class BrowserColDiagram : public BrowserDiagram
     friend class StereotypesDialog;
 
 protected:
-    static Q3PtrList<BrowserColDiagram> imported;
+    static QList<BrowserColDiagram *> imported;
     static Q3ValueList<int> imported_ids;
     static QStringList its_default_stereotypes;
 
@@ -112,7 +112,7 @@ public:
     static void open_all();
     static void import();
 
-    static void compute_referenced_by(Q3PtrList<BrowserNode> & l, BrowserNode *,
+    static void compute_referenced_by(QList<BrowserNode *> & l, BrowserNode *,
                                       const char * kc, char const * kr);
 };
 

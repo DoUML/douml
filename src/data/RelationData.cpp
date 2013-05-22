@@ -52,10 +52,10 @@
 #include "Logging/QsLog.h"
 
 IdDict<RelationData> RelationData::all(1023, __FILE__);
-Q3PtrList<RelationData> RelationData::Unconsistent;
+QList<RelationData *> RelationData::Unconsistent;
 
 // file format < 56
-static Q3PtrList<RelationData> IncludeToHeaderIfExternal;
+static QList<RelationData *> IncludeToHeaderIfExternal;
 
 RelationData::RelationData(UmlCode e, int id)
     : Labeled<RelationData>(all, id), is_deleted(FALSE), is_unconsistent(FALSE), type(e)
@@ -1783,9 +1783,7 @@ void RelationData::set_unconsistent()
 
 void RelationData::delete_unconsistent()
 {
-    while (! Unconsistent.isEmpty()) {
-        RelationData * d = Unconsistent.take(0);
-
+    foreach (RelationData *d, Unconsistent) {
         d->SetStart(0);
         d->SetEnd(0);
         if (!d->deletedp())
@@ -1793,6 +1791,7 @@ void RelationData::delete_unconsistent()
 
         delete d;
     }
+    Unconsistent.clear();
 }
 
 // for file < 56, modify import from source to header
@@ -1800,14 +1799,13 @@ void RelationData::delete_unconsistent()
 
 void RelationData::post_load()
 {
-    while (! IncludeToHeaderIfExternal.isEmpty()) {
-        RelationData * rd = IncludeToHeaderIfExternal.take(0);
-
+    foreach (RelationData *rd, IncludeToHeaderIfExternal) {
         if ((rd->end_removed_from != 0) &&
             (rd->end_removed_from->get_type() == UmlClass) &&
             ((ClassData *) rd->end_removed_from->get_data())->cpp_is_external())
             rd->a.cpp_decl = "#include in header";
     }
+    IncludeToHeaderIfExternal.clear();
 }
 
 void RelationData::IndexStartEnd()

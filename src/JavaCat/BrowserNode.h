@@ -75,11 +75,12 @@ public:
 
 #include <q3ptrlist.h>
 
-class BrowserNodeList : public Q3PtrList<BrowserNode>
+class BrowserNodeList : public QList<BrowserNode *>
 {
 public:
     void search(BrowserNode * bn, int k, const QString & s, bool cs);
-    virtual int compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2);
+    static bool lessThan(BrowserNode *a, BrowserNode *b);
+    void sort();
 };
 
 #endif

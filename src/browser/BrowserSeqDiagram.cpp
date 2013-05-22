@@ -53,7 +53,7 @@
 #include "mu.h"
 #include "translate.h"
 
-Q3PtrList<BrowserSeqDiagram> BrowserSeqDiagram::imported;
+QList<BrowserSeqDiagram *> BrowserSeqDiagram::imported;
 Q3ValueList<int> BrowserSeqDiagram::imported_ids;
 QStringList BrowserSeqDiagram::its_default_stereotypes;	// unicode
 QStringList BrowserSeqDiagram::message_default_stereotypes;	// unicode
@@ -160,14 +160,12 @@ void BrowserSeqDiagram::import()
 {
     Q3ValueList<int>::Iterator it = imported_ids.begin();
 
-    while (!imported.isEmpty()) {
-        QString warning;
-        BrowserSeqDiagram * d = imported.take(0);
-
+    foreach (BrowserSeqDiagram *d, imported) {
         (new SeqDiagramWindow(d->full_name(), d, *it))->close(TRUE);
         it = imported_ids.remove(it);
         d->is_modified = TRUE;
     }
+    imported.clear();
 }
 
 void BrowserSeqDiagram::renumber(int phase)
@@ -575,7 +573,7 @@ bool BrowserSeqDiagram::tool_cmd(ToolCom * com, const char * args)
     }
 }
 
-void BrowserSeqDiagram::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserSeqDiagram::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserNode * bn,
         char const * kc,
         char const * kr)

@@ -68,7 +68,7 @@ protected:
     QCheckBox * internal_cb;
     Q3ComboBox * edstereotype;
     MultiLineEdit * comment;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
 
     QWidget * ocltab;
     QWidget * cppTab;

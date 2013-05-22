@@ -85,14 +85,14 @@ class OpaqueDialog : public QObject, public AnyActionDialog
     Q_OBJECT
 
 private:
-    Q3PtrList<BodyDialog> * edits;
+    QList<BodyDialog *> * edits;
     MultiLineEdit * ocl_beh;
     MultiLineEdit * cpp_beh;
     MultiLineEdit * java_beh;
 
 public:
     void init(Q3TabDialog *, ActivityActionData *, OpaqueAction *,
-              Q3PtrList<BodyDialog> & e, bool visit);
+              QList<BodyDialog *> & e, bool visit);
     bool update(OpaqueAction *);
 
     static void post_edit_ocl(ActivityActionDialog * d, QString s);
@@ -272,14 +272,14 @@ class ValueSpecificationDialog : public QObject, public AnyActionDialog
     Q_OBJECT
 
 private:
-    Q3PtrList<BodyDialog> * edits;
+    QList<BodyDialog *> * edits;
     MultiLineEdit * ocl_val;
     MultiLineEdit * cpp_val;
     MultiLineEdit * java_val;
 
 public:
     void init(Q3TabDialog *, ActivityActionData *,
-              ValueSpecificationAction *, Q3PtrList<BodyDialog> & e,
+              ValueSpecificationAction *, QList<BodyDialog *> & e,
               bool visit);
     bool update(ValueSpecificationAction *);
 
@@ -387,7 +387,7 @@ protected:
     QStringList class_names;
     BrowserNodeList behaviors;
     QStringList behavior_names;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
 
     OpaqueDialog opaque;
     AcceptEventDialog acceptevent;

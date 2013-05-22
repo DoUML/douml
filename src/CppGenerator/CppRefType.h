@@ -44,13 +44,13 @@ class CppRefType
 public:
     enum Weight { Low, Medium, High, Strong };
 
-    static bool add(UmlClass *, Q3PtrList<CppRefType> &, bool incl, bool hight = FALSE);
-    static bool add(const WrapperStr &, Q3PtrList<CppRefType> &, bool incl);
-    static bool add(const UmlTypeSpec & t, Q3PtrList<CppRefType> & l, bool incl);
-    static void remove(UmlClass *, Q3PtrList<CppRefType> & l);
-    static void remove(const WrapperStr &, Q3PtrList<CppRefType> & l);
-    static void force_ref(UmlClass * cl, Q3PtrList<CppRefType> & l);
-    static void compute(Q3PtrList<CppRefType> & dependencies,
+    static bool add(UmlClass *, QList<CppRefType *> &, bool incl, bool hight = FALSE);
+    static bool add(const WrapperStr &, QList<CppRefType *> &, bool incl);
+    static bool add(const UmlTypeSpec & t, QList<CppRefType *> & l, bool incl);
+    static void remove(UmlClass *, QList<CppRefType *> & l);
+    static void remove(const WrapperStr &, QList<CppRefType *> & l);
+    static void force_ref(UmlClass * cl, QList<CppRefType *> & l);
+    static void compute(QList<CppRefType *> & dependencies,
                         const WrapperStr & hdef, const WrapperStr & srcdef,
                         WrapperStr & h_incl,  WrapperStr & decl, WrapperStr & src_incl,
                         UmlArtifact * who);

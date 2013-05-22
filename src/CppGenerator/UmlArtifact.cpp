@@ -136,7 +136,7 @@ void UmlArtifact::generate()
         // compute dependencies
 
         bool all_in_h = (hdef.find("${all_includes}") != -1);
-        Q3PtrList<CppRefType> dependencies;
+        QList<CppRefType *> dependencies;
         unsigned n = cls.count();
         unsigned index;
 

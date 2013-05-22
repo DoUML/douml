@@ -59,7 +59,6 @@ FragmentDialog::FragmentDialog(const QStringList & defaults, QString & s,
     QLabel * lbl1;
     QLabel * lbl2;
     SmallPushButton * refer_bt;
-    BrowserNode * bn;
 
     vbox->setMargin(5);
 
@@ -86,12 +85,12 @@ FragmentDialog::FragmentDialog(const QStringList & defaults, QString & s,
     BrowserDiagram::instances(nodes, TRUE);
     diag_cb->insertItem("");
 
-    for (bn = nodes.first(); bn != 0; bn = nodes.next())
+    foreach (BrowserNode *bn, nodes)
         diag_cb->insertItem(*(bn->pixmap(0)), bn->full_name(TRUE));
 
     diag_cb->setCurrentItem((refer == 0)
                             ? 0
-                            : nodes.findRef(refer) + 1);
+                            : nodes.indexOf(refer) + 1);
     diag_cb->setSizePolicy(sp);
     hbox->addWidget(diag_cb);
 
@@ -162,7 +161,7 @@ void FragmentDialog::menu_refer()
             break;
 
         case 1:
-            diag_cb->setCurrentItem(nodes.findRef(bn) + 1);
+            diag_cb->setCurrentItem(nodes.indexOf(bn) + 1);
             break;
 
         default:

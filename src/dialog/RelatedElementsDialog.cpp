@@ -162,14 +162,9 @@ void RelatedElementsDialog::accept()
 
     do {
         BrowserNodeList newones;
-        Q3PtrListIterator<BrowserNode> it(added);
-
-        for (; it.current() != 0; ++it) {
-            BrowserNode * e = (BrowserNode *) it.current();
-            BrowserNode * bn;
-
+        foreach (BrowserNode *e, added) {
             if (referenced_rb->isChecked()) {
-                for (bn = (BrowserNode *) e->firstChild();
+                for (BrowserNode *bn = (BrowserNode *) e->firstChild();
                      bn != 0;
                      bn = (BrowserNode *) bn->nextSibling()) {
                     if (! bn->deletedp()) {

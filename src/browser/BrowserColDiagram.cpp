@@ -53,7 +53,7 @@
 #include "mu.h"
 #include "translate.h"
 
-Q3PtrList<BrowserColDiagram> BrowserColDiagram::imported;
+QList<BrowserColDiagram *> BrowserColDiagram::imported;
 Q3ValueList<int> BrowserColDiagram::imported_ids;
 QStringList BrowserColDiagram::its_default_stereotypes;	// unicode
 
@@ -147,14 +147,12 @@ void BrowserColDiagram::import()
 {
     Q3ValueList<int>::Iterator it = imported_ids.begin();
 
-    while (!imported.isEmpty()) {
-        QString warning;
-        BrowserColDiagram * d = imported.take(0);
-
+    foreach (BrowserColDiagram *d, imported) {
         (new ColDiagramWindow(d->full_name(), d, *it))->close(TRUE);
         it = imported_ids.remove(it);
         d->is_modified = TRUE;
     }
+    imported.clear();
 }
 
 void BrowserColDiagram::renumber(int phase)
@@ -554,7 +552,7 @@ bool BrowserColDiagram::tool_cmd(ToolCom * com, const char * args)
     }
 }
 
-void BrowserColDiagram::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserColDiagram::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserNode * bn,
         char const * kc,
         char const * kr)

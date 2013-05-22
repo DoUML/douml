@@ -101,8 +101,10 @@ ClassDialog::~ClassDialog()
 {
     previous_size = size();
 
-    while (!edits.isEmpty())
-        edits.take(0)->close();
+    foreach (BodyDialog *dialog, edits)
+        dialog->close();
+    edits.clear();
+
     if(toolbar)
     {
         toolbar->setParent(0);
@@ -437,10 +439,8 @@ static void cpp_generate_inherit(QString & s, ClassData * cl,
     BrowserNodeList inh;
     cl->get_browser_node()->children(inh, UmlGeneralisation, UmlRealize);
 
-    Q3PtrListIterator<BrowserNode> it(inh);
-
-    while (it.current() != 0) {
-        RelationData * r = (RelationData *) it.current()->get_data();
+    foreach (BrowserNode *item, inh) {
+        RelationData * r = (RelationData *) item->get_data();
 
         if (r->get_cppdecl_a()[0]) {
             s += sep;
@@ -451,8 +451,6 @@ static void cpp_generate_inherit(QString & s, ClassData * cl,
 
             generate_mother(r->get_end_class(), TRUE, s, cl, actuals_table, nodes, node_names);
         }
-
-        ++it;
     }
 }
 
@@ -466,10 +464,8 @@ static void cpp_generate_typedef_type(QString & s, ClassData * cl,
 
     cl->get_browser_node()->children(inh, UmlGeneralisation, UmlRealize);
 
-    Q3PtrListIterator<BrowserNode> it(inh);
-
-    while (it.current() != 0) {
-        RelationData * r = (RelationData *) it.current()->get_data();
+    foreach (BrowserNode *item, inh) {
+        RelationData * r = (RelationData *) item->get_data();
         /*if (r->get_cppdecl_a()[0])*/
         {
             BrowserClass * mother = r->get_end_class();
@@ -483,8 +479,6 @@ static void cpp_generate_typedef_type(QString & s, ClassData * cl,
                 return;
             }
         }
-
-        ++it;
     }
 
     s += GenerationSettings::cpp_type(type(basetype, node_names, nodes));
@@ -951,11 +945,9 @@ static void java_generate_extends(QString & s, const QString & stereotype,
 
     cl->get_browser_node()->children(inh, UmlGeneralisation, UmlRealize);
 
-    Q3PtrListIterator<BrowserNode> it(inh);
-
-    while (it.current() != 0) {
+    foreach (BrowserNode *item, inh) {
         RelationData * r =
-            (RelationData *)((BrowserRelation *) it.current())->get_data();
+            (RelationData *)((BrowserRelation *) item)->get_data();
 
         if (r->get_javadecl_a()[0]) {
             bool gen = FALSE;
@@ -988,8 +980,6 @@ static void java_generate_extends(QString & s, const QString & stereotype,
                 generate_mother(mother, FALSE, s, cl, actuals_table, nodes, node_names);
             }
         }
-
-        ++it;
     }
 }
 
@@ -1002,11 +992,9 @@ static void java_generate_implements(QString & s, const QString & stereotype,
 
     cl->get_browser_node()->children(inh, UmlGeneralisation, UmlRealize);
 
-    Q3PtrListIterator<BrowserNode> it(inh);
-
-    while (it.current() != 0) {
+    foreach (BrowserNode *item, inh) {
         RelationData * r =
-            (RelationData *)((BrowserRelation *) it.current())->get_data();
+            (RelationData *)((BrowserRelation *) item)->get_data();
 
         if (r->get_javadecl_a()[0]) {
             BrowserClass * mother = r->get_end_class();
@@ -1024,8 +1012,6 @@ static void java_generate_implements(QString & s, const QString & stereotype,
                 generate_mother(mother, FALSE, s, cl, actuals_table, nodes, node_names);
             }
         }
-
-        ++it;
     }
 }
 
@@ -1246,11 +1232,9 @@ static void php_generate_extends(QString & s, const QString & stereotype,
 
     cl->get_browser_node()->children(inh, UmlGeneralisation, UmlRealize);
 
-    Q3PtrListIterator<BrowserNode> it(inh);
-
-    while (it.current() != 0) {
+    foreach (BrowserNode *item, inh) {
         RelationData * r =
-            (RelationData *)((BrowserRelation *) it.current())->get_data();
+            (RelationData *)((BrowserRelation *) item)->get_data();
 
         if (r->get_phpdecl_a()[0]) {
             bool gen = FALSE;
@@ -1280,8 +1264,6 @@ static void php_generate_extends(QString & s, const QString & stereotype,
                 s += mother->get_name();
             }
         }
-
-        ++it;
     }
 }
 
@@ -1293,11 +1275,9 @@ static void php_generate_implements(QString & s, const QString & stereotype,
 
     cl->get_browser_node()->children(inh, UmlGeneralisation, UmlRealize);
 
-    Q3PtrListIterator<BrowserNode> it(inh);
-
-    while (it.current() != 0) {
+    foreach (BrowserNode *item, inh) {
         RelationData * r =
-            (RelationData *)((BrowserRelation *) it.current())->get_data();
+            (RelationData *)((BrowserRelation *) item)->get_data();
 
         if (r->get_phpdecl_a()[0]) {
             BrowserClass * mother = r->get_end_class();
@@ -1314,8 +1294,6 @@ static void php_generate_implements(QString & s, const QString & stereotype,
                 s += mother->get_name();
             }
         }
-
-        ++it;
     }
 }
 
@@ -1476,10 +1454,8 @@ static void python_generate_inherit(QString & s, ClassData * cl, bool object,
 
     cl->get_browser_node()->children(inh, UmlGeneralisation, UmlRealize);
 
-    Q3PtrListIterator<BrowserNode> it(inh);
-
-    while (it.current() != 0) {
-        RelationData * r = (RelationData *) it.current()->get_data();
+    foreach (BrowserNode *item, inh) {
+        RelationData * r = (RelationData *) item->get_data();
 
         if (r->get_cppdecl_a()[0]) {
             s += sep;
@@ -1487,8 +1463,6 @@ static void python_generate_inherit(QString & s, ClassData * cl, bool object,
 
             generate_mother(r->get_end_class(), FALSE, s, cl, 0, nodes, node_names);
         }
-
-        ++it;
     }
 
     if (*sep != '(')
@@ -1673,10 +1647,8 @@ static void idl_generate_inherit(QString & s, QString st, ClassData * cl)
 
     cl->get_browser_node()->children(inh, UmlGeneralisation, UmlRealize);
 
-    Q3PtrListIterator<BrowserNode> it(inh);
-
-    while (it.current() != 0) {
-        RelationData * r = (RelationData *) it.current()->get_data();
+    foreach (BrowserNode *item, inh) {
+        RelationData * r = (RelationData *) item->get_data();
 
         if (r->get_idldecl_a()[0]) {
             BrowserClass * mother = r->get_end_class();
@@ -1713,8 +1685,6 @@ static void idl_generate_inherit(QString & s, QString st, ClassData * cl)
                 sep = ", ";
             }
         }
-
-        ++it;
     }
 }
 
@@ -2447,15 +2417,14 @@ void ActualParamsTable::generate(QString & s, ClassData * cl,
                                  BrowserNodeList & nodes,
                                  QStringList & node_names)
 {
-    ActualParamData * actual;
-    unsigned index;
+    unsigned index = 0;
+    QListIterator<ActualParamData *> it(cl->actuals);
 
-    for (actual = cl->actuals.first(), index = 0;
-         actual != 0;
-         actual = cl->actuals.next(), index += 1) {
-        if (actual->get_class() == parent)
-            // find;
+    for (index = 0; it.hasNext(); index += 1) {
+        if (it.next()->get_class() == parent) {
+            it.previous();
             break;
+        }
     }
 
     int n = ((ClassData *) parent->get_data())->get_n_formalparams();
@@ -2464,7 +2433,7 @@ void ActualParamsTable::generate(QString & s, ClassData * cl,
     bool need_space = FALSE;
 
     // progress on still present formals
-    while (actual && (nth < n) && (actual->get_class() == parent)) {
+    while (it.hasNext() && (nth < n) && (it.next()->get_class() == parent)) {
         AType t = the_type(text(index, 1).stripWhiteSpace(), node_names, nodes);
 
         if (t.type != 0) {
@@ -2501,7 +2470,6 @@ void ActualParamsTable::generate(QString & s, ClassData * cl,
         }
 
         sep = ", ";
-        actual = cl->actuals.next();
         nth += 1;
         index += 1;
     }
@@ -3117,7 +3085,7 @@ void ClassDialog::FillGuiElements(ClassData * _cl)
                         artifact->setCurrentItem(artifacts.count());
                     }
                     else
-                        artifact->setCurrentItem(artifacts.find(bc) + 1);
+                        artifact->setCurrentItem(artifacts.indexOf(bc) + 1);
                 }
                 else
                     artifact->setCurrentItem(0);
@@ -3448,16 +3416,12 @@ void ClassDialog::FillGuiElements(ClassData * _cl)
         edswitch_type->insertItem(cl->get_switch_type().get_full_type());
         edswitch_type->insertStringList(GenerationSettings::basic_types());
 
-        Q3PtrListIterator<BrowserNode> it(nodes);
-
-        while (it.current() != 0) {
+        foreach (BrowserNode *item, nodes) {
             QString st =
-                idl_stereotype(((ClassData *)(it.current()->get_data()))->get_stereotype());
+                idl_stereotype(((ClassData *)(item->get_data()))->get_stereotype());
 
             if (st == "enum")
-                edswitch_type->insertItem(it.current()->full_name(TRUE));
-
-            ++it;
+                edswitch_type->insertItem(item->full_name(TRUE));
         }
     }
 

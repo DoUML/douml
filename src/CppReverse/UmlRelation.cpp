@@ -97,7 +97,7 @@ bool UmlRelation::new_one(Class * container, const WrapperStr & name,
                           const WrapperStr & value, WrapperStr comment,
                           WrapperStr description
 #ifdef ROUNDTRIP
-                          , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                          , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                          )
 {
@@ -356,7 +356,7 @@ bool UmlRelation::new_one(Class * container, const WrapperStr & name,
 #ifdef ROUNDTRIP
 
     bool UmlRelation::new_friend(Class * container, UmlClass * to,
-                                 Q3PtrList<UmlItem> & expected_order)
+                                 QList<UmlItem *> & expected_order)
     {
         UmlClass * from = container->get_uml();
 

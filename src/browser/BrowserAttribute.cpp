@@ -534,7 +534,7 @@ void BrowserAttribute::member_cpp_def(const QString & prefix, const QString &,
     }
 }
 
-void BrowserAttribute::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserAttribute::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserNode * target)
 {
     IdIterator<BrowserAttribute> it(all);
@@ -551,7 +551,7 @@ void BrowserAttribute::compute_referenced_by(Q3PtrList<BrowserNode> & l,
     }
 }
 
-void BrowserAttribute::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserAttribute::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
 

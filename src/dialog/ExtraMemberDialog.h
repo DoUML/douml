@@ -53,7 +53,7 @@ class ExtraMemberDialog : public Q3TabDialog
 
 protected:
     ExtraMemberData * emd;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
 
     // uml tab
     LineEdit * edname;

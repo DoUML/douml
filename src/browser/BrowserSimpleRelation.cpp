@@ -151,7 +151,7 @@ bool BrowserSimpleRelation::undelete(bool, QString & warning, QString & renamed)
     return TRUE;
 }
 
-void BrowserSimpleRelation::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserSimpleRelation::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
 
@@ -168,7 +168,7 @@ void BrowserSimpleRelation::referenced_by(Q3PtrList<BrowserNode> & l, bool ondel
     }
 }
 
-void BrowserSimpleRelation::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserSimpleRelation::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserNode * target)
 {
     IdIterator<BrowserSimpleRelation> it(all);

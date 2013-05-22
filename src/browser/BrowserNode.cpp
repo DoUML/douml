@@ -81,7 +81,7 @@
 #include "../Logging/QsLog.h"
 
 QList<UmlCode> BrowserNode::generatable_types;
-Q3PtrList<BrowserNode> BrowserNode::marked_list;
+QList<BrowserNode *> BrowserNode::marked_list;
 
 static BrowserPackage * UndefinedNodePackage;
 
@@ -139,7 +139,7 @@ BrowserNode::BrowserNode(Q3ListView * view)
 BrowserNode::~BrowserNode()
 {
     if (is_marked)
-        marked_list.removeRef(this);
+        marked_list.remove(this);
 }
 
 bool BrowserNode::is_undefined() const
@@ -176,7 +176,7 @@ void BrowserNode::delete_it()
             is_deleted = TRUE;
 
             if (is_marked) {
-                marked_list.removeRef(this);
+                marked_list.remove(this);
                 is_marked = FALSE;
             }
 
@@ -218,7 +218,7 @@ bool BrowserNode::delete_internal(QString & warning)
         return FALSE;
     }
 
-    static Q3PtrList<BrowserNode> targetof;
+    static QList<BrowserNode *> targetof;
     static bool made = FALSE;
     bool made_here;
 
@@ -233,10 +233,7 @@ bool BrowserNode::delete_internal(QString & warning)
     bool ro = FALSE;
 
     if (!root_permission()) {
-        Q3PtrListIterator<BrowserNode> it(targetof);
-        BrowserNode * r;
-
-        while ((r = it.current()) != 0) {
+        foreach (BrowserNode *r, targetof) {
             if (!r->is_writable() && !r->is_from_lib()) {
                 ro = TRUE;
                 warning += "\n    ";
@@ -255,8 +252,6 @@ bool BrowserNode::delete_internal(QString & warning)
                     break;
                 }
             }
-
-            ++it;
         }
     }
 
@@ -279,7 +274,7 @@ bool BrowserNode::delete_internal(QString & warning)
         is_deleted = TRUE;
 
         if (is_marked) {
-            marked_list.removeRef(this);
+            marked_list.remove(this);
             is_marked = FALSE;
         }
 
@@ -301,7 +296,7 @@ void BrowserNode::set_comment(QString c)
     comment = c;
 }
 
-void BrowserNode::referenced_by(Q3PtrList<BrowserNode> & l, bool)
+void BrowserNode::referenced_by(QList<BrowserNode *> & l, bool)
 {
     BrowserSimpleRelation::compute_referenced_by(l, this);
 }
@@ -779,14 +774,11 @@ BrowserNode *BrowserNode::get_first_generatable_node()
 QList<BrowserNode *> BrowserNode::get_generation_list()
 {
     QList<BrowserNode *> result;
-    if(marked_list.count() > 0)
+    if (marked_list.count() > 0)
     {
-        Q3PtrListIterator<BrowserNode> it(marked_list);
-
-        for (; it.current() != 0; ++it)
-        {
-            BrowserNode * temp = it.current()->get_first_generatable_node();
-            if(temp != 0 && !result.contains(temp))
+        foreach (BrowserNode *current, marked_list) {
+            BrowserNode * temp = current->get_first_generatable_node();
+            if (temp != 0 && !result.contains(temp))
                 result << temp;
         }
     }
@@ -828,9 +820,9 @@ void BrowserNode::edit(const char * s, const QStringList & default_stereotypes)
 //
 
 // returns all parents for NON class
-Q3PtrList<BrowserNode> BrowserNode::parents() const
+QList<BrowserNode *> BrowserNode::parents() const
 {
-    Q3PtrList<BrowserNode> l;
+    QList<BrowserNode *> l;
     Q3ListViewItem * child;
 
     for (child = firstChild(); child != 0; child = child->nextSibling()) {
@@ -853,30 +845,26 @@ Q3PtrList<BrowserNode> BrowserNode::parents() const
 // check inheritance
 QString BrowserNode::check_inherit(const BrowserNode * new_parent) const
 {
-    Q3PtrList<BrowserNode> all_parents;
-    Q3PtrList<BrowserNode> notyet = parents();
+    QList<BrowserNode *> all_parents;
+    QList<BrowserNode *> notyet = parents();
 
-    if (notyet.findRef(new_parent) != -1)
+    if (notyet.contains(const_cast<BrowserNode *>(new_parent)))
         return TR("already generalize / realize");
 
-    notyet.append(new_parent);
+    notyet.append(const_cast<BrowserNode *>(new_parent));
 
     do {
-        BrowserNode * cl = notyet.getFirst();
-
-        notyet.removeFirst();
+        BrowserNode *cl = notyet.takeFirst();
 
         if (cl == this)
             return TR("can't have circular generalization / realization");
 
-        if (all_parents.findRef(cl) == -1) {
+        if (! all_parents.contains(cl)) {
             all_parents.append(cl);
 
-            Q3PtrList<BrowserNode> grand_parents = cl->parents();
-
-            for (cl = grand_parents.first(); cl; cl = grand_parents.next())
-                if (notyet.findRef(cl) == -1)
-                    notyet.append(cl);
+            foreach (BrowserNode *parent, cl->parents())
+                if (! notyet.contains(parent))
+                    notyet.append(parent);
         }
     }
     while (! notyet.isEmpty());
@@ -884,7 +872,7 @@ QString BrowserNode::check_inherit(const BrowserNode * new_parent) const
     return 0;
 }
 
-bool BrowserNode::may_contains_them(const Q3PtrList<BrowserNode> & ,
+bool BrowserNode::may_contains_them(const QList<BrowserNode *> & ,
                                     BooL & ) const
 {
     //for inheritance
@@ -919,17 +907,14 @@ void BrowserNode::mark_menu(Q3PopupMenu & m, const char * s, int bias) const
         m.setWhatsThis(m.insertItem(TR("Mark"), bias),
                        TR("to mark %1", s));
 
-        if (!marked_list.isEmpty())
-        {
+        if (!marked_list.isEmpty()) {
             bool parents_marked = FALSE;
             const BrowserNode * bn = this;
 
-            while (bn != BrowserView::get_project())
-            {
+            while (bn != BrowserView::get_project()) {
                 bn = (BrowserNode *) bn->parent();
 
-                if (bn->is_marked)
-                {
+                if (bn->is_marked) {
                     parents_marked = TRUE;
                     break;
                 }
@@ -939,20 +924,17 @@ void BrowserNode::mark_menu(Q3PopupMenu & m, const char * s, int bias) const
 #ifndef SIMPLE_DUPLICATION
             bool rec = FALSE;
 #endif
-            Q3PtrListIterator<BrowserNode> it(marked_list);
             bool moveInsideSameClass = true;
-            for (; (bn = it.current()) != 0; ++it)
-            {
-                if(bn->parent() != this->parent())
+            foreach (BrowserNode *node, marked_list) {
+                if(node->parent() != this->parent())
                     moveInsideSameClass = false;
-                if ((bn == BrowserView::get_project()) ||
-                    !((BrowserNode *) bn->parent())->is_writable())
-                {
+                if ((node == BrowserView::get_project()) ||
+                    !((BrowserNode *) node->parent())->is_writable()) {
                     moveable = FALSE;
 #ifndef SIMPLE_DUPLICATION
                 }
 
-                if (bn->firstChild() != 0) {
+                if (node->firstChild() != 0) {
                     rec = TRUE;
 #else
                     break;
@@ -967,15 +949,13 @@ void BrowserNode::mark_menu(Q3PopupMenu & m, const char * s, int bias) const
             bool thisIsntProject = this != BrowserView::get_project();
             bool isWritable = true;
             bool parentCanContain = false;
-            if(((BrowserNode *) parent()) != 0)
-            {
+            if(((BrowserNode *) parent()) != 0) {
                 isWritable = ((BrowserNode *) parent())->is_writable();
                 parentCanContain = ((BrowserNode *) parent())->may_contains_them(marked_list, duplicable_after);
             }
             bool after = thisIsntProject && isWritable &&  ( parentCanContain || moveInsideSameClass);
 
-            if (!parents_marked)
-            {
+            if (!parents_marked) {
                 if (moveable) {
                     if (into)
                         m.setWhatsThis(m.insertItem(TR("Move marked into"), bias + 3),
@@ -1056,10 +1036,8 @@ void BrowserNode::mark_management(int choice)
         return;
 
     case 3:	// move into
-        for (bn = marked_list.last();
-             bn != 0;
-             bn = marked_list.prev())
-        {
+        for (int i = marked_list.size() - 1; i >= 0; --i) {
+            bn = marked_list[i];
             if (bn->get_type() == UmlAttribute )
             {
                 BrowserAttribute* asAttribute =  dynamic_cast<BrowserAttribute*>(bn);
@@ -1085,10 +1063,8 @@ void BrowserNode::mark_management(int choice)
     case 4: {	// move after
         BrowserNode * p = (BrowserNode *) parent();
 
-        for (bn = marked_list.last();
-             bn != 0;
-             bn = marked_list.prev())
-        {
+        for (int i = marked_list.size() - 1; i >= 0; --i) {
+            bn = marked_list[i];
             //BrowserView::removeItem(p->get_)
 //            BrowserAttribute* asAttribute = ((BrowserAttribute *) bn);
 //            if(p != (BrowserNode *) bn->parent() && asAttribute != 0)
@@ -1124,10 +1100,9 @@ void BrowserNode::mark_management(int choice)
     break;
 
     case 5:	// duplicate into
-        for (bn = marked_list.last();
-             bn != 0;
-             bn = marked_list.prev())
+        for (int i = marked_list.size() - 1; i >= 0; --i)
         {
+            bn = marked_list[i];
             BrowserNode* getOperCopy = nullptr;
             BrowserNode* setOperCopy = nullptr;
             if((BrowserNode *) bn->parent()  != this)
@@ -1190,10 +1165,10 @@ void BrowserNode::mark_management(int choice)
     case 7: {	// duplicate after
         BrowserNode * p = (BrowserNode *) parent();
 
-        for (bn = marked_list.last();
-             bn != 0;
-             bn = marked_list.prev())
+        for (int i = marked_list.size() - 1; i >= 0; --i) {
+            bn = marked_list[i];
             p->move(bn->duplicate(p), this);
+        }
     }
     break;
 #ifndef SIMPLE_DUPLICATION
@@ -1206,11 +1181,7 @@ void BrowserNode::mark_management(int choice)
 
 void BrowserNode::unmark_all()
 {
-    BrowserNode * bn;
-
-    for (bn = marked_list.first();
-         bn != 0;
-         bn = marked_list.next()) {
+    foreach (BrowserNode * bn, marked_list) {
         bn->is_marked = FALSE;
         bn->repaint();
     }
@@ -1254,7 +1225,7 @@ void BrowserNode::toggle_mark()
 {
     if (is_marked) {
         is_marked = FALSE;
-        marked_list.removeRef(this);
+        marked_list.remove(this);
     }
     else {
         is_marked = TRUE;
@@ -1279,13 +1250,10 @@ void BrowserNode::toggle_mark()
 void BrowserNode::set_marked(bool value)
 {
     is_marked = value;
-    if (value) {
+    if (value)
         marked_list.append(this);
-    }
-    else {
-        marked_list.removeRef(this);
-
-    }
+    else
+        marked_list.remove(this);
 
     //repaint();
 
@@ -1627,17 +1595,17 @@ bool BrowserNode::tool_cmd(ToolCom * com, const char * args)
         // remove duplicats
         targetof.sort_it();
 
-        BrowserNode * bn;
+        BrowserNode *prevNode = 0;
+        foreach (BrowserNode *bn, targetof) {
+            if (bn == prevNode) {
+                targetof.clear();
+                break;
+            }
+            prevNode = bn;
+        }
 
-        targetof.first();
-
-        while ((bn = targetof.current()) != 0)
-            if (bn == targetof.next())
-                targetof.remove();
-
-        com->write_unsigned(targetof.count());
-
-        for (bn = targetof.first(); bn != 0; bn = targetof.next())
+        com->write_unsigned(targetof.size());
+        foreach (BrowserNode *bn, targetof)
             bn->write_id(com);
     }
     break;
@@ -1977,7 +1945,7 @@ void BrowserNode::support_file(Q3Dict<char> & files, bool add) const
 
 static QString UnconsistencyDeletedMsg;
 static QString UnconsistencyFixedMsg;
-static Q3PtrList<BrowserNode> ModifiedPackages;
+static QList<BrowserNode *> ModifiedPackages;
 
 void BrowserNode::signal_unconsistencies()
 {
@@ -2005,10 +1973,9 @@ void BrowserNode::signal_unconsistencies()
 
         do_change_shared_ids();
 
-        do
-            ModifiedPackages.take(0)->is_modified = TRUE;
-
-        while (! ModifiedPackages.isEmpty());
+        foreach (BrowserNode *node, ModifiedPackages)
+            node->is_modified = TRUE;
+        ModifiedPackages.clear();
     }
 
     if (! msg.isEmpty()) {
@@ -2028,7 +1995,7 @@ void BrowserNode::unconsistent_fixed(const char * what, BrowserNode * newone)
     while (bn->get_type() != UmlPackage)
         bn = (BrowserNode *) bn->parent();
 
-    if (ModifiedPackages.findRef(bn) == -1)
+    if (!ModifiedPackages.contains(bn))
         ModifiedPackages.append(bn);
 }
 
@@ -2050,13 +2017,53 @@ void BrowserNodeList::sort_it()
 
     BrowserPackage::prepare_for_sort();
 
-    sort();
+    qSort(begin(), end(), lessThan);
 
     SynonymousPath.setAutoDelete(TRUE);
     SynonymousPath.clear();
 
     if (count() > 1000)
         QApplication::restoreOverrideCursor();
+}
+
+void BrowserNodeList::sort()
+{
+    qSort(begin(), end(), lessThan);
+}
+
+bool BrowserNodeList::lessThan(BrowserNode *a, BrowserNode *b)
+{
+    QString s1 = ((BrowserNode *) a)->get_name();
+    QString s2 = ((BrowserNode *) b)->get_name();
+
+    if (s1 != s2) {
+        s1 += " ";
+        s2 += " ";
+    }
+    else {
+        QString * ps1 = SynonymousPath[(BrowserNode *) a];
+        QString * ps2 = SynonymousPath[(BrowserNode *) b];
+
+        if (ps1 == 0) {
+            s1 = ((BrowserNode *) a)->full_name(TRUE);
+            ps1 = new QString(s1);
+
+            SynonymousPath.insert((BrowserNode *) a, ps1);
+        }
+        else
+            s1 = *ps1;
+
+        if (ps2 == 0) {
+            s2 = ((BrowserNode *) b)->full_name(TRUE);
+            ps2 = new QString(s2);
+
+            SynonymousPath.insert((BrowserNode *) b, ps2);
+        }
+        else
+            s2 = *ps2;
+    }
+
+    return s1 < s2;
 }
 
 void BrowserNodeList::search(BrowserNode * bn, UmlCode k, const QString & s,
@@ -2109,52 +2116,13 @@ void BrowserNodeList::search_ddb(BrowserNode * bn, UmlCode k, const QString & s,
     }
 }
 
-int BrowserNodeList::compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2)
-{
-    QString s1 = ((BrowserNode *) item1)->get_name();
-    QString s2 = ((BrowserNode *) item2)->get_name();
-
-    if (s1 != s2) {
-        s1 += " ";
-        s2 += " ";
-    }
-    else {
-        QString * ps1 = SynonymousPath[(BrowserNode *) item1];
-        QString * ps2 = SynonymousPath[(BrowserNode *) item2];
-
-        if (ps1 == 0) {
-            s1 = ((BrowserNode *) item1)->full_name(TRUE);
-            ps1 = new QString(s1);
-
-            SynonymousPath.insert((BrowserNode *) item1, ps1);
-        }
-        else
-            s1 = *ps1;
-
-        if (ps2 == 0) {
-            s2 = ((BrowserNode *) item2)->full_name(TRUE);
-            ps2 = new QString(s2);
-
-            SynonymousPath.insert((BrowserNode *) item2, ps2);
-        }
-        else
-            s2 = *ps2;
-    }
-
-    return s1.compare(s2);
-}
-
 void BrowserNodeList::names(QStringList & list) const
 {
     list.clear();
 
-    Q3PtrListIterator<BrowserNode> it(*this);
-
-    while (it.current() != 0) {
-        const char * s = it.current()->get_name();
-
+    foreach (BrowserNode *node, *this) {
+        const char * s = node->get_name();
         list.append(((s == 0) || (*s == 0)) ? "<anonymous>" : s);
-        ++it;
     }
 }
 
@@ -2162,22 +2130,14 @@ void BrowserNodeList::full_names(QStringList & list) const
 {
     list.clear();
 
-    Q3PtrListIterator<BrowserNode> it(*this);
-
-    while (it.current() != 0) {
-        list.append(it.current()->full_name(TRUE));
-        ++it;
-    }
+    foreach (BrowserNode *node, *this)
+        list.append(node->full_name(true));
 }
 
 void BrowserNodeList::full_defs(QStringList & list) const
 {
     list.clear();
 
-    Q3PtrListIterator<BrowserNode> it(*this);
-
-    while (it.current() != 0) {
-        list.append(it.current()->get_data()->definition(TRUE, FALSE));
-        ++it;
-    }
+    foreach (BrowserNode *node, *this)
+        list.append(node->get_data()->definition(true, false));
 }

@@ -101,7 +101,7 @@ public:
     virtual int get_identifier() const;
     virtual const char * help_topic() const;
     virtual void modified();
-    virtual bool may_contains_them(const Q3PtrList<BrowserNode> &,
+    virtual bool may_contains_them(const QList<BrowserNode *> &,
                                    BooL & duplicable) const;
     virtual BasicData * get_data() const;
     virtual void get_usecasediagramsettings(UseCaseDiagramSettings &) const;
@@ -129,7 +129,7 @@ public:
     static void read_stereotypes(char *& , char *& k);
     static void save_stereotypes(QTextStream &);
 
-    virtual void referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete);
+    virtual void referenced_by(QList<BrowserNode *> & l, bool ondelete);
 
     static void clear(bool old);
     static void update_idmax_for_root();

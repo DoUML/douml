@@ -54,7 +54,7 @@
 #include "mu.h"
 #include "translate.h"
 
-Q3PtrList<BrowserClassDiagram> BrowserClassDiagram::imported;
+QList<BrowserClassDiagram *> BrowserClassDiagram::imported;
 Q3ValueList<int> BrowserClassDiagram::imported_ids;
 QStringList BrowserClassDiagram::its_default_stereotypes;	// unicode
 
@@ -148,14 +148,12 @@ void BrowserClassDiagram::import()
 {
     Q3ValueList<int>::Iterator it = imported_ids.begin();
 
-    while (!imported.isEmpty()) {
-        QString warning;
-        BrowserClassDiagram * d = imported.take(0);
-
+    foreach (BrowserClassDiagram *d, imported) {
         (new ClassDiagramWindow(d->full_name(), d, *it))->close(TRUE);
         it = imported_ids.remove(it);
         d->is_modified = TRUE;
     }
+    imported.clear();
 }
 
 void BrowserClassDiagram::renumber(int phase)
@@ -531,7 +529,7 @@ bool BrowserClassDiagram::tool_cmd(ToolCom * com, const char * args)
     }
 }
 
-void BrowserClassDiagram::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserClassDiagram::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserNode * bn,
         char const * kc,
         char const * kr)

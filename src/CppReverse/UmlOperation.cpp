@@ -55,7 +55,7 @@ using namespace std;
 # endif
 #endif
 
-NDict< Q3PtrList<UmlOperation> > UmlOperation::friends;
+NDict< QList<UmlOperation *> > UmlOperation::friends;
 #ifdef ROUNDTRIP
 Q3PtrDict<WrapperStr> UmlOperation::DefNotYetSet(97);
 #endif
@@ -224,7 +224,7 @@ bool UmlOperation::new_one(Class * cl, const WrapperStr & name,
                            bool friendp, WrapperStr friend_template,
                            WrapperStr comment, WrapperStr description, bool pfunc
 #ifdef ROUNDTRIP
-                           , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                           , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                           )
 {
@@ -473,10 +473,10 @@ bool UmlOperation::new_one(Class * cl, const WrapperStr & name,
 
     if ((op != 0) && friendp) {
         // not an operation
-        Q3PtrList<UmlOperation> * fr = friends[name];
+        QList<UmlOperation *> * fr = friends[name];
 
         if (fr == 0) {
-            fr = new Q3PtrList<UmlOperation>;
+            fr = new QList<UmlOperation *>;
             fr->append(op);
             friends.insert(name, fr);
         }
@@ -1189,21 +1189,20 @@ bool UmlOperation::read_throw_elt(ClassContainer * container,
     return FALSE;
 }
 
-void UmlOperation::friend_operations(Q3PtrList<UmlOperation> & candidates,
+void UmlOperation::friend_operations(QList<UmlOperation *> & candidates,
                                      const Q3ValueList<FormalParameterList> & tmplts,
                                      const WrapperStr & name)
 {
-    Q3PtrList<UmlOperation> * fr = friends[name];
+    QList<UmlOperation *> * fr = friends[name];
 
     if (fr != 0) {
         // may be a friend operation
         FormalParameterList t;
         const FormalParameterList & tmpl = (tmplts.isEmpty()) ? t : tmplts.last();
-        Q3PtrListIterator<UmlOperation> it(*fr);
 
-        while (it.current() != 0) {
+        foreach (UmlOperation *op, *fr) {
             const FormalParameterList & formals =
-                ((UmlClass *) it.current()->parent())->formals();
+                ((UmlClass *) op->parent())->formals();
 
             if (tmpl.count() <= formals.count()) {
                 unsigned rank = tmpl.count();
@@ -1217,10 +1216,8 @@ void UmlOperation::friend_operations(Q3PtrList<UmlOperation> & candidates,
 
                 if (rank == ~0u)
                     // candidate
-                    candidates.append(it.current());
+                    candidates.append(op);
             }
-
-            ++it;
         }
     }
 }
@@ -1255,7 +1252,7 @@ static bool compare_templates(const FormalParameterList & t1,
     return TRUE;
 }
 
-bool UmlOperation::operations(Q3PtrList<UmlOperation> & candidates, UmlClass * cl,
+bool UmlOperation::operations(QList<UmlOperation *> & candidates, UmlClass * cl,
                               const Q3ValueList<FormalParameterList> & tmplts,
                               const FormalParameterList *& oper_tmplt,
                               const WrapperStr & name)
@@ -1466,7 +1463,7 @@ void UmlOperation::reverse_definition(Package * pack, WrapperStr name,
         }
     }
 
-    Q3PtrList<UmlOperation> candidates;
+    QList<UmlOperation *> candidates;
     const FormalParameterList * oper_tmplt;
 
     if ((tcl.type != 0) ||	// set in case of a contructor/destructor
@@ -1491,20 +1488,19 @@ void UmlOperation::reverse_definition(Package * pack, WrapperStr name,
         return;
     }
 
-    Q3PtrListIterator<UmlOperation> it(candidates);
     LexContext context = Lex::get_context();
     BooL on_error = FALSE;
     unsigned nargs = ~0u;
     UmlClass * cl = 0;
 
-    do {
-        if ((nargs == ~0u) || (it.current()->params().count() == (int)nargs)) {
-            if (cl != it.current()->parent()) {
-                cl = (UmlClass *) it.current()->parent();
+    foreach (UmlOperation *op, candidates) {
+        if ((nargs == ~0u) || (op->params().count() == (int)nargs)) {
+            if (cl != op->parent()) {
+                cl = (UmlClass *) op->parent();
                 cl->set_under_construction(TRUE, TRUE);
             }
 
-            if (it.current()->reverse_if_def(pack, tmplts, oper_tmplt, inlinep,
+            if (op->reverse_if_def(pack, tmplts, oper_tmplt, inlinep,
                                              pfct, comment, description,
                                              on_error, nargs, name)) {
                 cl->set_under_construction(FALSE, TRUE);
@@ -1514,9 +1510,9 @@ void UmlOperation::reverse_definition(Package * pack, WrapperStr name,
             Lex::set_context(context);
         }
 
-        ++it;
+        if (on_error)
+            break;
     }
-    while (!on_error && (it.current() != 0));
 
     cl->set_under_construction(FALSE, TRUE);
 
@@ -1537,11 +1533,8 @@ bool UmlOperation::reverse_if_def(Package * pack,
 
     UmlParameter param;
     Q3ValueList<UmlParameter> params = this->params();
-    Q3PtrList<WrapperStr> param_names;
     WrapperStr decl = "${(}${)}";
     unsigned rank = 0;
-
-    param_names.setAutoDelete(TRUE);
 
     while (read_param(pack /*yes !*/, rank, param, decl, tmplts, on_error, FALSE)) {
         if ((params.count() <= (int)rank) ||
@@ -2156,7 +2149,7 @@ UmlOperation * UmlOperation::already_exist(Class * container,
     const Q3PtrVector<UmlItem> & ch = container->get_uml()->UmlItem::children();
     UmlItem ** v = ch.data();
     UmlItem ** const vsup = v + ch.size();
-    Q3PtrList<UmlOperation> opers;
+    QList<UmlOperation *> opers;
 
     for (; v != vsup; v += 1)
         if (((*v)->kind() == anOperation) &&
@@ -2172,17 +2165,16 @@ UmlOperation * UmlOperation::already_exist(Class * container,
     case 1:
         // suppose it is this one
         // even don't know if it is placed later in file
-        return opers.getFirst();
+        return opers.first();
 
     default:
         break;
     }
 
-    UmlOperation * op;
-    Q3PtrList<UmlOperation> same_names;
+    QList<UmlOperation *> same_names;
 
     // search for operation having the same params name and number
-    for (op = opers.first(); op != 0; op = opers.next()) {
+    foreach (UmlOperation *op, opers) {
         Q3ValueList<UmlParameter> ps = op->params();
         Q3ValueList<UmlParameter>::ConstIterator it1;
         Q3ValueList<UmlParameter>::ConstIterator it2;
@@ -2219,7 +2211,7 @@ UmlOperation * UmlOperation::already_exist(Class * container,
         // only one having the same number of param
         // and same param names (type changed)
         // suppose this one
-        return same_names.getFirst();
+        return same_names.first();
     }
 
     // suppose not find

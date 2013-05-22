@@ -96,8 +96,8 @@ public:
 
     virtual bool tool_cmd(ToolCom * com, const char * args);
 
-    virtual void referenced_by(Q3PtrList<BrowserNode> &, bool ondelete = FALSE);
-    static void compute_referenced_by(Q3PtrList<BrowserNode> &, BrowserPseudoState *);
+    virtual void referenced_by(QList<BrowserNode *> &, bool ondelete = FALSE);
+    static void compute_referenced_by(QList<BrowserNode *> &, BrowserPseudoState *);
 
     bool allow_empty() const;
     static bool allow_empty(UmlCode c);

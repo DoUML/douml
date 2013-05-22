@@ -144,17 +144,15 @@ void CodObjCanvas::get_all_in_all_out(ColMsgList & all_in, ColMsgList & all_out)
         all_out = all_in;
     }
 
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    for (; it.current() != 0; ++it) {
+    foreach (ArrowCanvas *canvas, lines) {
         CodDirsCanvas * dirs;
 
-        if ((it.current()->type() == UmlLink) &&
-            ((dirs = ((CodLinkCanvas *) it.current())->find_dirs()) != 0)) {
+        if ((canvas->type() == UmlLink) &&
+            ((dirs = ((CodLinkCanvas *) canvas)->find_dirs()) != 0)) {
             CodObjCanvas * from;
             CodObjCanvas * to;
 
-            ((CodLinkCanvas *) it.current())->get_start_end(from, to);
+            ((CodLinkCanvas *) canvas)->get_start_end(from, to);
 
             if (this == to)
                 ColMsg::get_all_in_all_out(all_in, all_out, dirs->get_msgs());
@@ -170,4 +168,3 @@ CodObjCanvas * CodObjCanvas::read(char *& st, UmlCanvas * canvas)
 
     return CodClassInstCanvas::read(st, canvas, k);
 }
-

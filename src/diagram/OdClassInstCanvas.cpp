@@ -232,12 +232,10 @@ void OdClassInstCanvas::modified()
         if (the_canvas()->must_draw_all_relations())
             draw_all_relations();
 
-        Q3PtrListIterator<ArrowCanvas> it(lines);
-
-        for (; it.current(); ++it)
-            if (IsaRelation(it.current()->type()))
+        foreach (ArrowCanvas *canvas, lines)
+            if (IsaRelation(canvas->type()))
                 // useless to check UmlObjectLink ie unset link
-                ((ObjectLinkCanvas *) it.current())->check();
+                ((ObjectLinkCanvas *) canvas)->check();
 
         canvas()->update();
         package_modified();
@@ -252,16 +250,11 @@ void OdClassInstCanvas::post_loaded()
 
 bool OdClassInstCanvas::has_relation(const SlotRel & slot_rel) const
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    while (it.current()) {
-        if (IsaRelation(it.current()->type()) &&
-            (((ObjectLinkCanvas *) it.current())
-             ->is(slot_rel, it.current()->get_start() == (DiagramItem *) this)))
+    foreach (ArrowCanvas *canvas, lines)
+        if (IsaRelation(canvas->type()) &&
+            (((ObjectLinkCanvas *) canvas)
+             ->is(slot_rel, canvas->get_start() == (DiagramItem *) this)))
             return TRUE;
-
-        ++it;
-    }
 
     return FALSE;
 }
@@ -271,18 +264,13 @@ bool OdClassInstCanvas::is_duplicated(ObjectLinkCanvas * lnk,
                                       OdClassInstCanvas * other) const
 {
     RelationData * rel = lnk->get_rel();
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-    ArrowCanvas * ar;
 
-    while ((ar = it.current()) != 0) {
+    foreach (ArrowCanvas *ar, lines)
         if ((ar != lnk) &&
             IsaRelation(ar->type()) &&
             (((ObjectLinkCanvas *) ar)->get_rel() == rel) &&
             (ar->get_end() == other))
             return TRUE;
-        else
-            ++it;
-    }
 
     return FALSE;
 }
@@ -706,7 +694,7 @@ bool OdClassInstCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void OdClassInstCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void OdClassInstCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         StateSpecVector st(2);
@@ -724,21 +712,20 @@ void OdClassInstCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if (dialog.exec() == QDialog::Accepted) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
+            foreach (DiagramItem *item, l) {
+                OdClassInstCanvas *canvas = (OdClassInstCanvas *)item;
                 if (!st[0].name.isEmpty())
-                    ((OdClassInstCanvas *) it.current())->write_horizontally =
+                    canvas->write_horizontally =
                         write_horizontally;
 
                 if (!st[1].name.isEmpty())
-                    ((OdClassInstCanvas *) it.current())->show_context_mode =
+                    canvas->show_context_mode =
                         show_context_mode;
 
                 if (!co[0].name.isEmpty())
-                    ((OdClassInstCanvas *) it.current())->itscolor = itscolor;
+                    canvas->itscolor = itscolor;
 
-                ((OdClassInstCanvas *) it.current())->modified();	// call package_modified()
+                canvas->modified();
             }
         }
 
@@ -747,20 +734,13 @@ void OdClassInstCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void OdClassInstCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void OdClassInstCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    OdClassInstCanvas * x = (OdClassInstCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        OdClassInstCanvas * o = (OdClassInstCanvas *) it.current();
-
-        o->write_horizontally = x->write_horizontally;
-        o->show_context_mode = x->show_context_mode;
-        o->itscolor = x->itscolor;
-        o->modified();	// call package_modified()
-    }
+    const OdClassInstCanvas * x = (const OdClassInstCanvas *) src;
+    write_horizontally = x->write_horizontally;
+    show_context_mode = x->show_context_mode;
+    itscolor = x->itscolor;
+    modified();
 }
 
 bool OdClassInstCanvas::get_show_stereotype_properties() const

@@ -117,8 +117,9 @@ ArtifactDialog::~ArtifactDialog()
     //data->browser_node->edit_end();
     previous_size = size();
 
-    while (!edits.isEmpty())
-        edits.take(0)->close();
+    foreach (BodyDialog *dialog, edits)
+        dialog->close();
+    edits.clear();
 
     if(toolbar)
     {
@@ -556,12 +557,11 @@ void ArtifactDialog::init_assoc_classes_tab()
         for (it = l.begin(); it != end; ++it)
             d.insert(*it, *it);
 
-        BrowserNode * cl;
         BrowserNodeList classes;
 
         BrowserClass::instances(classes, 0, TRUE);
 
-        for (cl = classes.first(); cl != 0; cl = classes.next())
+        foreach (BrowserNode *cl, classes)
             if ((((BrowserClass *) cl)->get_associated_artifact() == 0) &&
                 (d.find(cl) == 0))
                 lb_cl_available->insertItem(new ListBoxBrowserNode(cl, cl->full_name(TRUE)));
@@ -1863,13 +1863,12 @@ void ArtifactDialog::stereotypeFilterActivated(const QString & st)
         QString s = st.stripWhiteSpace();
         BrowserNodeList artifacts;
         BrowserNode * itself = data->browser_node;
-        BrowserNode * cp;
 
         BrowserArtifact::instances(artifacts, s);
         lb_art_available->clear();
         lb_art_associated->clear();
 
-        for (cp = artifacts.first(); cp != 0; cp = artifacts.next()) {
+        foreach (BrowserNode *cp, artifacts) {
             if (cp != itself) {
                 if (art_associated.find(cp))
                     lb_art_associated->insertItem(new ListBoxBrowserNode(cp, cp->full_name(TRUE)));

@@ -139,7 +139,7 @@ const QPixmap * BrowserPin::pixmap(int) const
         return PinIcon;
 }
 
-void BrowserPin::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserPin::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
 
@@ -147,7 +147,7 @@ void BrowserPin::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
         BrowserActivityDiagram::compute_referenced_by(l, this, "pincanvas", "pin_ref");
 }
 
-void BrowserPin::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserPin::compute_referenced_by(QList<BrowserNode *> & l,
                                        BrowserNode * target)
 {
     IdIterator<BrowserPin> it(all);

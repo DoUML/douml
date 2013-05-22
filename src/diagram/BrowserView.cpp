@@ -399,14 +399,9 @@ void BrowserView::OnGenerateIdl()
 
 void BrowserView::OnUnmarkItem(QString name, int type)
 {
-    Q3PtrListIterator<BrowserNode> it( BrowserNode::marked_list );
-    BrowserNode *node;
-    while ( (node = it.current()) != 0 )
-    {
-        ++it;
+    foreach (BrowserNode *node, BrowserNode::marked_list)
         if(node->get_name() == name && node->get_type() == type)
             node->toggle_mark();
-    }
 }
 
 void BrowserView::OnUnmarkAll()

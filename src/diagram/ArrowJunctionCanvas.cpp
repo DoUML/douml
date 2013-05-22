@@ -109,10 +109,9 @@ void ArrowJunctionCanvas::draw(QPainter & p)
     if (!visible())
         return;
 
-    ArrowCanvas * a;
     FILE * fp = svg();
 
-    for (a = lines.first(); a != 0; a = lines.next()) {
+    foreach (ArrowCanvas *a, lines) {
         switch (a->type()) {
         case UmlRequired: {
             QRect r = rect();

@@ -63,7 +63,7 @@ protected:
     LineEdit * edname;
     Q3ComboBox * edstereotype;
     MultiLineEdit * comment;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
 
     // required classes
     Q3VBox * rq_page;

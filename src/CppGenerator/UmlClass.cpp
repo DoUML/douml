@@ -51,7 +51,7 @@
 // the eventual class list where we are, used by write() to not generate
 // parent classes and template in the class declaration of the class
 
-Q3PtrList<UmlClass> UmlClass::context;
+QList<UmlClass *> UmlClass::context;
 Q3ValueList<UmlActualParameter> UmlClass::noactuals;
 
 WrapperStr UmlClass::cpp_stereotype()
@@ -84,7 +84,7 @@ void UmlClass::generate()
     }
 }
 
-void UmlClass::compute_dependencies(Q3PtrList<CppRefType> & dependencies,
+void UmlClass::compute_dependencies(QList<CppRefType *> & dependencies,
                                     bool all_in_h)
 {
     const WrapperStr dummy;
@@ -92,7 +92,7 @@ void UmlClass::compute_dependencies(Q3PtrList<CppRefType> & dependencies,
     compute_dependency(dependencies, dummy, all_in_h);
 }
 
-void UmlClass::compute_dependency(Q3PtrList<CppRefType> & dependencies,
+void UmlClass::compute_dependency(QList<CppRefType *> & dependencies,
                                   const WrapperStr &, bool all_in_h)
 {
     Q3PtrVector<UmlItem> ch = children();
@@ -563,9 +563,9 @@ void UmlClass::write(QTextStream & f, const UmlTypeSpec & t,
 void UmlClass::write(QTextStream & f, bool with_formals, BooL * is_template,
                      const Q3ValueList<UmlActualParameter> & actuals)
 {
-    if (context.findRef(this) == -1) {
+    if (! context.contains(this)) {
         if (parent()->kind() == aClass) {
-            if (context.findRef((UmlClass *) parent()) == -1) {
+            if (! context.contains((UmlClass *) parent())) {
                 // parent cannot have formals, but may have actuals
                 ((UmlClass *) parent())->write(f, FALSE, 0, actuals);
                 f << "::";

@@ -355,7 +355,7 @@ bool NoteCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void NoteCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void NoteCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         ColorSpecVector co(1);
@@ -368,11 +368,10 @@ void NoteCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if ((dialog.exec() == QDialog::Accepted) && !co[0].name.isEmpty()) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
-                ((NoteCanvas *) it.current())->itscolor = itscolor;
-                ((NoteCanvas *) it.current())->modified();	// call package_modified()
+            foreach (DiagramItem *item, l) {
+                NoteCanvas *canvas = (NoteCanvas *)item;
+                canvas->itscolor = itscolor;
+                canvas->modified();
             }
         }
 
@@ -381,18 +380,11 @@ void NoteCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void NoteCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void NoteCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    NoteCanvas * x = (NoteCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        NoteCanvas * o = (NoteCanvas *) it.current();
-
-        o->itscolor = x->itscolor;
-        o->modified();	// call package_modified()
-    }
+    const NoteCanvas * x = (const NoteCanvas *) src;
+    itscolor = x->itscolor;
+    modified();
 }
 
 QString NoteCanvas::may_start(UmlCode & l) const

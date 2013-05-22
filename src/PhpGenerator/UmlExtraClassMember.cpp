@@ -33,7 +33,7 @@
 #include "UmlExtraClassMember.h"
 
 /*
-void UmlExtraClassMember::compute_dependency(Q3PtrList<PhpRefType> &, WrapperStr) {
+void UmlExtraClassMember::compute_dependency(QList<PhpRefType *> &, WrapperStr) {
   // does nothing
 }
 */

@@ -80,8 +80,8 @@ public:
     virtual void set_z(double z);	// only called by upper() & lower()
 
     virtual bool has_drawing_settings() const;
-    virtual void edit_drawing_settings(Q3PtrList<DiagramItem> &);
-    virtual void same_drawing_settings(Q3PtrList<DiagramItem> &);
+    virtual void edit_drawing_settings(QList<DiagramItem *> &);
+    virtual void clone_drawing_settings(const DiagramItem *src);
     void edit_drawing_settings();
     virtual bool get_show_stereotype_properties() const;
 

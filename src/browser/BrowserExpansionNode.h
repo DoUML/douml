@@ -96,8 +96,8 @@ public:
     virtual bool tool_cmd(ToolCom * com, const char * args);
     virtual bool api_compatible(unsigned v) const;
 
-    virtual void referenced_by(Q3PtrList<BrowserNode> &, bool ondelete = FALSE);
-    static void compute_referenced_by(Q3PtrList<BrowserNode> &, BrowserNode *);
+    virtual void referenced_by(QList<BrowserNode *> &, bool ondelete = FALSE);
+    static void compute_referenced_by(QList<BrowserNode *> &, BrowserNode *);
 
     virtual void DropAfterEvent(QDropEvent * e, BrowserNode * after);
     QString drag_key() const;

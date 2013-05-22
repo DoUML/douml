@@ -945,7 +945,7 @@ static void recompute_st_list()
     BrowserClass::instances(l, "stereotype", TRUE);
 
     while (! l.isEmpty()) {
-        BrowserClass * cl = (BrowserClass *) l.take(0);
+        BrowserClass * cl = (BrowserClass *) l.takeFirst();
         BrowserNode * pf = (BrowserNode *) cl->parent()->parent();
 
         if ((pf->get_type() == UmlPackage) &&

@@ -127,8 +127,8 @@ public:
     virtual void renumber(int phase);
     virtual void prepare_update_lib() const;
 
-    virtual void referenced_by(Q3PtrList<BrowserNode> &, bool ondelete = FALSE);
-    static void compute_referenced_by(Q3PtrList<BrowserNode> &, BrowserClass *);
+    virtual void referenced_by(QList<BrowserNode *> &, bool ondelete = FALSE);
+    static void compute_referenced_by(QList<BrowserNode *> &, BrowserClass *);
 
     static QString python_init_self(BrowserNode * cl);
 

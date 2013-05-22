@@ -47,7 +47,7 @@ public:
     static void remove_comments(WrapperStr & s);
     static void remove_arrays(WrapperStr & s);
     static void remove_preprocessor(WrapperStr & s);
-    static bool compute_dependency(Q3PtrList<CppRefType> & dependency,
+    static bool compute_dependency(QList<CppRefType *> & dependency,
                                    WrapperStr decl, const UmlTypeSpec &,
                                    bool force_incl = FALSE);
 

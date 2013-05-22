@@ -46,7 +46,7 @@ public:
     UmlExtraClassMember(void * id, const WrapperStr & n)
         : UmlBaseExtraClassMember(id, n) {};
 
-    virtual void compute_dependency(Q3PtrList<CppRefType> & dependency,
+    virtual void compute_dependency(QList<CppRefType *> & dependency,
                                     const WrapperStr & cl_stereotype,
                                     bool all_in_h);
     virtual void generate_decl(aVisibility & current_visibility,

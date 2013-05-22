@@ -92,7 +92,7 @@ UmlArtifact * UmlArtifact::get_main()
     return main_art;
 }
 
-void UmlArtifact::mark_useless(Q3PtrList<UmlItem> & l)
+void UmlArtifact::mark_useless(QList<UmlItem *> & l)
 {
     if (useless) {
         set_isMarked(TRUE);

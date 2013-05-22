@@ -121,9 +121,9 @@ public:
     virtual const QPixmap * pixmap(int) const;
     virtual void iconChanged();
 
-    virtual void referenced_by(Q3PtrList<BrowserNode> &, bool ondelete = FALSE);
-    static void compute_referenced_by(Q3PtrList<BrowserNode> &, BrowserArtifact *);
-    static void compute_referenced_by(Q3PtrList<BrowserNode> &, BrowserClass *);
+    virtual void referenced_by(QList<BrowserNode *> &, bool ondelete = FALSE);
+    static void compute_referenced_by(QList<BrowserNode *> &, BrowserArtifact *);
+    static void compute_referenced_by(QList<BrowserNode *> &, BrowserClass *);
 
     static void init();
     static const QStringList & default_stereotypes();

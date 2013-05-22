@@ -112,7 +112,7 @@ void UmlClassMember::generate_visibility(QTextStream & f)
 }
 
 /*
-bool UmlClassMember::compute_dependency(Q3PtrList<PhpRefType> & dependencies,
+bool UmlClassMember::compute_dependency(QList<PhpRefType *> & dependencies,
 					WrapperStr decl, const UmlTypeSpec & t)
 {
   remove_comments(decl);

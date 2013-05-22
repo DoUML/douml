@@ -120,8 +120,8 @@ void Socket::data_received()
 
 //
 
-Q3PtrList<ToolCom> ToolCom::used;
-Q3PtrList<ToolCom> ToolCom::unused;
+QList<ToolCom *> ToolCom::used;
+QList<ToolCom *> ToolCom::unused;
 int ToolCom::exitvalue;
 
 ToolCom::ToolCom()
@@ -167,7 +167,7 @@ int ToolCom::run(const char * cmd, BrowserNode * bn,
 
     ToolCom * com = (unused.isEmpty())
             ? new ToolCom
-            : unused.take(0);
+            : unused.takeFirst();
 
     com->DisconnectExternalProcess();
 
@@ -213,10 +213,8 @@ int exit_value()
 
 bool ToolCom::is_running(int id)
 {
-    Q3PtrListIterator<ToolCom> it(used);
-
-    for (; it.current(); ++it)
-        if (it.current()->id == id)
+    foreach (ToolCom *item, used)
+        if (item->id == id)
             return TRUE;
 
     return FALSE;
@@ -748,17 +746,16 @@ void ToolCom::data_received(Socket * who)
                         break;
 
                     case allMarkedCmd: {
-                        Q3PtrList<BrowserNode> marked = BrowserNode::marked_nodes();
+                        QList<BrowserNode *> marked = BrowserNode::marked_nodes();
                         unsigned n = 0;
-                        BrowserNode * bn;
 
-                        for (bn = marked.first(); bn != 0; bn = marked.next())
+                        foreach (BrowserNode *bn, marked)
                             if (bn->api_compatible(api_format(true)))
                                 n += 1;
 
                         write_unsigned(n);
 
-                        for (bn = marked.first(); bn != 0; bn = marked.next())
+                        foreach (BrowserNode *bn, marked)
                             if (bn->api_compatible(api_format(true)))
                                 bn->write_id(this);
                     }

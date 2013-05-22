@@ -41,7 +41,7 @@
 #include "UmlCom.h"
 #include "util.h"
 
-void UmlRelation::compute_dependency(Q3PtrList<CppRefType> & dependencies,
+void UmlRelation::compute_dependency(QList<CppRefType *> & dependencies,
                                      const WrapperStr & cl_stereotype,
                                      bool all_in_h)
 {

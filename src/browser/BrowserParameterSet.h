@@ -81,7 +81,7 @@ public:
 
     static BrowserParameterSet * new_one(const char *, BrowserNode * p);
 
-    virtual void referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete);
+    virtual void referenced_by(QList<BrowserNode *> & l, bool ondelete);
 
     static void clear(bool old);
     static void update_idmax_for_root();

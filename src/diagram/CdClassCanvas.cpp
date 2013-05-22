@@ -526,32 +526,22 @@ void CdClassCanvas::post_loaded()
 
 void CdClassCanvas::check_inner()
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    while (it.current()) {
-        if (it.current()->type() == UmlInner) {
-            DiagramItem * b = ((ArrowCanvas *) it.current())->get_start();
-            DiagramItem * e = ((ArrowCanvas *) it.current())->get_end();
+    foreach (ArrowCanvas *canvas, lines) {
+        if (canvas->type() == UmlInner) {
+            DiagramItem * b = canvas->get_start();
+            DiagramItem * e = canvas->get_end();
 
             if (((BrowserNode *) b->get_bn()->parent()) != e->get_bn())
-                it.current()->delete_it();
-            else
-                ++it;
+                canvas->delete_it();
         }
-        else
-            ++it;
     }
 }
 bool CdClassCanvas::has_relation(BasicData * def) const
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    while (it.current()) {
-        if (IsaRelation(it.current()->type()) &&
-            (((RelationCanvas *) it.current())->get_data() == def))
+    foreach (ArrowCanvas *canvas, lines) {
+        if (IsaRelation(canvas->type()) &&
+            (((RelationCanvas *) canvas)->get_data() == def))
             return TRUE;
-
-        ++it;
     }
 
     return FALSE;
@@ -559,14 +549,10 @@ bool CdClassCanvas::has_relation(BasicData * def) const
 
 bool CdClassCanvas::has_inner(DiagramItem * end) const
 {
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    while (it.current()) {
-        if ((it.current()->type() == UmlInner) &&
-            (((ArrowCanvas *) it.current())->get_end() == end))
+    foreach (ArrowCanvas *canvas, lines) {
+        if ((canvas->type() == UmlInner) &&
+            (canvas->get_end() == end))
             return TRUE;
-
-        ++it;
     }
 
     return FALSE;
@@ -1265,7 +1251,7 @@ static CdClassCanvas * container_class_without_inner(CdClassCanvas * cln)
 
 void CdClassCanvas::menu(const QPoint &)
 {
-    Q3PtrList<BrowserOperation> l =
+    QList<BrowserOperation *> l =
         ((BrowserClass *) browser_node)->inherited_operations(21);
     Q3PopupMenu m(0);
     Q3PopupMenu gensubm(0);
@@ -1344,14 +1330,11 @@ void CdClassCanvas::menu(const QPoint &)
             if (l.count() > 20)
                 m.insertItem(TR("Add inherited operation"), 2999);
             else {
-                BrowserOperation * oper;
-
                 MenuFactory::createTitle(inhopersubm, TR("Choose operation"));
                 inhopersubm.insertSeparator();
 
-                for (oper = l.first(), index = 3000;
-                     oper;
-                     oper = l.next(), index += 1) {
+                index = 3000;
+                foreach (BrowserOperation *oper, l) {
                     QString menuItemText = ((BrowserNode *) oper->parent())->get_name() +
                             QString("::") + oper->get_data()->definition(TRUE, FALSE);
                     if (((OperationData *) oper->get_data())->get_is_abstract())
@@ -1364,6 +1347,7 @@ void CdClassCanvas::menu(const QPoint &)
                     }
                     else
                         inhopersubm.insertItem(menuItemText,index);
+                    ++index;
                 }
 
                 m.insertItem(TR("Add inherited operation"), &inhopersubm);
@@ -1571,7 +1555,7 @@ void CdClassCanvas::menu(const QPoint &)
 
     case 1999: {
         OperationListDialog dialog(TR("Choose operation to edit"),
-                                   (Q3PtrList<BrowserOperation> &) operations);
+                                   (QList<BrowserOperation *> &) operations);
 
         dialog.raise();
 
@@ -1675,7 +1659,7 @@ bool CdClassCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void CdClassCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void CdClassCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         StateSpecVector st;
@@ -1692,15 +1676,14 @@ void CdClassCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if (dialog.exec() == QDialog::Accepted) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
+            foreach (DiagramItem *item, l) {
+                CdClassCanvas *canvas = (CdClassCanvas *)item;
                 if (!co[0].name.isEmpty())
-                    ((CdClassCanvas *) it.current())->itscolor = itscolor;
+                    canvas->itscolor = itscolor;
 
-                ((CdClassCanvas *) it.current())->settings.set(st, 0);
-                ((CdClassCanvas *) it.current())->modified();
-                ((CdClassCanvas *) it.current())->package_modified();
+                canvas->settings.set(st, 0);
+                canvas->modified();
+                canvas->package_modified();
             }
         }
 
@@ -1709,20 +1692,13 @@ void CdClassCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void CdClassCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void CdClassCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    CdClassCanvas * x = (CdClassCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        CdClassCanvas * o = (CdClassCanvas *) it.current();
-
-        o->itscolor = x->itscolor;
-        o->settings = x->settings;
-        o->modified();
-        o->package_modified();
-    }
+    const CdClassCanvas * x = (const CdClassCanvas *) src;
+    itscolor = x->itscolor;
+    settings = x->settings;
+    modified();
+    package_modified();
 }
 
 QString CdClassCanvas::may_start(UmlCode & l) const
@@ -1843,12 +1819,10 @@ static void save_hidden_list(BrowserNode * bn, UmlCode c, QTextStream & st,
 
     bn->children(l, c);
 
-    Q3PtrListIterator<BrowserNode> it(l);
-
-    while (it.current() != 0) {
+    foreach (BrowserNode *node, l) {
         QString dummy;
 
-        if (hidden_visible.findIndex(it.current()) != -1) {
+        if (hidden_visible.findIndex(node) != -1) {
             if (s != 0) {
                 nl_indent(st);
                 st << s;
@@ -1857,10 +1831,8 @@ static void save_hidden_list(BrowserNode * bn, UmlCode c, QTextStream & st,
 
             nl_indent(st);
             st << "  ";
-            it.current()->save(st, TRUE, dummy);
+            node->save(st, TRUE, dummy);
         }
-
-        ++it;
     }
 
     if ((s != 0) && (*s == 'v')) {
@@ -1953,7 +1925,7 @@ CdClassCanvas * CdClassCanvas::read(char *& st, UmlCanvas * canvas,
                    strcmp(k, "xyz")) {
                 BrowserNode * b = BrowserAttribute::read(st, k, 0, FALSE);
 
-                if ((b != 0) && (l.findRef(b) != -1))
+                if ((b != 0) && (l.contains(b)))
                     result->hidden_visible_attributes.append(b);
             }
         }
@@ -1968,7 +1940,7 @@ CdClassCanvas * CdClassCanvas::read(char *& st, UmlCanvas * canvas,
             while (strcmp(k = read_keyword(st), "xyzwh") && strcmp(k, "xyz")) {
                 BrowserNode * b = BrowserOperation::read(st, k, 0, FALSE);
 
-                if ((b != 0) && (l.findRef(b) != -1))
+                if ((b != 0) && (l.contains(b)))
                     result->hidden_visible_operations.append(b);
             }
         }

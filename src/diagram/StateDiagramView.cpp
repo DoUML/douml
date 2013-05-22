@@ -407,7 +407,6 @@ void StateDiagramView::save(QTextStream & st, QString & warning,
                             bool copy) const
 {
     DiagramItemList items(canvas()->allItems());
-    DiagramItem * di;
 
     if (!copy)
         // sort is useless for a copy
@@ -417,7 +416,7 @@ void StateDiagramView::save(QTextStream & st, QString & warning,
 
     // save first states pseudostates actions packages fragments notes and icons
 
-    for (di = items.first(); di != 0; di = items.next()) {
+    foreach (DiagramItem *di, items) {
         switch (di->type()) {
         case UmlState:
         case UmlStateAction:
@@ -449,7 +448,7 @@ void StateDiagramView::save(QTextStream & st, QString & warning,
 
     // then saves relations
 
-    for (di = items.first(); di != 0; di = items.next()) {
+    foreach (DiagramItem *di, items) {
         if (di->type() == UmlTransition) {
             if (!copy || di->copyable())
                 di->save(st, FALSE, warning);
@@ -458,7 +457,7 @@ void StateDiagramView::save(QTextStream & st, QString & warning,
 
     // then saves anchors
 
-    for (di = items.first(); di != 0; di = items.next())
+    foreach (DiagramItem *di, items)
         if ((!copy || di->copyable()) && (di->type() == UmlAnchor))
             di->save(st, FALSE, warning);
 

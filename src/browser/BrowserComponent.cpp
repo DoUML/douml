@@ -130,7 +130,7 @@ void BrowserComponent::prepare_update_lib() const
         ((BrowserNode *) child)->prepare_update_lib();
 }
 
-void BrowserComponent::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserComponent::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
 
@@ -140,7 +140,7 @@ void BrowserComponent::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
     }
 }
 
-void BrowserComponent::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserComponent::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserClass * target)
 {
     IdIterator<BrowserComponent> it(all);
@@ -783,8 +783,8 @@ void BrowserComponent::get_all_provided_classes(Q3ValueList<BrowserClass *> & r,
         r.clear();
         nl.sort_it();
 
-        while (! nl.isEmpty())
-            r.append((BrowserClass *) nl.take(0));
+        foreach (BrowserNode *node, nl)
+            r.append((BrowserClass *) node);
     }
 }
 
@@ -824,8 +824,8 @@ void BrowserComponent::get_all_required_classes(Q3ValueList<BrowserClass *> & r,
         r.clear();
         nl.sort_it();
 
-        while (! nl.isEmpty())
-            r.append((BrowserClass *) nl.take(0));
+        foreach (BrowserNode *node, nl)
+            r.append((BrowserClass *) node);
     }
 }
 

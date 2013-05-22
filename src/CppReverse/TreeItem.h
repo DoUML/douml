@@ -39,14 +39,14 @@
 
 #else
 
-#include <q3ptrlist.h>
 #include <qstring.h>
+#include <QList>
 
 class TreeItem
 {
 private:
     TreeItem * its_parent;
-    Q3PtrList<TreeItem> its_children;
+    QList<TreeItem *> its_children;
     QString its_name;
 
 public:
@@ -62,12 +62,10 @@ public:
         return its_parent;
     };
 
-    TreeItem * firstChild() {
-        return its_children.first();
-    };
-    TreeItem * nextSibling() {
-        return its_parent->its_children.next();
-    };
+    const QList<TreeItem *> &children()
+    {
+        return its_children;
+    }
 };
 
 #endif

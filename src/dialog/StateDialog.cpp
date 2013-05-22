@@ -123,7 +123,7 @@ StateDialog::StateDialog(StateData * d)
         edspecification->insertStringList(speclist);
         edspecification->setCurrentItem((state->get_specification() == 0)
                                         ? 0
-                                        : opers.findRef(state->get_specification()) + 1);
+                                        : opers.indexOf(state->get_specification()) + 1);
     }
 
     switch (((BrowserNode *) bn->parent())->get_type()) {
@@ -148,16 +148,14 @@ StateDialog::StateDialog(StateData * d)
                 if (((BrowserState *) bn)->can_reference()) {
                     BrowserState::instances(states, TRUE);
 
-                    BrowserNode * st = states.first();
+                    QMutableListIterator<BrowserNode *> it(states);
 
-                    while (st != 0) {
-                        if (!((BrowserState *) bn)->can_reference((BrowserState *) st) ||
-                            ((BrowserState *) st)->is_ref()) {
-                            states.remove();
-                            st = states.current();
+                    while (it.hasNext()) {
+                        BrowserState *state = (BrowserState *)it.next();
+                        if (!((BrowserState *) bn)->can_reference(state) ||
+                            state->is_ref()) {
+                            it.remove();
                         }
-                        else
-                            st = states.next();
                     }
                 }
                 else
@@ -167,7 +165,7 @@ StateDialog::StateDialog(StateData * d)
                 edreference->insertStringList(reflist);
                 edreference->setCurrentItem((state->get_reference() == 0)
                                             ? 0
-                                            : states.findRef(state->get_reference()) + 1);
+                                            : states.indexOf(state->get_reference()) + 1);
 
                 connect(edreference, SIGNAL(activated(int)), this, SLOT(ed_ref_activated(int)));
             }
@@ -243,8 +241,9 @@ StateDialog::~StateDialog()
     state->browser_node->edit_end();
     previous_size = size();
 
-    while (!edits.isEmpty())
-        edits.take(0)->close();
+    foreach (BodyDialog *dialog, edits)
+        dialog->close();
+    edits.clear();
 
     close_dialog(this);
 }

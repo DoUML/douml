@@ -46,17 +46,22 @@
 #include <QTextStream>
 #include <Q3PtrCollection>
 
-int ColMsgList::compareItems(Q3PtrCollection::Item item1,
-                             Q3PtrCollection::Item item2)
+void ColMsgList::sort()
 {
-    unsigned r1 = ((ColMsg *) item1)->get_rank();
-    unsigned r2 = ((ColMsg *) item2)->get_rank();
+    qSort(begin(), end(), compareItems);
+}
+
+bool ColMsgList::compareItems(ColMsg *a,
+                              ColMsg *b)
+{
+    unsigned r1 = ((ColMsg *) a)->get_rank();
+    unsigned r2 = ((ColMsg *) b)->get_rank();
 
     if (r1 == r2)
         // in case sort compare an item with itself
         return 0;
 
-    return (r1 > r2) ? 1 : -1;
+    return r1 > r2;
 }
 
 //
@@ -77,8 +82,8 @@ void ColMsg::delete_it(bool rec, ColMsgList & top)
         delete_it_internal();
     else {
         // moves sub messages at toplevel
-        while (msgs.first() != 0)
-            top.append(msgs.take());
+        top << msgs;
+        msgs.clear();
 
         // remove it from (self)link
         in->remove_it(this);
@@ -90,8 +95,9 @@ void ColMsg::delete_it(bool rec, ColMsgList & top)
 void ColMsg::delete_it_internal()
 {
     // delete sub msgs
-    while (!msgs.isEmpty())
-        msgs.take()->delete_it_internal();
+    foreach (ColMsg *msg, msgs)
+        msg->delete_it_internal();
+    msgs.clear();
 
     // remove it from (self)link
     in->remove_it(this);
@@ -104,18 +110,16 @@ void ColMsg::delete_it_internal()
 
 bool ColMsg::extract_it(ColMsgList & top)
 {
-    Q3PtrListIterator<ColMsg> it(top);
-    int index;
-
-    for (index = 0; it.current(); ++it, index += 1) {
-        if (it.current() == this) {
-            top.remove(index);
+    int index = 0;
+    foreach (ColMsg *msg, top) {
+        if (msg == this) {
+            top.removeAt(index);
             return TRUE;
         }
 
-        if (extract_it(it.current()->msgs))
+        if (extract_it(msg->msgs))
             return TRUE;
-
+        ++index;
     }
 
     return FALSE;
@@ -160,11 +164,11 @@ QString ColMsg::next_hierarchical_rank() const
 void ColMsg::update_ranks(ColMsgList & msgs)
 {
     unsigned rank = 0;
-    unsigned hi_rank;
-    Q3PtrListIterator<ColMsg> it(msgs);
-
-    for (hi_rank = 1; it.current() != 0; ++it, hi_rank += 1)
-        it.current()->update_ranks(rank, QString::number(hi_rank));	// rank is updated
+    unsigned hi_rank = 1;
+    foreach (ColMsg *msg, msgs) {
+        msg->update_ranks(rank, QString::number(hi_rank));	// rank is updated
+        ++hi_rank;
+    }
 }
 
 void ColMsg::update_ranks(unsigned & r, QString hr)
@@ -174,20 +178,19 @@ void ColMsg::update_ranks(unsigned & r, QString hr)
 
     hr += '.';
 
-    unsigned hi_rank;
-    Q3PtrListIterator<ColMsg> it(msgs);
-
-    for (hi_rank = 1; it.current() != 0; ++it, hi_rank += 1)
-        it.current()->update_ranks(r, hr + QString::number(hi_rank));
+    unsigned hi_rank = 1;
+    foreach (ColMsg *msg, msgs) {
+        msg->update_ranks(r, hr + QString::number(hi_rank));
+        ++hi_rank;
+    }
 }
 
 void ColMsg::update_rank(unsigned & r)
 {
     absolute_rank = ++r;
-    Q3PtrListIterator<ColMsg> it(msgs);
 
-    for (; it.current() != 0; ++it)
-        it.current()->update_rank(r);
+    foreach (ColMsg *msg, msgs)
+        msg->update_rank(r);
 }
 
 ColMsg * ColMsg::new_one(const OperationData * d, const QString & e, bool f,
@@ -202,15 +205,15 @@ ColMsg * ColMsg::new_one(const OperationData * d, const QString & e, bool f,
 
 void ColMsg::place_in_its_support()
 {
-    unsigned index;
-    Q3PtrListIterator<ColMsg> it(in->get_msgs());
     const char * hr = hierarchical_rank;
 
-    for (index = 0; it.current() != 0; ++it, index += 1) {
-        if (!gt(hr, it.current()->hierarchical_rank)) {
+    unsigned index = 0;
+    foreach (ColMsg *msg, in->get_msgs()) {
+        if (!gt(hr, msg->hierarchical_rank)) {
             in->get_msgs().insert(index, this);
             return;
         }
+        ++index;
     }
 
     in->get_msgs().append(this);
@@ -223,10 +226,9 @@ void ColMsg::place_in(ColMsgList & l)
 
     // lazy implementation where all the objects's rank is updated
     unsigned r = 0;
-    Q3PtrListIterator<ColMsg> it(l);
 
-    for (; it.current() != 0; ++it)
-        it.current()->update_rank(r);
+    foreach (ColMsg *msg, l)
+        msg->update_rank(r);
 }
 
 void ColMsg::place_in_internal(ColMsgList & l)
@@ -235,13 +237,17 @@ void ColMsg::place_in_internal(ColMsgList & l)
     int ndots = hierarchical_rank.count('.'); //[lgfreitas] contains now returns a bool
 
     for (;;) {
-        Q3PtrListIterator<ColMsg> it(*pl);
-        ColMsg * m;
+        QListIterator<ColMsg *> it(*pl);
+        ColMsg * m = 0;
         unsigned index = pl->count();
 
-        for (it.toLast(), index = pl->count(); (m = it.current()) != 0; --it, index -= 1)
+        it.toBack();
+        while (it.hasPrevious()) {
+            m = it.previous();
             if (gt(hierarchical_rank, m->hierarchical_rank))
                 break;
+            --index;
+        }
 
         if ((m == 0) || // must be the first one
             (m->hierarchical_rank.contains('.') == ndots)) {	// must be placed after m
@@ -257,30 +263,26 @@ void ColMsg::place_in_internal(ColMsgList & l)
 void ColMsg::get_all_in_all_out(ColMsgList & all_in, ColMsgList & all_out,
                                 const ColMsgList & msgs)
 {
-    Q3PtrListIterator<ColMsg> it(msgs);
+    foreach (ColMsg *msg, msgs) {
+        ColMsgList & l = (msg->is_forward) ? all_in : all_out;
+        const QString & hi = msg->hierarchical_rank;
 
-    for (; it.current() != 0; ++it) {
-        ColMsgList & l = (it.current()->is_forward) ? all_in : all_out;
-        const QString & hi = it.current()->hierarchical_rank;
-
-        unsigned index;
-        Q3PtrListIterator<ColMsg> it2(l);
-
-        for (index = 0; it2.current() != 0; index += 1, ++it2)
-            if (lt(hi, it2.current()->hierarchical_rank))
+        unsigned index = 0;
+        foreach (ColMsg *nestedMsg, l) {
+            if (lt(hi, nestedMsg->hierarchical_rank))
                 break;
+            ++index;
+        }
 
-        l.insert(index, it.current());
+        l.insert(index, msg);
     }
 }
 
 ColMsg * ColMsg::find(const QString & hi, ColMsgList & l)
 {
-    Q3PtrListIterator<ColMsg> it(l);
-
-    for (; it.current(); ++it)
-        if ((*it)->hierarchical_rank == hi)
-            return *it;
+    foreach (ColMsg *msg, l)
+        if (msg->hierarchical_rank == hi)
+            return msg;
 
     return 0;
 }
@@ -289,17 +291,17 @@ ColMsg * ColMsg::find(const QString & hi, ColMsgList & l)
 
 ColMsg * ColMsg::find_rec(const QString & hr, ColMsgList & top)
 {
-    Q3PtrListIterator<ColMsg> it(top);
-    int index;
+    int index = 0;
 
-    for (index = 0; it.current(); ++it, index += 1) {
-        if (it.current()->hierarchical_rank == hr)
-            return it.current();
+    foreach (ColMsg *msg, top) {
+        if (msg->hierarchical_rank == hr)
+            return msg;
 
-        ColMsg * result = find_rec(hr, it.current()->msgs);
+        ColMsg * result = find_rec(hr, msg->msgs);
 
         if (result != 0)
             return result;
+        ++index;
     }
 
     return 0;
@@ -311,7 +313,7 @@ unsigned ColMsg::last_rank(const ColMsgList & l)
     const ColMsgList * pl = &l;
 
     while (!pl->isEmpty()) {
-        ColMsg * m = pl->getLast();
+        ColMsg * m = pl->last();
 
         result = m->absolute_rank;
         pl = &m->msgs;
@@ -375,10 +377,7 @@ void ColMsg::save(QTextStream & st, const ColMsgList & l, bool copy,
     nl_indent(st);
 
     bool first_one = TRUE;
-    Q3PtrListIterator<ColMsg> it(l);
-    ColMsg * msg;
-
-    for (; (msg = it.current()) != 0; ++it) {
+    foreach (ColMsg *msg, l) {
         if (copy && !msg->in->copyable())
             continue;
 
@@ -501,11 +500,9 @@ void ColMsg::read(char *& st, ColMsgList & l, UmlCanvas * canvas)
 
 void ColMsg::get_all(const ColMsgList & l, ColMsgList & r)
 {
-    Q3PtrListIterator<ColMsg> it(l);
-
-    for (; it.current(); ++it) {
-        r.append(it.current());
-        get_all(it.current()->msgs, r);
+    foreach (ColMsg *msg, l) {
+        r.append(msg);
+        get_all(msg->msgs, r);
     }
 }
 
@@ -518,9 +515,7 @@ void ColMsg::send(ToolCom * com, const ColMsgList & l)
 
     com->write_unsigned(lm.count());
 
-    ColMsg * msg;
-
-    for (msg = lm.first(); msg != 0; msg = lm.next()) {
+    foreach (ColMsg *msg, lm) {
         if (msg->operation == 0) {
             com->write_id(0);
             com->write_string(msg->explicit_operation);

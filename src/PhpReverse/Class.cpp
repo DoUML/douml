@@ -64,7 +64,7 @@ using namespace std;
 #include "Pixmap.h"
 #include "ShowFileDialog.h"
 
-Q3PtrList<Class> Class::Historic;
+QList<Class *> Class::Historic;
 #endif
 
 Class::Class(Package * p, const char * n, char st)

@@ -94,7 +94,7 @@ bool UmlAttribute::new_one(Class * container, const WrapperStr & name,
                            const WrapperStr & value, WrapperStr comment,
                            WrapperStr description, WrapperStr annotation
 #ifdef ROUNDTRIP
-                           , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                           , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                           )
 {
@@ -341,7 +341,7 @@ bool UmlAttribute::new_one(Class * container, const WrapperStr & name,
     bool UmlAttribute::manage_enum_item(WrapperStr name, UmlClass * cl
 #ifdef ROUNDTRIP
                                         , bool roundtrip,
-                                        Q3PtrList<UmlItem> & expected_order
+                                        QList<UmlItem *> & expected_order
 #endif
                                        )
     {

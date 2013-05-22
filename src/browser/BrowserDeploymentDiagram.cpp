@@ -54,7 +54,7 @@
 #include "mu.h"
 #include "translate.h"
 
-Q3PtrList<BrowserDeploymentDiagram> BrowserDeploymentDiagram::imported;
+QList<BrowserDeploymentDiagram *> BrowserDeploymentDiagram::imported;
 Q3ValueList<int> BrowserDeploymentDiagram::imported_ids;
 QStringList BrowserDeploymentDiagram::its_default_stereotypes;	// unicode
 
@@ -152,14 +152,12 @@ void BrowserDeploymentDiagram::import()
 {
     Q3ValueList<int>::Iterator it = imported_ids.begin();
 
-    while (!imported.isEmpty()) {
-        QString warning;
-        BrowserDeploymentDiagram * d = imported.take(0);
-
+    foreach (BrowserDeploymentDiagram *d, imported) {
         (new DeploymentDiagramWindow(d->full_name(), d, *it))->close(TRUE);
         it = imported_ids.remove(it);
         d->is_modified = TRUE;
     }
+    imported.clear();
 }
 
 void BrowserDeploymentDiagram::renumber(int phase)
@@ -549,7 +547,7 @@ bool BrowserDeploymentDiagram::tool_cmd(ToolCom * com, const char * args)
     }
 }
 
-void BrowserDeploymentDiagram::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserDeploymentDiagram::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserNode * bn,
         char const * kc,
         char const * kr)

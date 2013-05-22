@@ -113,8 +113,6 @@ DiagramView::DiagramView(QWidget * parent, UmlCanvas * canvas, int i)
     canvas->setDoubleBuffering(TRUE);
 
     canvas->set_view(this);
-
-    history.setAutoDelete(TRUE);
 }
 
 void DiagramView::init()
@@ -148,7 +146,7 @@ void DiagramView::contentsMouseDoubleClickEvent(QMouseEvent * e)
 
 bool DiagramView::multiple_selection_for_menu(BooL & in_model, BooL & out_model,
         BooL & alignable, int & n_resize,
-        Q3PtrList<DiagramItem> & l_drawing_settings,
+        QList<DiagramItem *> & l_drawing_settings,
         const Q3CanvasItemList & selected)
 {
     Q3CanvasItemList::ConstIterator it;
@@ -223,7 +221,7 @@ void DiagramView::contentsMousePressEvent(QMouseEvent * e)
                 BooL in_model;
                 BooL out_model;
                 BooL alignable;
-                Q3PtrList<DiagramItem> l_drawing_settings;
+                QList<DiagramItem *> l_drawing_settings;
                 int n_resize;
 
                 if (multiple_selection_for_menu(in_model, out_model, alignable,
@@ -1007,7 +1005,7 @@ void DiagramView::same_size(bool w, bool h)
 
 void DiagramView::multiple_selection_menu(bool in_model, bool out_model,
         bool alignable, int n_resize,
-        Q3PtrList<DiagramItem> & l_drawing_settings)
+        QList<DiagramItem *> & l_drawing_settings)
 {
     const Q3CanvasItemList selected = selection();
     Q3CanvasItemList::ConstIterator it;
@@ -1160,7 +1158,11 @@ void DiagramView::multiple_selection_menu(bool in_model, bool out_model,
 
     case 17:
         history_protected = FALSE;
-        l_drawing_settings.first()->same_drawing_settings(l_drawing_settings);
+        if (!l_drawing_settings.isEmpty()) {
+            const DiagramItem *source = l_drawing_settings[0];
+            for (int i = 1, n = l_drawing_settings.size(); i < n; ++i)
+                l_drawing_settings[i]->clone_drawing_settings(source);
+        }
 
     default:
         return;
@@ -1429,7 +1431,7 @@ void DiagramView::keyPressEvent(QKeyEvent * e)
                              (s == "Same drawing settings")) {
                         Q3CanvasItemList::ConstIterator it;
                         UmlCode k = UmlCodeSup;
-                        Q3PtrList<DiagramItem> l;
+                        QList<DiagramItem *> l;
 
                         for (it = selected.begin(); it != selected.end(); ++it) {
                             if (! isa_label(*it)) {
@@ -1475,8 +1477,14 @@ void DiagramView::keyPressEvent(QKeyEvent * e)
 
                             if (s == "Edit drawing settings")
                                 l.first()->edit_drawing_settings(l);
-                            else
-                                l.first()->same_drawing_settings(l);
+                            else {
+                                history_protected = FALSE;
+                                if (!l.isEmpty()) {
+                                    const DiagramItem *source = l[0];
+                                    for (int i = 1, n = l.size(); i < n; ++i)
+                                        l[i]->clone_drawing_settings(source);
+                                }
+                            }
                         }
                     }
                     else if (s == "Align bottom") {
@@ -1533,7 +1541,7 @@ void DiagramView::keyPressEvent(QKeyEvent * e)
                         BooL in_model;
                         BooL out_model;
                         BooL alignable;
-                        Q3PtrList<DiagramItem> l_drawing_settings;
+                        QList<DiagramItem *> l_drawing_settings;
                         int n_resize;
 
                         if (multiple_selection_for_menu(in_model, out_model, alignable,
@@ -2650,8 +2658,8 @@ void DiagramView::history_save(bool on_undo)
         return;
 
     // get current state
-    QByteArray * ba = new QByteArray();
-    QBuffer b(ba);
+    QByteArray ba;
+    QBuffer b(&ba);
 
     b.open(QIODevice::WriteOnly);
 
@@ -2662,10 +2670,10 @@ void DiagramView::history_save(bool on_undo)
     */
 
     DiagramItemList items(canvas()->allItems());
-    DiagramItem * di;
 
-    for (di = items.first(); di != 0; di = items.next())
+    foreach (DiagramItem * di, items) {
         di->history_save(b);
+    }
 
     b.close();
 
@@ -2675,19 +2683,15 @@ void DiagramView::history_save(bool on_undo)
         history_index = 0;
     }
     else {
-        QByteArray * current = history.at(history_index);
+        const QByteArray &current = history.at(history_index);
 
         if (! on_undo) {
             // remove redo
-            while (history.getLast() != current)
+            while (history.last() != current)
                 history.removeLast();
         }
 
-        if (*ba == *current) {
-            // nothing new
-            delete ba;
-        }
-        else {
+        if (ba != current) {
             history.append(ba);
 
             // limit history depth to 20
@@ -2708,15 +2712,14 @@ void DiagramView::history_load()
     unselect_all();
 
     DiagramItemList items(canvas()->allItems());
-    DiagramItem * di;
-
-    for (di = items.first(); di != 0; di = items.next()) {
+    foreach (DiagramItem *di, items) {
         di->history_hide();
         di->post_history_hide();
     }
 
     // load history
-    QBuffer b((history.at(history_index))); // [lgfreitas] now qbuffer receives a pointer to a bytearray
+    QByteArray &ba = history[history_index];
+    QBuffer b(&ba); // [lgfreitas] now qbuffer receives a pointer to a bytearray
 
     b.open(QIODevice::ReadOnly);
 

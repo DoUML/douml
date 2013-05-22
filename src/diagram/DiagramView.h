@@ -78,7 +78,7 @@ protected:
     BooL decenter_start;
     BooL decenter_horiz;
     Q3ValueList<QPoint> previousResizeCorrection;
-    Q3PtrList<QByteArray> history;
+    QList<QByteArray> history;
     unsigned history_index;
 
 
@@ -112,7 +112,7 @@ public:
         return preferred_zoom != 0;
     }
     void multiple_selection_menu(bool in_model, bool out_model, bool alignable,
-                                 int n_resize, Q3PtrList<DiagramItem> & l_drawing_settings);
+                                 int n_resize, QList<DiagramItem *> & l_drawing_settings);
     bool is_present(BrowserNode * bn);
     virtual void add_related_elements(DiagramItem *, QString what,
                                       bool inh, bool assoc);
@@ -175,7 +175,7 @@ protected:
     void add_point(QMouseEvent * e);
     bool multiple_selection_for_menu(BooL & in_model, BooL & out_model,
                                      BooL & alignable, int & n_resize,
-                                     Q3PtrList<DiagramItem> & l_drawing_settings,
+                                     QList<DiagramItem *> & l_drawing_settings,
                                      const Q3CanvasItemList & selected);
 
     void set_format(int);

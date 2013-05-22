@@ -247,9 +247,7 @@ void BrowserSearchDialog::search()
     if (! nodes.isEmpty()) {
         nodes.sort();
 
-        BrowserNode * bn;
-
-        for (bn = nodes.first(); bn != 0; bn = nodes.next())
+        foreach (BrowserNode *bn, nodes)
             results->insertItem(*(bn->pixmap(0)), bn->full_name(TRUE));
 
         selected(0);
@@ -288,9 +286,7 @@ void BrowserSearchDialog::mark_unmark()
 
 void BrowserSearchDialog::mark_them()
 {
-    BrowserNode * bn;
-
-    for (bn = nodes.first(); bn != 0; bn = nodes.next()) {
+    foreach (BrowserNode *bn, nodes) {
         if (! bn->markedp()) {
             bn->toggle_mark();  	// call update
             BrowserView::force_visible(bn);

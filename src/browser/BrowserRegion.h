@@ -61,7 +61,7 @@ public:
     BrowserRegion(const BrowserRegion * model, BrowserNode * p);
     virtual ~BrowserRegion();
 
-    virtual bool may_contains_them(const Q3PtrList<BrowserNode> & l,
+    virtual bool may_contains_them(const QList<BrowserNode *> & l,
                                    BooL & duplicable) const;
     static BrowserRegion * add_region(BrowserNode * future_parent,
                                       const char * s = "region");

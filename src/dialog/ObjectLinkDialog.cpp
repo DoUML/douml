@@ -51,7 +51,7 @@
 QSize ObjectLinkDialog::previous_size;
 
 ObjectLinkDialog::ObjectLinkDialog(BrowserClassInstance * a, BrowserClassInstance * b,
-                                   Q3PtrList<RelationData> & l, RelationData * current,
+                                   QList<RelationData *> & l, RelationData * current,
                                    int nfirstdir)
     : QDialog(0, "object link dialog", TRUE),
       rels(l), nforward(nfirstdir), clia(a), clib(b), choozen(0), reverse(FALSE)
@@ -151,14 +151,14 @@ void ObjectLinkDialog::init(RelationData * current)
          ((ClassInstanceData *) clia->get_data())->get_class()->get_name();
     rb = clib->get_name() + QString(":") +
          ((ClassInstanceData *) clib->get_data())->get_class()->get_name();
-    Q3PtrListIterator<RelationData> iter(rels);
-    int row;
+    QListIterator<RelationData *> iter(rels);
+    int row = 0;
 
-    for (row = 0; (row != nforward) && iter.current(); ++iter, row += 1)
-        add_rel(table, iter.current(), row, ra, rb);
+    for (; (row != nforward) && iter.hasNext(); ++row)
+        add_rel(table, iter.next(), row, ra, rb);
 
-    for (; iter.current(); ++iter, row += 1)
-        add_rel(table, iter.current(), row, rb, ra);
+    for (; iter.hasNext(); ++row)
+        add_rel(table, iter.next(), row, rb, ra);
 
     ninputrels = row;
 
@@ -171,7 +171,7 @@ void ObjectLinkDialog::init(RelationData * current)
     if (current != 0) {
         // select the current relation
         Q3TableSelection sel;
-        int row = rels.findRef(current);
+        int row = rels.indexOf(current);
 
         sel.init(row, 0);
         sel.expandTo(row, 4);

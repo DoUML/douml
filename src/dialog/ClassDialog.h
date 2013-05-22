@@ -85,7 +85,7 @@ protected:
     BrowserNodeList nodes;
     QStringList node_names;
     BrowserNodeList artifacts;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
 
     ActualParamsTable * actuals_table;
     Q3VBox * instantiate_vtab;

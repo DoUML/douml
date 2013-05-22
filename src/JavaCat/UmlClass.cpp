@@ -145,7 +145,7 @@ bool UmlClass::set_roundtrip_expected()
 
 }
 
-void UmlClass::mark_useless(Q3PtrList<UmlItem> & l)
+void UmlClass::mark_useless(QList<UmlItem *> & l)
 {
     UmlClassItem::mark_useless(l);
 
@@ -197,7 +197,7 @@ UmlItem * UmlClass::search_for_att_rel(const WrapperStr & name)
     return 0;
 }
 
-void UmlClass::reorder(Q3PtrList<UmlItem> & expected_order)
+void UmlClass::reorder(QList<UmlItem *> & expected_order)
 {
     if (expected_order.isEmpty())
         return;
@@ -209,10 +209,8 @@ void UmlClass::reorder(Q3PtrList<UmlItem> & expected_order)
 
     //bool updated = FALSE;
     UmlItem * expected_previous = 0;
-    Q3PtrListIterator<UmlItem> expected_it(expected_order);
-    UmlItem * expected;
 
-    while ((expected = expected_it.current()) != 0) {
+    foreach (UmlItem *expected, expected_order) {
         if (*v != expected) {
             //updated = TRUE;
             expected->moveAfter(expected_previous);
@@ -229,7 +227,6 @@ void UmlClass::reorder(Q3PtrList<UmlItem> & expected_order)
         }
 
         expected_previous = expected;
-        ++expected_it;
         v += 1;
     }
 

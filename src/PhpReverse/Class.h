@@ -60,7 +60,7 @@ protected:
     bool description_updatedp;
     WrapperStr description;
 
-    static Q3PtrList<Class> Historic;
+    static QList<Class *> Historic;
 #endif
 
     bool manage_extends(ClassContainer * container);

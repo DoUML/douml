@@ -511,7 +511,7 @@ bool ParameterCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void ParameterCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void ParameterCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         ColorSpecVector co(1);
@@ -524,11 +524,10 @@ void ParameterCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if ((dialog.exec() == QDialog::Accepted) && !co[0].name.isEmpty()) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
-                ((ParameterCanvas *) it.current())->itscolor = itscolor;
-                ((ParameterCanvas *) it.current())->modified();	// call package_modified()
+            foreach (DiagramItem *item, l) {
+                ParameterCanvas *canvas = (ParameterCanvas *)item;
+                canvas->itscolor = itscolor;
+                canvas->modified();
             }
         }
 
@@ -537,18 +536,11 @@ void ParameterCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void ParameterCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void ParameterCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    ParameterCanvas * x = (ParameterCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        ParameterCanvas * o = (ParameterCanvas *) it.current();
-
-        o->itscolor = x->itscolor;
-        o->modified();	// call package_modified()
-    }
+    const ParameterCanvas * x = (const ParameterCanvas *) src;
+    itscolor = x->itscolor;
+    modified();
 }
 
 QString ParameterCanvas::may_start(UmlCode & l) const

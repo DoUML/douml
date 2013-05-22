@@ -78,7 +78,7 @@ InstanceDialog::InstanceDialog(Instance * i, QString w, UmlCode k)
     inst->get_types(nodes);
     nodes.full_names(list);
     edtype->insertStringList(list);
-    edtype->setCurrentItem(nodes.find(inst->get_type()));
+    edtype->setCurrentItem(nodes.indexOf(inst->get_type()));
 
     new QLabel("", grid);
     new QLabel("", grid);

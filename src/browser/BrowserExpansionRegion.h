@@ -63,7 +63,7 @@ public:
     BrowserExpansionRegion(const BrowserExpansionRegion * model, BrowserNode * p);
     virtual ~BrowserExpansionRegion();
 
-    virtual bool may_contains_them(const Q3PtrList<BrowserNode> & l,
+    virtual bool may_contains_them(const QList<BrowserNode *> & l,
                                    BooL & duplicable) const;
     virtual BrowserNode * duplicate(BrowserNode * p,
                                     QString name = QString());
@@ -101,7 +101,7 @@ public:
     virtual void renumber(int phase);
     virtual void prepare_update_lib() const;
 
-    virtual void referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete);
+    virtual void referenced_by(QList<BrowserNode *> & l, bool ondelete);
 
     virtual bool tool_cmd(ToolCom * com, const char * args);
     virtual bool api_compatible(unsigned v) const;

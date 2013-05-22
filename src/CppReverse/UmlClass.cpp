@@ -59,7 +59,7 @@ using namespace std;
 
 // contains the classes whose definition in currently read
 // may be more than one because of the nested classes
-Q3PtrList<UmlClass> UmlClass::UnderConstruction;
+QList<UmlClass *> UmlClass::UnderConstruction;
 
 // used (by using) classes list
 Q3Dict<UmlClass> UmlClass::Usings;
@@ -79,8 +79,8 @@ bool UmlClass::manage_inherit(ClassContainer * container,
 #ifdef REVERSE
                               , bool libp
 # ifdef ROUNDTRIP
-                              , bool roundtrip, Q3PtrList<UmlItem> & expected_order
-                              , bool container_roundtrip, Q3PtrList<UmlItem> & container_expected_order
+                              , bool roundtrip, QList<UmlItem *> & expected_order
+                              , bool container_roundtrip, QList<UmlItem *> & container_expected_order
 # endif
 #endif
                              )
@@ -291,7 +291,7 @@ UmlClass * UmlClass::auxilarily_typedef(const WrapperStr & base
                                         , bool libp
 # ifdef ROUNDTRIP
                                         , bool container_roundtrip
-                                        , Q3PtrList<UmlItem> & container_expected_order
+                                        , QList<UmlItem *> & container_expected_order
 # endif
 #endif
                                        )
@@ -467,12 +467,12 @@ void UmlClass::set_under_construction(bool y, bool rec)
     else if (rec)
         UnderConstruction.clear();
     else
-        UnderConstruction.removeRef(this);
+        UnderConstruction.removeOne(this);
 }
 
 bool UmlClass::inside_its_definition()
 {
-    return UnderConstruction.findRef(this) != -1;
+    return UnderConstruction.contains(this);
 }
 
 bool UmlClass::is_itself(WrapperStr t)
@@ -641,7 +641,7 @@ bool UmlClass::set_roundtrip_expected()
 
 }
 
-void UmlClass::mark_useless(Q3PtrList<UmlItem> & l)
+void UmlClass::mark_useless(QList<UmlItem *> & l)
 {
     UmlClassItem::mark_useless(l);
 
@@ -733,7 +733,7 @@ UmlRelation * UmlClass::search_for_inherit(UmlClass * mother)
     return 0;
 }
 
-void UmlClass::reorder(Q3PtrList<UmlItem> & expected_order)
+void UmlClass::reorder(QList<UmlItem *> & expected_order)
 {
     if (expected_order.isEmpty())
         return;
@@ -745,10 +745,8 @@ void UmlClass::reorder(Q3PtrList<UmlItem> & expected_order)
 
     //bool updated = FALSE;
     UmlItem * expected_previous = 0;
-    Q3PtrListIterator<UmlItem> expected_it(expected_order);
-    UmlItem * expected;
 
-    while ((expected = expected_it.current()) != 0) {
+    foreach (UmlItem * expected, expected_order) {
         if (*v != expected) {
             //updated = TRUE;
             expected->moveAfter(expected_previous);
@@ -765,7 +763,6 @@ void UmlClass::reorder(Q3PtrList<UmlItem> & expected_order)
         }
 
         expected_previous = expected;
-        ++expected_it;
         v += 1;
     }
 

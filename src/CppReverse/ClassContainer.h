@@ -55,7 +55,7 @@ public:
     virtual void declaration(const WrapperStr & name, const WrapperStr & stereotype,
                              const WrapperStr & decl
 #ifdef ROUNDTRIP
-                             , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                             , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                             ) = 0;
 

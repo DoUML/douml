@@ -94,7 +94,7 @@ Class * Class::reverse(ClassContainer * container, WrapperStr stereotype,
                        const Q3ValueList<FormalParameterList> & tmplts,
                        const WrapperStr & path, WrapperStr name
 #ifdef ROUNDTRIP
-                       , bool rndtrp, Q3PtrList<UmlItem> & expectedorder
+                       , bool rndtrp, QList<UmlItem *> & expectedorder
 #endif
                       )
 {
@@ -169,7 +169,7 @@ Class * Class::reverse(ClassContainer * container, WrapperStr stereotype,
     }
 
     bool roundtrip = FALSE;
-    Q3PtrList<UmlItem> expected_order;
+    QList<UmlItem *> expected_order;
 #else
     UmlClass * cl_uml = 0;
 #endif
@@ -571,7 +571,7 @@ Class * Class::reverse(ClassContainer * container, WrapperStr stereotype,
 void Class::declaration(const WrapperStr & name, const WrapperStr & stereotype,
                         const WrapperStr & decl
 #ifdef ROUNDTRIP
-                        , bool rndtrp, Q3PtrList<UmlItem> & expectedorder
+                        , bool rndtrp, QList<UmlItem *> & expectedorder
 #endif
                        )
 {
@@ -613,7 +613,7 @@ void Class::manage_member(WrapperStr s, aVisibility visibility,
                           ClassContainer * /*container*/,
                           const WrapperStr & path
 #ifdef ROUNDTRIP
-                          , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                          , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                          )
 {
@@ -1135,7 +1135,7 @@ void Class::manage_member(WrapperStr s, aVisibility visibility,
 Class * Class::reverse_enum(ClassContainer * container,
                             const WrapperStr & path, WrapperStr name
 #ifdef ROUNDTRIP
-                            , bool rndtrp, Q3PtrList<UmlItem> & expectedorder
+                            , bool rndtrp, QList<UmlItem *> & expectedorder
 #endif
                            )
 {
@@ -1206,8 +1206,9 @@ Class * Class::reverse_enum(ClassContainer * container,
     // enum definition
     Class * cl = container->define(name, "enum");
 
-    if(cl)
+    if(cl) {
         QLOG_INFO() << "RE got definition" << cl->stereotype.operator QString();
+    }
     //QLOG_INFO() << "RE got definition" << cl->uml;
     if ((cl == 0) || cl->reversedp)
     {
@@ -1258,7 +1259,7 @@ Class * Class::reverse_enum(ClassContainer * container,
         expectedorder.append(cl_uml);
 
     bool roundtrip;
-    Q3PtrList<UmlItem> expected_order;
+    QList<UmlItem *> expected_order;
 
     if (cl_uml->is_created()) {
         Statistic::one_class_created_more();
@@ -1481,7 +1482,7 @@ Class * Class::reverse_enum(ClassContainer * container,
     bool Class::reverse_typedef(ClassContainer  * container, const WrapperStr & path,
                                 Q3ValueList<FormalParameterList> & tmplts
 #ifdef ROUNDTRIP
-                                , bool rndtrp, Q3PtrList<UmlItem> & expectedorder
+                                , bool rndtrp, QList<UmlItem *> & expectedorder
 #endif
                                )
     {

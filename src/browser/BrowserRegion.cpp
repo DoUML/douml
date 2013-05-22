@@ -414,13 +414,11 @@ bool BrowserRegion::tool_cmd(ToolCom * com, const char * args)
     }
 }
 
-bool BrowserRegion::may_contains_them(const Q3PtrList<BrowserNode> & l,
+bool BrowserRegion::may_contains_them(const QList<BrowserNode *> & l,
                                       BooL & duplicable) const
 {
-    Q3PtrListIterator<BrowserNode> it(l);
-
-    for (; it.current(); ++it) {
-        switch (it.current()->get_type()) {
+    foreach (BrowserNode *node, l) {
+        switch (node->get_type()) {
         case UmlState:
             break;
 
@@ -435,16 +433,16 @@ bool BrowserRegion::may_contains_them(const Q3PtrList<BrowserNode> & l,
         case ChoicePS:
         case ForkPS:
         case JoinPS:
-            return (((const BrowserNode *) it.current()->parent()) == this);
+            return (((const BrowserNode *) node->parent()) == this);
 
         default:
             return FALSE;
         }
 
-        if (! may_contains(it.current(), FALSE))
+        if (! may_contains(node, FALSE))
             return FALSE;
 
-        duplicable = may_contains_it(it.current());
+        duplicable = may_contains_it(node);
     }
 
     return TRUE;

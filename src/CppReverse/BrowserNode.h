@@ -71,7 +71,7 @@ public:
 
 #include <q3ptrlist.h>
 
-class BrowserNodeList : public Q3PtrList<BrowserNode>
+class BrowserNodeList : public QList<BrowserNode *>
 {
 public:
     void search(BrowserNode * bn, int k, const QString & s, bool cs);

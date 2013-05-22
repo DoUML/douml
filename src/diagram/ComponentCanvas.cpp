@@ -342,17 +342,9 @@ void ComponentCanvas::modified()
     check_stereotypeproperties();
 
     // remove required/provided arrow if needed
-    ArrowCanvas * a = lines.first();
-
-    while (a != 0) {
-        if (! valid(a)) {
-            // class removed from required/provided
-            a->delete_it();
-            a = lines.current();
-        }
-        else
-            a = lines.next();
-    }
+    foreach (ArrowCanvas *a, lines)
+        if (! valid(a))
+            a->delete_it(); // class removed from required/provided
 
     if (the_canvas()->must_draw_all_relations())
         draw_all_simple_relations();
@@ -1023,7 +1015,7 @@ bool ComponentCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void ComponentCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void ComponentCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         StateSpecVector st(4);
@@ -1043,25 +1035,25 @@ void ComponentCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         SettingsDialog dialog(&st, &co, FALSE, TRUE);
 
         if (dialog.exec() == QDialog::Accepted) {
-            Q3PtrListIterator<DiagramItem> it(l);
 
-            for (; it.current(); ++it) {
+            foreach (DiagramItem *item, l) {
+                ComponentCanvas *canvas = (ComponentCanvas *)item;
                 if (!st[0].name.isEmpty())
-                    ((ComponentCanvas *) it.current())->settings.draw_component_as_icon = draw_component_as_icon;
+                    canvas->settings.draw_component_as_icon = draw_component_as_icon;
 
                 if (!st[1].name.isEmpty())
-                    ((ComponentCanvas *) it.current())->settings.show_component_req_prov = show_component_req_prov;
+                    canvas->settings.show_component_req_prov = show_component_req_prov;
 
                 if (!st[2].name.isEmpty())
-                    ((ComponentCanvas *) it.current())->settings.show_component_rea = show_component_rea;
+                    canvas->settings.show_component_rea = show_component_rea;
 
                 if (!st[3].name.isEmpty())
-                    ((ComponentCanvas *) it.current())->settings.show_stereotype_properties = show_stereotype_properties;
+                    canvas->settings.show_stereotype_properties = show_stereotype_properties;
 
                 if (!co[0].name.isEmpty())
-                    ((ComponentCanvas *) it.current())->itscolor = itscolor;
+                    canvas->itscolor = itscolor;
 
-                ((ComponentCanvas *) it.current())->modified();	// call package_modified()
+                canvas->modified();
             }
         }
 
@@ -1070,19 +1062,12 @@ void ComponentCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void ComponentCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void ComponentCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    ComponentCanvas * x = (ComponentCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        ComponentCanvas * o = (ComponentCanvas *) it.current();
-
-        o->settings = x->settings;
-        o->itscolor = x->itscolor;
-        o->modified();	// call package_modified()
-    }
+    const ComponentCanvas * x = (const ComponentCanvas *) src;
+    settings = x->settings;
+    itscolor = x->itscolor;
+    modified();
 }
 
 bool ComponentCanvas::get_show_stereotype_properties() const

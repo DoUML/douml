@@ -89,16 +89,12 @@ HideShowDialog::HideShowDialog(const BrowserNodeList & a,
     subvbox->addWidget(lb_hidden = new Q3ListBox(this));
     lb_hidden->setSelectionMode(Q3ListBox::Multi);
 
-    Q3PtrListIterator<BrowserNode> it(all);
+    foreach (BrowserNode *item, all) {
+        QString def = item->get_data()->definition(TRUE, FALSE);
 
-    while (it.current() != 0) {
-        QString def = it.current()->get_data()->definition(TRUE, FALSE);
-
-        (((hidden_visible.findIndex(it.current()) == -1) ^ on_visible)
+        (((hidden_visible.findIndex(item) == -1) ^ on_visible)
          ? lb_visible : lb_hidden)
-        ->insertItem(new ListBoxBrowserNode(it.current(), def));
-
-        ++it;
+        ->insertItem(new ListBoxBrowserNode(item, def));
     }
 
     lb_visible->sort();
@@ -224,17 +220,13 @@ void HideShowDialog::hide_private()
     lb_visible->clear();
     lb_hidden->clear();
 
-    Q3PtrListIterator<BrowserNode> it(all);
-
-    while (it.current() != 0) {
-        BasicData * m = it.current()->get_data();
+    foreach (BrowserNode *item, all) {
+        BasicData * m = item->get_data();
         QString def = m->definition(TRUE, FALSE);
 
         ((((ClassMemberData *) m)->get_visibility(m->get_browser_node()) != UmlPrivate)
          ? lb_visible : lb_hidden)
-        ->insertItem(new ListBoxBrowserNode(it.current(), def));
-
-        ++it;
+        ->insertItem(new ListBoxBrowserNode(item, def));
     }
 
     lb_visible->sort();
@@ -246,19 +238,15 @@ void HideShowDialog::hide_private_protected()
     lb_visible->clear();
     lb_hidden->clear();
 
-    Q3PtrListIterator<BrowserNode> it(all);
-
-    while (it.current() != 0) {
-        BasicData * m = it.current()->get_data();
+    foreach (BrowserNode *item, all) {
+        BasicData * m = item->get_data();
         QString def = m->definition(TRUE, FALSE);
         UmlVisibility visi =
             ((ClassMemberData *) m)->get_visibility(m->get_browser_node());
 
         (((visi == UmlPublic) || (visi == UmlPackageVisibility))
          ? lb_visible : lb_hidden)
-        ->insertItem(new ListBoxBrowserNode(it.current(), def));
-
-        ++it;
+        ->insertItem(new ListBoxBrowserNode(item, def));
     }
 
     lb_visible->sort();

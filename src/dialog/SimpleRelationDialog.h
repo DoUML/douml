@@ -49,7 +49,7 @@ protected:
     Q3ComboBox * edstereotype;
     MultiLineEdit * comment;
     KeyValuesTable * kvtable;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
 
     static QSize previous_size;
 

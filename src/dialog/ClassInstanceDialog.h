@@ -74,7 +74,7 @@ protected:
     BrowserNodeList attributes;
     BrowserNode * cl_container;
     MultiLineEdit * comment;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
     MyTable * atbl;
     RelTable * rtbl;
     KeyValuesTable * kvtable;

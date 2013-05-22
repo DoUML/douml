@@ -72,7 +72,7 @@ protected:
     ClassData * cl;
     QStringList list;
     BrowserNodeList nodes;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
     BrowserNode * view;
     AttributeData * get_of_attr;
     AttributeData * set_of_attr;

@@ -48,8 +48,8 @@ class ToolCom  : public QObject
     Q_OBJECT
 
 protected:
-    static Q3PtrList<ToolCom> used;
-    static Q3PtrList<ToolCom> unused;
+    static QList<ToolCom *> used;
+    static QList<ToolCom *> unused;
     static int exitvalue;
 
     bool start;

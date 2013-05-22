@@ -742,9 +742,8 @@ Package * Package::find(WrapperStr name, bool nohack)
         return this;
 
     Package * p = 0;
-    TreeItem * child;
 
-    for (child = firstChild(); child != 0; child = child->nextSibling()) {
+    foreach (TreeItem *child, children()) {
         if (((BrowserNode *) child)->isa_package() &&
             (child->text(0) == (const char *) name)) {
             p = (Package *) child;

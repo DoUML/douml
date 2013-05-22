@@ -42,7 +42,7 @@
 //}
 
 void UmlExtraClassMember::add_init(UmlClass * cl, WrapperStr def, bool roundtrip,
-                                   Q3PtrList<UmlItem> & expected_order)
+                                   QList<UmlItem *> & expected_order)
 {
     if (roundtrip) {
         const Q3PtrVector<UmlItem> & ch = cl->children();

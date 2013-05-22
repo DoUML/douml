@@ -980,13 +980,11 @@ void BrowserClassView::DragMoveInsideEvent(QDragMoveEvent * e)
         e->ignore();
 }
 
-bool BrowserClassView::may_contains_them(const Q3PtrList<BrowserNode> & l,
+bool BrowserClassView::may_contains_them(const QList<BrowserNode *> & l,
         BooL & duplicable) const
 {
-    Q3PtrListIterator<BrowserNode> it(l);
-
-    for (; it.current(); ++it) {
-        switch (it.current()->get_type()) {
+    foreach (BrowserNode *current, l) {
+        switch (current->get_type()) {
         case UmlClass:
         case UmlClassInstance:
         case UmlClassDiagram:
@@ -995,7 +993,7 @@ bool BrowserClassView::may_contains_them(const Q3PtrList<BrowserNode> & l,
         case UmlObjectDiagram:
         case UmlState:
         case UmlActivity:
-            if (! may_contains(it.current(), FALSE))
+            if (! may_contains(current, FALSE))
                 return FALSE;
 
             break;
@@ -1004,7 +1002,7 @@ bool BrowserClassView::may_contains_them(const Q3PtrList<BrowserNode> & l,
             return FALSE;
         }
 
-        duplicable = may_contains_it(it.current());
+        duplicable = may_contains_it(current);
     }
 
     return TRUE;

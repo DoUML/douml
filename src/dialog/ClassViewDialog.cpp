@@ -132,7 +132,7 @@ ClassViewDialog::ClassViewDialog(BasicData * nd)
                     deploymentview->setCurrentItem(deploymentviews.count());
                 }
                 else
-                    deploymentview->setCurrentItem(deploymentviews.find(bcv) + 1);
+                    deploymentview->setCurrentItem(deploymentviews.indexOf(bcv) + 1);
             }
             else
                 deploymentview->setCurrentItem(0);
@@ -189,8 +189,9 @@ ClassViewDialog::~ClassViewDialog()
     data->get_browser_node()->edit_end();
     previous_size = size();
 
-    while (!edits.isEmpty())
-        edits.take(0)->close();
+    foreach (BodyDialog *dialog, edits)
+        dialog->close();
+    edits.clear();
 
     close_dialog(this);
 }

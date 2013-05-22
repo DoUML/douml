@@ -83,8 +83,12 @@ void BrowserNodeList::search(BrowserNode * bn, int k,
     }
 }
 
-int BrowserNodeList::compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2)
+bool BrowserNodeList::lessThan(BrowserNode *a, BrowserNode *b)
 {
-    return ((BrowserNode *) item1)->text(0)
-           .compare(((BrowserNode *) item2)->text(0));
+    return a->text(0) < b->text(0);
+}
+
+void BrowserNodeList::sort()
+{
+    qSort(begin(), end(), lessThan);
 }

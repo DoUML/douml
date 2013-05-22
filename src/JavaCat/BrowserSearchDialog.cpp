@@ -131,9 +131,7 @@ void BrowserSearchDialog::search()
                  ed->text(), case_sensitive->isChecked());
     nodes.sort();
 
-    BrowserNode * bn;
-
-    for (bn = nodes.first(); bn != 0; bn = nodes.next()) {
+    foreach (BrowserNode *bn, nodes) {
         QString up = ((BrowserNode *) bn->parent())->get_path();
 
         results->insertItem((up.isEmpty())

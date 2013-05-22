@@ -34,7 +34,7 @@
 //Added by qt3to4:
 #include <Q3PtrList>
 
-static Q3PtrList<UmlArtifact> Artifacts;
+static QList<UmlArtifact *> Artifacts;
 
 bool UmlDeploymentView::set_roundtrip_expected()
 {
@@ -49,7 +49,7 @@ bool UmlDeploymentView::set_roundtrip_expected()
     return result;
 }
 
-void UmlDeploymentView::mark_useless(Q3PtrList<UmlItem> & l)
+void UmlDeploymentView::mark_useless(QList<UmlItem *> & l)
 {
     Q3PtrVector<UmlItem> ch = UmlItem::children();
     UmlClassItem ** v = (UmlClassItem **) ch.data();
@@ -79,15 +79,11 @@ void UmlDeploymentView::scan_it(int & n)
     if (n != 0) {
         Package::set_step(1, n);
 
-        Q3PtrListIterator<UmlArtifact> iter(Artifacts);
         Package * pk =
-            ((UmlPackage *) iter.current()->parent()->parent())->get_package();
+            ((UmlPackage *) Artifacts.first()->parent()->parent())->get_package();
 
-        do {
-            pk->reverse(iter.current());
-        }
-        while (++iter, iter.current() != 0);
-
+        foreach (UmlArtifact *artifact, Artifacts)
+            pk->reverse(artifact);
 
         Package::set_step(1, -1);
     }
@@ -98,14 +94,11 @@ void UmlDeploymentView::send_it(int n)
     if (n != 0) {
         Package::set_step(2, n);
 
-        Q3PtrListIterator<UmlArtifact> iter(Artifacts);
         Package * pk =
-            ((UmlPackage *) iter.current()->parent()->parent())->get_package();
+            ((UmlPackage *) Artifacts.first()->parent()->parent())->get_package();
 
-        do {
-            pk->reverse(iter.current());
-        }
-        while (++iter, iter.current() != 0);
+        foreach (UmlArtifact *artifact, Artifacts)
+            pk->reverse(artifact);
 
 
         Package::set_step(2, -1);

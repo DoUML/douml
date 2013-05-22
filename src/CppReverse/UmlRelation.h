@@ -50,7 +50,7 @@ public:
                         const WrapperStr & value,	WrapperStr comment,
                         WrapperStr description
 #ifdef ROUNDTRIP
-                        , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                        , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                        );
     static bool new_friend(UmlClass * from, UmlClass * to);
@@ -58,7 +58,7 @@ public:
 #ifdef ROUNDTRIP
     void set_unidir();
     static bool new_friend(Class * from, UmlClass * to,
-                           Q3PtrList<UmlItem> & expected_order);
+                           QList<UmlItem *> & expected_order);
 #endif
 };
 

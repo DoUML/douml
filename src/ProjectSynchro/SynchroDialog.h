@@ -41,11 +41,11 @@ class SynchroDialog : public QDialog
     Q_OBJECT
 
 protected:
-    Q3PtrList<BrowserView> & browsers;
-    Q3PtrList<QCheckBox> checks;
+    QList<BrowserView *> & browsers;
+    QList<QCheckBox *> checks;
 
 public:
-    SynchroDialog(Q3PtrList<BrowserView> & b);
+    SynchroDialog(QList<BrowserView *> & b);
     virtual ~SynchroDialog();
 
 public slots:

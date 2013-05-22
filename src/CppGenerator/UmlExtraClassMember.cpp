@@ -35,7 +35,7 @@
 #include "UmlExtraClassMember.h"
 #include "UmlClass.h"
 
-void UmlExtraClassMember::compute_dependency(Q3PtrList<CppRefType> &,
+void UmlExtraClassMember::compute_dependency(QList<CppRefType *> &,
         const WrapperStr &,
         bool)
 {

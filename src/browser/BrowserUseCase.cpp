@@ -174,7 +174,7 @@ void BrowserUseCase::prepare_update_lib() const
         ((BrowserNode *) child)->prepare_update_lib();
 }
 
-void BrowserUseCase::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserUseCase::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
 
@@ -961,13 +961,11 @@ void BrowserUseCase::DragMoveInsideEvent(QDragMoveEvent * e)
         e->ignore();
 }
 
-bool BrowserUseCase::may_contains_them(const Q3PtrList<BrowserNode> & l,
+bool BrowserUseCase::may_contains_them(const QList<BrowserNode *> & l,
                                        BooL & duplicable) const
 {
-    Q3PtrListIterator<BrowserNode> it(l);
-
-    for (; it.current(); ++it) {
-        switch (it.current()->get_type()) {
+    foreach (BrowserNode *node, l) {
+        switch (node->get_type()) {
         case UmlUseCaseDiagram:
         case UmlSeqDiagram:
         case UmlColDiagram:
@@ -981,17 +979,17 @@ bool BrowserUseCase::may_contains_them(const Q3PtrList<BrowserNode> & l,
             break;
 
         default:
-            if (!IsaSimpleRelation(it.current()->get_type()) ||
-                (((const BrowserNode *) it.current()->parent()) != this))
+            if (!IsaSimpleRelation(node->get_type()) ||
+                (((const BrowserNode *) node->parent()) != this))
                 return FALSE;
 
             duplicable = FALSE;
         }
 
-        if (! may_contains(it.current(), FALSE))
+        if (! may_contains(node, FALSE))
             return FALSE;
 
-        duplicable = may_contains_it(it.current());
+        duplicable = may_contains_it(node);
     }
 
     return TRUE;

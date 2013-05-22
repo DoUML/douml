@@ -94,7 +94,7 @@ bool UmlAttribute::new_one(Class * container, const WrapperStr & name,
                            const WrapperStr & bitfield, const WrapperStr & value,
                            WrapperStr comment, WrapperStr description
 #ifdef ROUNDTRIP
-                           , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                           , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                           )
 {

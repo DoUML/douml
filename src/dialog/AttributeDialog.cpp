@@ -642,8 +642,9 @@ AttributeDialog::~AttributeDialog()
     att->browser_node->edit_end();
     previous_size = size();
 
-    while (!edits.isEmpty())
-        edits.take(0)->close();
+    foreach (BodyDialog *dialog, edits)
+        dialog->close();
+    edits.clear();
 
     if (new_in_st)
         // new_in_st cleared by accept

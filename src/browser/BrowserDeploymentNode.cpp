@@ -120,7 +120,7 @@ void BrowserDeploymentNode::prepare_update_lib() const
         ((BrowserNode *) child)->prepare_update_lib();
 }
 
-void BrowserDeploymentNode::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserDeploymentNode::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
 

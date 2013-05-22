@@ -46,6 +46,20 @@ class QPainter;
 class QColorGroup;
 #endif
 
+class Class;
+
+class HistoricList
+{
+    QList<Class *> Historic;
+    int current;
+public:
+    void appendClass(Class *klass);
+    bool hasPrev() const;
+    Class *prev();
+    bool hasNext() const;
+    Class *next();
+};
+
 class Class : public BrowserNode, public ClassContainer
 {
 protected:
@@ -66,7 +80,7 @@ protected:
     bool description_updatedp;
     WrapperStr description;
 
-    static Q3PtrList<Class> Historic;
+    static HistoricList Historic;
 #endif
     FormalParameterList formals;
 
@@ -75,31 +89,31 @@ protected:
     bool manage_extends(ClassContainer * container,
                         const Q3ValueList<FormalParameterList> & tmplts
 #ifdef ROUNDTRIP
-                        , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                        , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                        );
     bool manage_implements(ClassContainer * container, aRelationKind k,
                            const Q3ValueList<FormalParameterList> & tmplts
 #ifdef ROUNDTRIP
-                           , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                           , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                           );
     bool add_inherit(aRelationKind k, UmlTypeSpec & typespec,
                      Q3ValueList<UmlTypeSpec> & actuals, WrapperStr & str_actual
 #ifdef ROUNDTRIP
-                     , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                     , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                     );
     void inherit(Class * cl);
     void inherit(UmlClass * uml_cl, WrapperStr header = 0);
     bool manage_member(WrapperStr s, WrapperStr & path
 #ifdef ROUNDTRIP
-                       , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                       , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                       );
     bool manage_enum_items(
 #ifdef ROUNDTRIP
-        bool roundtrip, Q3PtrList<UmlItem> & expected_order
+        bool roundtrip, QList<UmlItem *> & expected_order
 #endif
     );
     void set_description(const char * p);
@@ -174,7 +188,7 @@ public:
                         aVisibility visibility,	WrapperStr & f,
                         Q3ValueList<FormalParameterList> tmplts
 #ifdef ROUNDTRIP
-                        , bool rndtrp, Q3PtrList<UmlItem> & expectedorder
+                        , bool rndtrp, QList<UmlItem *> & expectedorder
 #endif
                        );
 

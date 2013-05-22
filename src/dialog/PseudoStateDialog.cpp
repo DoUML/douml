@@ -167,7 +167,7 @@ PseudoStateDialog::PseudoStateDialog(PseudoStateData * ps)
             edreference->insertStringList(reflist);
             edreference->setCurrentItem((ref == 0)
                                         ? 0
-                                        : pseudostates.findRef(ref) + 1);
+                                        : pseudostates.indexOf(ref) + 1);
         }
     }
     else
@@ -217,8 +217,9 @@ PseudoStateDialog::~PseudoStateDialog()
     pst->browser_node->edit_end();
     previous_size = size();
 
-    while (!edits.isEmpty())
-        edits.take(0)->close();
+    foreach (BodyDialog *dialog, edits)
+        dialog->close();
+    edits.clear();
 
     close_dialog(this);
 }

@@ -95,7 +95,7 @@ void BrowserView::select(Q3ListViewItem * b)
     if (!ongoing) {
         ongoing = TRUE;
 
-        const Q3PtrList<BrowserView> & l = SynchroWindow::get_browsers();
+        const QList<BrowserView *> & l = SynchroWindow::get_browsers();
         Q3PtrListIterator<BrowserView> it(l);
         QString fn = ((BrowserNode *) b)->file_name();
 
@@ -136,7 +136,7 @@ struct Use {
     Use(int rev) : rev_min(rev), rev_max(rev), count(1) {}
 };
 
-void BrowserView::update(const Q3PtrList<BrowserView> & lv)
+void BrowserView::update(const QList<BrowserView *> & lv)
 {
     Q3Dict<Use> all_nodes(DICT_SIZE);
     Q3PtrListIterator<BrowserView> itv(lv);
@@ -218,7 +218,7 @@ void BrowserView::update(const Q3PtrList<BrowserView> & lv)
 
     for (it = deleted_or_new.begin(); it != deleted_or_new.end(); ++it) {
         QString who = *it;
-        Q3PtrList<BrowserNode> images;
+        QList<BrowserNode *> images;
         bool young = FALSE;
 
         // set the state in each view without looking at the others

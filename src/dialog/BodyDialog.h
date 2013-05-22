@@ -45,13 +45,13 @@ protected:
     MultiLineEdit * e;
     Q3TabDialog * dlg;
     post_edit f;
-    Q3PtrList<BodyDialog> & eds;
+    QList<BodyDialog *> & eds;
 
     static QSize previous_size;
 
 public:
     BodyDialog(QString t, Q3TabDialog * d, post_edit pf,
-               EditType k, QString what, Q3PtrList<BodyDialog> & edits);
+               EditType k, QString what, QList<BodyDialog *> & edits);
     virtual ~BodyDialog();
 };
 

@@ -94,7 +94,7 @@ class RelationData : public ClassMemberData, public Labeled<RelationData>
 
 protected:
     static IdDict<RelationData> all;
-    static Q3PtrList<RelationData> Unconsistent;
+    static QList<RelationData *> Unconsistent;
 
     // Uml
     bool is_deleted : 8;	// 1 useless here, 8 faster than 1 ?

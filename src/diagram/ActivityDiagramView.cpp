@@ -771,7 +771,6 @@ void ActivityDiagramView::save(QTextStream & st, QString & warning,
                                bool copy) const
 {
     DiagramItemList items(canvas()->allItems());
-    DiagramItem * di;
 
     if (!copy)
         // sort is useless for a copy
@@ -781,7 +780,7 @@ void ActivityDiagramView::save(QTextStream & st, QString & warning,
 
     // save first activity, activity nodes, actions, objects, packages, fragments, notes and icons
 
-    for (di = items.first(); di != 0; di = items.next()) {
+    foreach (DiagramItem *di, items) {
         switch (di->type()) {
         case UmlActivity:
         case UmlInterruptibleActivityRegion:
@@ -815,7 +814,7 @@ void ActivityDiagramView::save(QTextStream & st, QString & warning,
 
     // then saves relations
 
-    for (di = items.first(); di != 0; di = items.next()) {
+    foreach (DiagramItem *di, items) {
         switch (di->type()) {
         case UmlFlow:
         case UmlDependOn:
@@ -829,7 +828,7 @@ void ActivityDiagramView::save(QTextStream & st, QString & warning,
 
     // then saves anchors
 
-    for (di = items.first(); di != 0; di = items.next())
+    foreach (DiagramItem *di, items)
         if ((!copy || di->copyable()) && (di->type() == UmlAnchor))
             di->save(st, FALSE, warning);
 

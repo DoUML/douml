@@ -325,9 +325,7 @@ int Package::count_file_number()
 
     QDir d(path);
     int result = file_number(d, TRUE);
-    TreeItem * child;
-
-    for (child = firstChild(); child != 0; child = child->nextSibling())
+    foreach (TreeItem *child, children())
         if (((BrowserNode *) child)->isa_package())
             result += ((Package *) child)->count_file_number();
 
@@ -351,9 +349,7 @@ void Package::scan_dir()
 
     reverse_directory(d, TRUE);
 
-    TreeItem * child;
-
-    for (child = firstChild(); child != 0; child = child->nextSibling())
+    foreach (TreeItem *child, children())
         if (((BrowserNode *) child)->isa_package())
             ((Package *) child)->scan_dir();
 }
@@ -539,9 +535,7 @@ void Package::send_dir()
 
     reverse_directory(d, TRUE);
 
-    TreeItem * child;
-
-    for (child = firstChild(); child != 0; child = child->nextSibling())
+    foreach (TreeItem *child, children())
         if (((BrowserNode *) child)->isa_package())
             ((Package *) child)->send_dir();
 }
@@ -811,7 +805,7 @@ void Package::reverse_file(WrapperStr f
                 if ((s == "class") || (s == "enum") ||
                     (s == "interface") || (s == "@interface")) {
 #ifdef ROUNDTRIP
-                    Q3PtrList<UmlItem> dummy;
+                    QList<UmlItem *> dummy;
 #endif
 
                     if (!Class::reverse(this, s, annotation, abstractp,
@@ -1251,9 +1245,13 @@ Package * Package::find(WrapperStr s, bool nohack)
     }
 
     Package * p = 0;
-    TreeItem * child;
 
-    for (child = firstChild(); child != 0; child = child->nextSibling()) {
+    // TODO: remove suspicious macro TreeItem in order to remove Qt3 dependency.
+#ifdef REVERSE
+    foreach (TreeItem * child,  children()) {
+#else
+    for (TreeItem *child = firstChild(); child; child = child->nextSibling()) {
+#endif
         if (((BrowserNode *) child)->isa_package() &&
             (child->text(0) == (const char *) name)) {
             p = (Package *) child;

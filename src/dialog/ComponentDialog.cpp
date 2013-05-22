@@ -119,8 +119,9 @@ ComponentDialog::~ComponentDialog()
     data->get_browser_node()->edit_end();
     previous_size = size();
 
-    while (!edits.isEmpty())
-        edits.take(0)->close();
+    foreach (BodyDialog *dialog, edits)
+        dialog->close();
+    edits.clear();
 
     close_dialog(this);
 }
@@ -262,11 +263,10 @@ void ComponentDialog::rq_stereotypeFilterActivated(const QString & st)
     lb_rq_available->clear();
 
     BrowserNodeList classes;
-    BrowserNode * cl;
 
     BrowserClass::instances(classes, st, TRUE);
 
-    for (cl = classes.first(); cl != 0; cl = classes.next())
+    foreach (BrowserNode *cl, classes)
         if (rqs.findIndex((BrowserClass *) cl) == -1)
             lb_rq_available->insertItem(new ListBoxBrowserNode(cl, cl->full_name(TRUE)));
 
@@ -278,11 +278,10 @@ void ComponentDialog::pr_stereotypeFilterActivated(const QString & st)
     lb_pr_available->clear();
 
     BrowserNodeList classes;
-    BrowserNode * cl;
 
     BrowserClass::instances(classes, st, TRUE);
 
-    for (cl = classes.first(); cl != 0; cl = classes.next())
+    foreach (BrowserNode *cl, classes)
         if (prs.findIndex((BrowserClass *) cl) == -1)
             lb_pr_available->insertItem(new ListBoxBrowserNode(cl, cl->full_name(TRUE)));
 
@@ -294,11 +293,10 @@ void ComponentDialog::rz_stereotypeFilterActivated(const QString & st)
     lb_rz_available->clear();
 
     BrowserNodeList classes;
-    BrowserNode * cl;
 
     BrowserClass::instances(classes, st, TRUE);
 
-    for (cl = classes.first(); cl != 0; cl = classes.next())
+    foreach (BrowserNode *cl, classes)
         if (rzs.findIndex((BrowserClass *) cl) == -1)
             lb_rz_available->insertItem(new ListBoxBrowserNode(cl, cl->full_name(TRUE)));
 

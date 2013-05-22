@@ -208,20 +208,16 @@ void FragmentCanvas::moveBy(double dx, double dy)
 {
     DiagramCanvas::moveBy(dx, dy);
 
-    Q3PtrListIterator<FragmentSeparatorCanvas> it(separators);
-
-    for (; it.current(); ++it)
-        it.current()->update();
+    foreach (FragmentSeparatorCanvas *canvas, separators)
+        canvas->update();
 }
 
 void FragmentCanvas::set_z(double z)
 {
     setZ(z);
 
-    Q3PtrListIterator<FragmentSeparatorCanvas> it(separators);
-
-    for (; it.current(); ++it)
-        it.current()->update();
+    foreach (FragmentSeparatorCanvas *canvas, separators)
+        canvas->update();
 }
 
 void FragmentCanvas::open()
@@ -319,10 +315,8 @@ void FragmentCanvas::change_scale()
     recenter();
     Q3CanvasRectangle::setVisible(TRUE);
 
-    Q3PtrListIterator<FragmentSeparatorCanvas> it(separators);
-
-    for (; it.current(); ++it)
-        it.current()->update();
+    foreach (FragmentSeparatorCanvas *canvas, separators)
+        canvas->update();
 }
 
 void FragmentCanvas::modified()
@@ -481,7 +475,7 @@ bool FragmentCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void FragmentCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void FragmentCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         ColorSpecVector co(1);
@@ -494,11 +488,9 @@ void FragmentCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if ((dialog.exec() == QDialog::Accepted) && !co[0].name.isEmpty()) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
-                ((FragmentCanvas *) it.current())->itscolor = itscolor;
-                ((FragmentCanvas *) it.current())->modified();	// call package_modified()
+            foreach (DiagramItem *item, l) {
+                ((FragmentCanvas *) item)->itscolor = itscolor;
+                ((FragmentCanvas *) item)->modified(); // call package_modified()
             }
         }
 
@@ -507,18 +499,11 @@ void FragmentCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void FragmentCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void FragmentCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    FragmentCanvas * x = (FragmentCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        FragmentCanvas * o = (FragmentCanvas *) it.current();
-
-        o->itscolor = x->itscolor;
-        o->modified();	// call package_modified()
-    }
+    const FragmentCanvas * x = (const FragmentCanvas *) src;
+    itscolor = x->itscolor;
+    modified();
 }
 
 QString FragmentCanvas::may_start(UmlCode & l) const
@@ -540,19 +525,15 @@ void FragmentCanvas::resize(aCorner c, int dx, int dy, QPoint & o)
 {
     DiagramCanvas::resize(c, dx, dy, o, min_width, min_height);
 
-    Q3PtrListIterator<FragmentSeparatorCanvas> it(separators);
-
-    for (; it.current(); ++it)
-        it.current()->update();
+    foreach (FragmentSeparatorCanvas *canvas, separators)
+        canvas->update();
 }
 
 void FragmentCanvas::resize(const QSize & sz, bool w, bool h)
 {
     if (DiagramCanvas::resize(sz, w, h, min_width, min_height)) {
-        Q3PtrListIterator<FragmentSeparatorCanvas> it(separators);
-
-        for (; it.current(); ++it)
-            it.current()->update();
+        foreach (FragmentSeparatorCanvas *canvas, separators)
+            canvas->update();
     }
 }
 
@@ -610,10 +591,8 @@ void FragmentCanvas::save(QTextStream & st, bool ref, QString & warning) const
 
         save_xyzwh(st, this, "xyzwh");
 
-        Q3PtrListIterator<FragmentSeparatorCanvas> it(separators);
-
-        for (; it.current(); ++it)
-            it.current()->save(st, FALSE, warning);
+        foreach (FragmentSeparatorCanvas *canvas, separators)
+            canvas->save(st, false, warning);
 
         indent(-1);
         nl_indent(st);
@@ -680,10 +659,9 @@ void FragmentCanvas::history_save(QBuffer & b) const
 
     ::save((int) separators.count(), b);
 
-    Q3PtrListIterator<FragmentSeparatorCanvas> it(separators);
 
-    for (; it.current(); ++it)
-        ::save(it.current(), b);
+    foreach (FragmentSeparatorCanvas *canvas, separators)
+        ::save(canvas, b);
 }
 
 void FragmentCanvas::history_load(QBuffer & b)
@@ -731,8 +709,8 @@ void FragmentCanvas::history_hide()
 // for plug outs
 
 void FragmentCanvas::send(ToolCom * com, Q3CanvasItemList & all,
-                          Q3PtrList<FragmentCanvas> & fragments,
-                          Q3PtrList<FragmentCanvas> & refs)
+                          QList<FragmentCanvas *> & fragments,
+                          QList<FragmentCanvas *> & refs)
 {
     Q3CanvasItemList::Iterator cit;
 
@@ -745,9 +723,7 @@ void FragmentCanvas::send(ToolCom * com, Q3CanvasItemList & all,
 
     com->write_unsigned(fragments.count());
 
-    FragmentCanvas * f;
-
-    for (f = fragments.first(); f != 0; f = fragments.next()) {
+    foreach (FragmentCanvas * f, fragments) {
         WrapperStr s = fromUnicode(f->name);
 
         com->write_string((const char *) s);
@@ -760,11 +736,11 @@ void FragmentCanvas::send(ToolCom * com, Q3CanvasItemList & all,
             com->write_unsigned(1);
         else {
             FragmentSeparatorCanvas ** v = new FragmentSeparatorCanvas *[sz];
-            unsigned index;
-            Q3PtrListIterator<FragmentSeparatorCanvas> it(f->separators);
-
-            for (index = 0; it.current(); ++it, index += 1)
-                v[index] = it.current();
+            unsigned index = 0;
+            foreach (FragmentSeparatorCanvas *canvas, f->separators) {
+                v[index] = canvas;
+                ++index;
+            }
 
             bool modified;
 

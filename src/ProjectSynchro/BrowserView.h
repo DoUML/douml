@@ -77,7 +77,7 @@ public:
 
     void synchronize();
 
-    static void update(const Q3PtrList<BrowserView> &);
+    static void update(const QList<BrowserView *> &);
 
 protected:
     void update_it();

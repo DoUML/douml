@@ -55,7 +55,7 @@
 #include "mu.h"
 #include "translate.h"
 
-Q3PtrList<BrowserUseCaseDiagram> BrowserUseCaseDiagram::imported;
+QList<BrowserUseCaseDiagram *> BrowserUseCaseDiagram::imported;
 Q3ValueList<int> BrowserUseCaseDiagram::imported_ids;
 QStringList BrowserUseCaseDiagram::its_default_stereotypes;	// unicode
 
@@ -160,14 +160,12 @@ void BrowserUseCaseDiagram::import()
 {
     Q3ValueList<int>::Iterator it = imported_ids.begin();
 
-    while (!imported.isEmpty()) {
-        QString warning;
-        BrowserUseCaseDiagram * d = imported.take(0);
-
+    foreach (BrowserUseCaseDiagram *d, imported) {
         (new UseCaseDiagramWindow(d->full_name(), d, *it))->close(TRUE);
         it = imported_ids.remove(it);
         d->is_modified = TRUE;
     }
+    imported.clear();
 }
 
 void BrowserUseCaseDiagram::renumber(int phase)
@@ -570,7 +568,7 @@ bool BrowserUseCaseDiagram::tool_cmd(ToolCom * com, const char * args)
     }
 }
 
-void BrowserUseCaseDiagram::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserUseCaseDiagram::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserNode * bn,
         char const * kc,
         char const * kr)

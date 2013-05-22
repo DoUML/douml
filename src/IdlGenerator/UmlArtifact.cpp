@@ -101,7 +101,7 @@ void UmlArtifact::generate()
 #if 0
         // compute dependencies
 
-        Q3PtrList<CppRefType> dependencies;
+        QList<CppRefType *> dependencies;
 #endif
         const Q3PtrVector<UmlClass> & cls = associatedClasses();
         unsigned n = cls.count();

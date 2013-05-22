@@ -60,7 +60,7 @@ protected:
     PinData * pin;
     QStringList list;
     BrowserNodeList nodes;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
     BrowserNode * view;
     int offset;
 

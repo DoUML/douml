@@ -69,7 +69,7 @@ protected:
     Q3ComboBox * edspecification;
     MultiLineEdit * comment;
     MultiLineEdit * constraint;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
     QCheckBox * readonly_cb;
     QCheckBox * singlexec_cb;
     QCheckBox * active_cb;

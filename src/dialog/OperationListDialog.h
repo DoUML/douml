@@ -43,7 +43,7 @@ protected:
     static QSize previous_size;
 
 public:
-    OperationListDialog(const char * m, Q3PtrList<BrowserOperation> & l);
+    OperationListDialog(const char * m, QList<BrowserOperation *> & l);
     virtual ~OperationListDialog();
 
     int choosen();

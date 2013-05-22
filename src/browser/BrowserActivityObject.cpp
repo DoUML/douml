@@ -121,7 +121,7 @@ void BrowserActivityObject::prepare_update_lib() const
         ((BrowserNode *) child)->prepare_update_lib();
 }
 
-void BrowserActivityObject::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserActivityObject::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
     BrowserFlow::compute_referenced_by(l, this);
@@ -130,7 +130,7 @@ void BrowserActivityObject::referenced_by(Q3PtrList<BrowserNode> & l, bool ondel
         BrowserActivityDiagram::compute_referenced_by(l, this, "activityobjectcanvas", "activityobject_ref");
 }
 
-void BrowserActivityObject::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserActivityObject::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserNode * target)
 {
     IdIterator<BrowserActivityObject> it(all);
@@ -609,25 +609,23 @@ bool BrowserActivityObject::tool_cmd(ToolCom * com, const char * args)
     }
 }
 
-bool BrowserActivityObject::may_contains_them(const Q3PtrList<BrowserNode> & l,
+bool BrowserActivityObject::may_contains_them(const QList<BrowserNode *> & l,
         BooL & duplicable) const
 {
-    Q3PtrListIterator<BrowserNode> it(l);
-
-    for (; it.current(); ++it) {
-        switch (it.current()->get_type()) {
+    foreach (BrowserNode *node, l) {
+        switch (node->get_type()) {
         case UmlFlow:
         case UmlDependOn:
-            return (((const BrowserNode *) it.current()->parent()) == this);
+            return (((const BrowserNode *) node->parent()) == this);
 
         default:
             return FALSE;
         }
 
-        if (! may_contains(it.current(), FALSE))
+        if (! may_contains(node, FALSE))
             return FALSE;
 
-        duplicable = may_contains_it(it.current());
+        duplicable = may_contains_it(node);
     }
 
     return TRUE;

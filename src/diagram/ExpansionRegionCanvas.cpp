@@ -612,7 +612,7 @@ bool ExpansionRegionCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void ExpansionRegionCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void ExpansionRegionCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         ColorSpecVector co(1);
@@ -625,11 +625,10 @@ void ExpansionRegionCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if ((dialog.exec() == QDialog::Accepted) && !co[0].name.isEmpty()) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
-                ((ExpansionRegionCanvas *) it.current())->itscolor = itscolor;
-                ((ExpansionRegionCanvas *) it.current())->modified();	// call package_modified()
+            foreach (DiagramItem *item, l) {
+                ExpansionRegionCanvas *canvas = (ExpansionRegionCanvas *)item;
+                canvas->itscolor = itscolor;
+                canvas->modified();
             }
         }
 
@@ -638,18 +637,11 @@ void ExpansionRegionCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void ExpansionRegionCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void ExpansionRegionCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    ExpansionRegionCanvas * x = (ExpansionRegionCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        ExpansionRegionCanvas * o = (ExpansionRegionCanvas *) it.current();
-
-        o->itscolor = x->itscolor;
-        o->modified();	// call package_modified()
-    }
+    const ExpansionRegionCanvas * x = (const ExpansionRegionCanvas *) src;
+    itscolor = x->itscolor;
+    modified();
 }
 
 QString ExpansionRegionCanvas::may_start(UmlCode & l) const

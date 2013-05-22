@@ -64,7 +64,7 @@ public:
         useless = !y;
     }
     virtual bool set_roundtrip_expected();
-    virtual void mark_useless(Q3PtrList<UmlItem> & l);
+    virtual void mark_useless(QList<UmlItem *> & l);
 # endif
 #endif
 };

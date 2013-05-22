@@ -160,7 +160,7 @@ protected:
     Q3GroupBox * php_b;
     Q3GroupBox * python_b;
     Q3GroupBox * idl_b;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
     BrowserNode * view;
     int offset;
 

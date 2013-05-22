@@ -216,10 +216,7 @@ void ColMsgTable::refresh()
 
 void ColMsgTable::refresh(ColMsgList & m)
 {
-    ColMsg * msg;
-    Q3PtrListIterator<ColMsg> it(m);
-
-    for (; (msg = it.current()) != 0; ++it) {
+    foreach (ColMsg *msg, m) {
         QString def = msg->def(FALSE, TRUE, UmlView, DefaultShowContextMode);
         CodObjCanvas * from;
         CodObjCanvas * to;
@@ -264,11 +261,7 @@ void ColMsgTable::save_list(ColMsgList & l, Q3PtrDict<ColMsgList> & saved)
     if (saved.find(&l) == 0) {
         saved.insert(&l, new ColMsgList(l));
 
-        Q3PtrListIterator<ColMsg> it(l);
-
-        for (; it.current(); ++it) {
-            ColMsg * m = it.current();
-
+        foreach (ColMsg *m, l) {
             save_list(m->get_msgs(), saved);
             save_list(m->in->get_msgs(), saved);
         }

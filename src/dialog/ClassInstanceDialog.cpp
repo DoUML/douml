@@ -187,7 +187,7 @@ ClassInstanceDialog::ClassInstanceDialog(ClassInstanceData * i)
         BrowserClass::instances(nodes);
         nodes.full_names(list);
         edtype->insertStringList(list);
-        edtype->setCurrentItem(nodes.find(inst->get_class()));
+        edtype->setCurrentItem(nodes.indexOf(inst->get_class()));
         connect(edtype, SIGNAL(activated(int)), this, SLOT(type_changed(int)));
     }
 
@@ -272,8 +272,9 @@ ClassInstanceDialog::~ClassInstanceDialog()
     inst->browser_node->edit_end();
     previous_size = size();
 
-    while (!edits.isEmpty())
-        edits.take(0)->close();
+    foreach (BodyDialog *dialog, edits)
+        dialog->close();
+    edits.clear();
 
     close_dialog(this);
 }
@@ -339,8 +340,7 @@ void ClassInstanceDialog::menu_class()
 
             // no break
         case 1: {
-
-            if ((index = nodes.findRef(bn)) == -1) {
+            if ((index = nodes.indexOf(bn)) == -1) {
                 // new class, may be created through an other dialog
                 QStringList::Iterator iter = list.begin();
                 QStringList::Iterator iter_end = list.end();
@@ -381,13 +381,10 @@ void ClassInstanceDialog::type_changed(int i)
     atbl->setNumRows(0);
     atbl->setNumRows(attributes.count());
 
-    BrowserNode * at;
-    int index;
     Q3ValueList<SlotAttr> attrs = inst->attributes;
 
-    for (at = attributes.first(), index = 0;
-         at != 0;
-         at = attributes.next(), index += 1) {
+    int index = 0;
+    foreach (BrowserNode * at, attributes) {
         atbl->setItem(index, 0, new TableItem(atbl, Q3TableItem::Never, at->get_name()));
         atbl->setItem(index, 1, new TableItem(atbl, Q3TableItem::Never, ((BrowserNode *) at->parent())->get_name()));
 
@@ -402,6 +399,7 @@ void ClassInstanceDialog::type_changed(int i)
 
         if (it_attr == attrs.end())
             atbl->setText(index, 2, QString());
+        ++index;
     }
 
     atbl->setColumnStretchable(2, TRUE);

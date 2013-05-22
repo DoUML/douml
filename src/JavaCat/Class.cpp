@@ -63,7 +63,39 @@ UmlArtifact * Class::CurrentArtifact;
 #include "Pixmap.h"
 #include "ShowFileDialog.h"
 
-Q3PtrList<Class> Class::Historic;
+HistoricList Class::Historic;
+
+void HistoricList::appendClass(Class *klass)
+{
+    while (current + 1 != Historic.size())
+        Historic.removeLast();
+
+    Historic.append(klass);
+    ++current;
+}
+
+bool HistoricList::hasPrev() const
+{
+    return current != 0;
+}
+
+Class *HistoricList::prev()
+{
+    --current;
+    return Historic[current];
+}
+
+bool HistoricList::hasNext() const
+{
+    return current + 1 < Historic.size();
+}
+
+Class *HistoricList::next()
+{
+    ++current;
+    return Historic[current];
+}
+
 #endif
 
 Class::Class(BrowserNode * p, const char * n, char st)
@@ -368,7 +400,7 @@ bool Class::reverse(ClassContainer * container, WrapperStr stereotype,
                     aVisibility visibility, WrapperStr & path,
                     Q3ValueList<FormalParameterList> tmplts
 #ifdef ROUNDTRIP
-                    , bool rndtrp, Q3PtrList<UmlItem> & expectedorder
+                    , bool rndtrp, QList<UmlItem *> & expectedorder
 #endif
                    )
 {
@@ -406,7 +438,7 @@ bool Class::reverse(ClassContainer * container, WrapperStr stereotype,
     }
 
     bool roundtrip = FALSE;
-    Q3PtrList<UmlItem> expected_order;
+    QList<UmlItem *> expected_order;
 #else
     UmlClass * cl_uml = 0;
 #endif
@@ -706,7 +738,7 @@ bool Class::reverse(ClassContainer * container, WrapperStr stereotype,
 bool Class::manage_extends(ClassContainer * container,
                            const Q3ValueList<FormalParameterList> & tmplts
 #ifdef ROUNDTRIP
-                           , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                           , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                           )
 {
@@ -747,7 +779,7 @@ bool Class::manage_extends(ClassContainer * container,
 bool Class::manage_implements(ClassContainer * container, aRelationKind k,
                               const Q3ValueList<FormalParameterList> & tmplts
 #ifdef ROUNDTRIP
-                              , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                              , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                              )
 {
@@ -804,7 +836,7 @@ bool Class::add_inherit(aRelationKind k, UmlTypeSpec & typespec,
                         Q3ValueList<UmlTypeSpec> & actuals,
                         WrapperStr & str_actuals
 #ifdef ROUNDTRIP
-                        , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                        , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                        )
 {
@@ -1085,7 +1117,7 @@ bool Class::get_formals(FormalParameterList & tmplt, bool name_only,
 
 bool Class::manage_member(WrapperStr s, WrapperStr & path
 #ifdef ROUNDTRIP
-                          , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                          , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                          )
 {
@@ -1415,7 +1447,7 @@ bool Class::manage_member(WrapperStr s, WrapperStr & path
 
 bool Class::manage_enum_items(
 #ifdef ROUNDTRIP
-    bool roundtrip, Q3PtrList<UmlItem> & expected_order
+    bool roundtrip, QList<UmlItem *> & expected_order
 #endif
 )
 {
@@ -1613,10 +1645,7 @@ void Class::selected()
 void Class::manage_historic()
 {
     // manage historic
-    while (Historic.getLast() != Historic.current())
-        Historic.removeLast();
-
-    Historic.append(this);
+    Historic.appendClass(this);
 }
 
 // called when the node is activated for any reason
@@ -1743,13 +1772,13 @@ void Class::activated()
 
 void Class::historic_back()
 {
-    if (Historic.current() != Historic.getFirst())
+    if (Historic.hasPrev())
         BrowserView::select(Historic.prev());
 }
 
 void Class::historic_forward()
 {
-    if (Historic.current() != Historic.getLast())
+    if (Historic.hasNext())
         BrowserView::select(Historic.next());
 }
 

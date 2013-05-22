@@ -261,7 +261,7 @@ void ObjectLinkCanvas::open()
         last = (ObjectLinkCanvas *)((ArrowPointCanvas *) last->end)->get_other(last);
 
     // compute all compatible relations in the two directions
-    Q3PtrList<RelationData> l;
+    QList<RelationData *> l;
     int nfirstdir;
 
     ((BrowserClass *)((OdClassInstCanvas *) first->begin)->get_type())

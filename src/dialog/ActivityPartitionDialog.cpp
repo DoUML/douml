@@ -190,8 +190,9 @@ ActivityPartitionDialog::~ActivityPartitionDialog()
     data->browser_node->edit_end();
     previous_size = size();
 
-    while (!edits.isEmpty())
-        edits.take(0)->close();
+    foreach (BodyDialog *dialog, edits)
+        dialog->close();
+    edits.clear();
 
     close_dialog(this);
 }
@@ -257,9 +258,9 @@ void ActivityPartitionDialog::menu_represents()
     if ((bn != 0) && allowed(bn))
         m.insertItem(TR("Choose element selected in browser"), 1);
 
-    const Q3PtrList<BrowserNode> & l = BrowserNode::marked_nodes();
+    const QList<BrowserNode *> & l = BrowserNode::marked_nodes();
 
-    if ((l.count() == 1) && allowed(l.getFirst()))
+    if ((l.count() == 1) && allowed(l.first()))
         m.insertItem(TR("Choose element marked in browser"), 2);
 
     switch (m.exec(QCursor::pos())) {
@@ -272,7 +273,7 @@ void ActivityPartitionDialog::menu_represents()
         break;
 
     case 2:
-        represented = l.getFirst();
+        represented = l.first();
         break;
 
     default:

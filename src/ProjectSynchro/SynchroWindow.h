@@ -49,7 +49,7 @@ public:
 
     void load(int argc, char ** argv);
 
-    static const Q3PtrList<BrowserView> & get_browsers() {
+    static const QList<BrowserView *> & get_browsers() {
         return the->browsers;
     }
     static void abort();
@@ -58,7 +58,7 @@ protected:
     static SynchroWindow * the;
 
     QString project_name;
-    Q3PtrList<BrowserView> browsers;
+    QList<BrowserView *> browsers;
     Q3HBox * hbox;
 
     void load(QString path);

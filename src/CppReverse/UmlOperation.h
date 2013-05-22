@@ -55,7 +55,7 @@ public:
                         bool friendp, WrapperStr friend_template,
                         WrapperStr comment, WrapperStr description, bool pfunc
 #ifdef ROUNDTRIP
-                        , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                        , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                        );
     static void reverse_definition(Package * pack, WrapperStr name, WrapperStr type,
@@ -78,7 +78,7 @@ private:
 #ifdef ROUNDTRIP
     static Q3PtrDict<WrapperStr> DefNotYetSet;
 #endif
-    static NDict< Q3PtrList<UmlOperation> > friends;
+    static NDict< QList<UmlOperation *> > friends;
     FormalParameterList * formals;
     WrapperStr def0;	// for template operations
 
@@ -86,10 +86,10 @@ private:
                            UmlParameter & param, WrapperStr & decl,
                            const Q3ValueList<FormalParameterList> & tmplt,
                            BooL & on_error, bool add_defaultvalue);
-    static void friend_operations(Q3PtrList<UmlOperation> & candidates,
+    static void friend_operations(QList<UmlOperation *> & candidates,
                                   const Q3ValueList<FormalParameterList> & tmplt,
                                   const WrapperStr & name);
-    static bool operations(Q3PtrList<UmlOperation> & candidates, UmlClass * cl,
+    static bool operations(QList<UmlOperation *> & candidates, UmlClass * cl,
                            const Q3ValueList<FormalParameterList> & tmplt,
                            const FormalParameterList *& oper_tmplt,
                            const WrapperStr & name);

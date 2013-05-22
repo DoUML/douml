@@ -101,8 +101,8 @@ enum EditType { CppEdit, JavaEdit, PhpEdit, PythonEdit, TxtEdit };
 typedef void (* post_edit)(Q3TabDialog *, QString);
 
 extern void edit(const QString &, QString name, void * id, EditType k,
-                 Q3TabDialog * tbl, post_edit pf, Q3PtrList<BodyDialog> & edits);
-extern bool check_edits(Q3PtrList<BodyDialog> & edits);
+                 Q3TabDialog * tbl, post_edit pf, QList<BodyDialog *> & edits);
+extern bool check_edits(QList<BodyDialog *> & edits);
 
 extern AType the_type(const QString & t, const QStringList & types,
                       BrowserNodeList & nodes);

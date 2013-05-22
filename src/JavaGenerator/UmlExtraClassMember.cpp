@@ -33,7 +33,7 @@
 #include "UmlExtraClassMember.h"
 
 /*
-void UmlExtraClassMember::compute_dependency(Q3PtrList<JavaRefType> &, WrapperStr) {
+void UmlExtraClassMember::compute_dependency(QList<JavaRefType *> &, WrapperStr) {
   // does nothing
 }
 */

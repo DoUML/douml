@@ -68,7 +68,7 @@ QRegExp * Package::DirFilter;
 QRegExp * Package::FileFilter;
 
 // the packages selected by the user to reverse them
-Q3PtrList<Package> Package::Choozen;
+QList<Package *> Package::Choozen;
 
 // all the classes presents in the environment, the
 // key is the full name including namespaces
@@ -359,9 +359,7 @@ int Package::count_file_number()
         file_number(h_path, TRUE, CppSettings::headerExtension())
         + file_number(src_path, TRUE, CppSettings::sourceExtension());
 
-    TreeItem * child;
-
-    for (child = firstChild(); child != 0; child = child->nextSibling())
+    foreach (TreeItem * child, children())
         if (((BrowserNode *) child)->isa_package())
             result += ((Package *) child)->count_file_number();
 
@@ -389,9 +387,7 @@ void Package::scan_dir()
     reverse_directory(h_path, TRUE, CppSettings::headerExtension(), TRUE);
     reverse_directory(src_path, TRUE, CppSettings::sourceExtension(), FALSE);
 
-    TreeItem * child;
-
-    for (child = firstChild(); child != 0; child = child->nextSibling())
+    foreach (TreeItem * child, children())
         if (((BrowserNode *) child)->isa_package())
             ((Package *) child)->scan_dir();
 }
@@ -478,10 +474,8 @@ void Package::scan_dirs(int & n)
     // count files
     UmlCom::message("count files ...");
 
-    Package * p;
-
     /* lgfreitas: This just counts the packages */
-    for (p = Choozen.first(); p != 0; p = Choozen.next()) {
+    foreach (Package *p, Choozen) {
         n += file_number(p->h_path, TRUE,
                          CppSettings::headerExtension())
              + file_number(p->src_path, TRUE,
@@ -494,8 +488,7 @@ void Package::scan_dirs(int & n)
     /* lgfreitas: This is where the reversing magic happens. It iterates
        through each package, asking for it to do the reversing on the
        given path */
-    for (p = Choozen.first(); p != 0; p = Choozen.next())
-    {
+    foreach (Package *p, Choozen) {
         p->reverse_directory(p->h_path, TRUE, CppSettings::headerExtension(), TRUE);
         p->reverse_directory(p->src_path, TRUE, CppSettings::sourceExtension(), FALSE);
     }
@@ -613,9 +606,7 @@ void Package::send_dir()
     reverse_directory(h_path, TRUE, CppSettings::headerExtension(), TRUE);
     reverse_directory(src_path, TRUE, CppSettings::sourceExtension(), FALSE);
 
-    TreeItem * child;
-
-    for (child = firstChild(); child != 0; child = child->nextSibling())
+    foreach (TreeItem * child, children())
         if (((BrowserNode *) child)->isa_package())
             ((Package *) child)->send_dir();
 }
@@ -631,9 +622,7 @@ void Package::send_dirs(int n, bool rec)
 
     set_step(2, n);
 
-    Package * p;
-
-    for (p = Choozen.first(); p != 0; p = Choozen.next()) {
+    foreach (Package *p, Choozen) {
         p->reverse_directory(p->h_path, rec, CppSettings::headerExtension(), TRUE);
         p->reverse_directory(p->src_path, rec, CppSettings::sourceExtension(), FALSE);
     }
@@ -926,7 +915,7 @@ void Package::reverse_toplevel_forms(WrapperStr f, bool sub_block)
                     Lex::come_back();
                     // do not manage 'struct {..} var;' or 'struct {..} f()' ...
 #ifdef ROUNDTRIP
-                    Q3PtrList<UmlItem> dummy;
+                    QList<UmlItem *> dummy;
 
                     Class::reverse(this, s, Formals, f, 0, FALSE, dummy);
 #else
@@ -948,7 +937,7 @@ void Package::reverse_toplevel_forms(WrapperStr f, bool sub_block)
                     Lex::come_back();
                     // do not manage 'enum {..} var;' or 'enum {..} f()' ...
 #ifdef ROUNDTRIP
-                    Q3PtrList<UmlItem> dummy;
+                    QList<UmlItem *> dummy;
 
                     Class::reverse_enum(this, f, 0, FALSE, dummy);
 #else
@@ -958,7 +947,7 @@ void Package::reverse_toplevel_forms(WrapperStr f, bool sub_block)
             }
             else if (s == "typedef") {
 #ifdef ROUNDTRIP
-                Q3PtrList<UmlItem> dummy;
+                QList<UmlItem *> dummy;
 
                 Class::reverse_typedef(this, f, Formals, FALSE, dummy);
 #else
@@ -1393,7 +1382,7 @@ void Package::define(WrapperStr name, Class * cl)
 void Package::declaration(const WrapperStr &, const WrapperStr &,
                           const WrapperStr &
 #ifdef ROUNDTRIP
-                          , bool, Q3PtrList<UmlItem> &
+                          , bool, QList<UmlItem *> &
 #endif
                          )
 {
@@ -1470,9 +1459,7 @@ Package * Package::find(QFileInfo * di)
 #endif
 
     QString s = di->fileName();
-    TreeItem * child;
-
-    for (child = firstChild(); child != 0; child = child->nextSibling())
+    foreach (TreeItem * child, children())
         if (((BrowserNode *) child)->isa_package() &&
             (child->text(0) == s))
             return (Package *) child;

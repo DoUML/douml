@@ -65,7 +65,7 @@ protected:
     MultiLineEdit * comment;
     QMap<BrowserClass *, FormalParamsTable *> formals;	// to generate the associated
     QMap<BrowserClass *, ActualParamsTable *> actuals;	// classes definition
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
 
     // c++
     unsigned n_cpp;

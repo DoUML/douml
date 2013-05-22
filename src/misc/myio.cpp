@@ -1528,7 +1528,6 @@ void delete_backup(QDir & d)
     QFileInfoList l = d.entryInfoList(s);
 
     if (!l.empty()) {
-        //Q3PtrListIterator<QFileInfo> it(l);
         QFileInfoList::iterator it = l.begin(); //[lgfreitas] above iterator was not working.
         //QFileInfo fi;
 

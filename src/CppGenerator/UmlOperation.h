@@ -47,7 +47,7 @@ public:
     UmlOperation(void * id, const WrapperStr & n)
         : UmlBaseOperation(id, n) {};
 
-    virtual void compute_dependency(Q3PtrList<CppRefType> & dependency,
+    virtual void compute_dependency(QList<CppRefType *> & dependency,
                                     const WrapperStr & cl_stereotype,
                                     bool all_in_h);
     virtual void generate_decl(aVisibility & current_visibility, QTextStream & f_h,

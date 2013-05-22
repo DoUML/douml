@@ -336,7 +336,7 @@ QString BrowserParameter::full_name(bool rev, bool) const
     return fullname(rev);
 }
 
-void BrowserParameter::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserParameter::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
     BrowserFlow::compute_referenced_by(l, this);
@@ -345,7 +345,7 @@ void BrowserParameter::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
         BrowserActivityDiagram::compute_referenced_by(l, this, "parametercanvas", "parameter_ref");
 }
 
-void BrowserParameter::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserParameter::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserNode * target)
 {
     IdIterator<BrowserParameter> it(all);

@@ -175,17 +175,15 @@ ConstraintTable::ConstraintTable(QWidget * parent, ConstraintCanvas * c)
     setColumnStretchable(0, FALSE);
     setColumnStretchable(1, FALSE);
 
-    int row;
     bool v = c->indicate_visible;
     Q3ValueList<BrowserNode *> & hv = c->hidden_visible;
     BrowserNodeList & elts = c->elements;
-    BrowserNode * bn;
     QString yes = TR("  yes");
-    QString empty;
 
     elts.sort();
 
-    for (bn = elts.first(), row = 0; bn != 0; bn = elts.next(), row += 1) {
+    int row = 0;
+    foreach (BrowserNode *bn, elts) {
         if ((v) ? hv.findIndex(bn) != -1 : hv.findIndex(bn) == -1)
             setText(row, 0, yes);
 
@@ -208,6 +206,7 @@ ConstraintTable::ConstraintTable(QWidget * parent, ConstraintCanvas * c)
             // note : adjustRow(row) does nothing
             setRowHeight(row, rowHeight(row) * (n + 1));
         }
+        ++row;
     }
 
     adjustColumn(0);
@@ -246,14 +245,15 @@ void ConstraintTable::hide_inherited(ConstraintCanvas * c)
 {
     BrowserNode * cl = c->cl->get_bn();
     BrowserNodeList & elts = c->elements;
-    BrowserNode * bn;
-    int row;
     QString yes = TR("  yes");
     QString empty;
 
-    for (bn = elts.first(), row = 0; bn != 0; bn = elts.next(), row += 1)
+    int row = 0;
+    foreach (BrowserNode *bn, elts) {
         setText(row, 0,
                 ((bn == cl) || (bn->parent() == cl)) ? yes : empty);
+        ++row;
+    }
 }
 
 void ConstraintTable::update(ConstraintCanvas * c)
@@ -261,12 +261,13 @@ void ConstraintTable::update(ConstraintCanvas * c)
     Q3ValueList<BrowserNode *> & list = c->hidden_visible;
     bool empty_if_visible = !c->indicate_visible;
     BrowserNodeList & elts = c->elements;
-    BrowserNode * bn;
-    int row;
 
     list.clear();
 
-    for (bn = elts.first(), row = 0; bn != 0; bn = elts.next(), row += 1)
+    int row = 0;
+    foreach (BrowserNode *bn, elts) {
         if (text(row, 0).isEmpty() == empty_if_visible)
             list.append(bn);
+        ++row;
+    }
 }

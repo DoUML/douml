@@ -115,35 +115,33 @@ void ReferenceDialog::compute()
 {
     QApplication::setOverrideCursor(Qt::waitCursor);
 
-    Q3PtrList<BrowserNode> l;
-    BrowserNode * bn;
+    QList<BrowserNode *> l;
 
     nodes.clear();
     results->clear();
     target->referenced_by(l);
 
-    for (bn = l.first(); bn; bn = l.next())
+    foreach (BrowserNode * bn, l)
         nodes.append(bn);
 
     nodes.sort();
 
     // remove duplicats
-    nodes.first();
-
-    while ((bn = nodes.current()) != 0)
-        if (bn == nodes.next())
-            nodes.remove();
+    BrowserNode *prevNode = 0;
+    foreach (BrowserNode * bn, l) {
+        if (prevNode == bn)
+            nodes.removeOne(bn);
+    }
 
     QStringList names;
 
     nodes.full_names(names);
 
-    QStringList::Iterator it;
-
-    for (bn = nodes.first(), it = names.begin();
-         bn;
-         bn = nodes.next(), ++it)
+    QStringList::Iterator it = names.begin();
+    foreach (BrowserNode * bn, nodes) {
         results->insertItem(*(bn->pixmap(0)), *it);
+        ++it;
+    }
 
     selected((nodes.isEmpty()) ? -1 : 0);
 
@@ -178,9 +176,7 @@ void ReferenceDialog::mark_unmark()
 
 void ReferenceDialog::mark_them()
 {
-    BrowserNode * bn;
-
-    for (bn = nodes.first(); bn != 0; bn = nodes.next()) {
+    foreach (BrowserNode *bn, nodes) {
         if (! bn->markedp()) {
             bn->toggle_mark();  	// call update
             BrowserView::force_visible(bn);

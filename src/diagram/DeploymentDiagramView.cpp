@@ -73,11 +73,7 @@ DeploymentDiagramView::DeploymentDiagramView(QWidget * parent, UmlCanvas * canva
 // have marked elements not yet drawn ?
 static bool marked_not_yet_drawn(Q3PtrDict<DiagramItem> & drawn)
 {
-    const Q3PtrList<BrowserNode> & l = BrowserNode::marked_nodes();
-    Q3PtrListIterator<BrowserNode> it(l);
-    BrowserNode * bn;
-
-    for (; (bn = it.current()) != 0; ++it) {
+    foreach (BrowserNode *bn, BrowserNode::marked_nodes()) {
         UmlCode k = bn->get_type();
 
         switch (k) {
@@ -101,9 +97,7 @@ static bool marked_not_yet_drawn(Q3PtrDict<DiagramItem> & drawn)
 static void get_drawn(DiagramItemList & items,
                       Q3PtrDict<DiagramItem> & drawn)
 {
-    DiagramItem * di;
-
-    for (di = items.first(); di != 0; di = items.next()) {
+    foreach (DiagramItem *di, items) {
         UmlCode k = di->type();
 
         switch (k) {
@@ -173,11 +167,8 @@ void DeploymentDiagramView::add_marked_elements(const QPoint & p,
     int x = p.x();
     int y = p.y();
     int future_y = y;
-    const Q3PtrList<BrowserNode> & l = BrowserNode::marked_nodes();
-    Q3PtrListIterator<BrowserNode> it(l);
-    BrowserNode * bn;
 
-    for (; (bn = it.current()) != 0; ++it) {
+    foreach (BrowserNode *bn, BrowserNode::marked_nodes()) {
         if (drawn[bn->get_data()] == 0) {
             DiagramCanvas * dc;
 
@@ -228,7 +219,7 @@ void DeploymentDiagramView::add_marked_elements(const QPoint & p,
     UmlCanvas * cnv = (UmlCanvas *) canvas();
 
     if (! cnv->must_draw_all_relations()) {
-        for (it.toFirst(); (bn = it.current()) != 0; ++it) {
+        foreach (BrowserNode *bn, BrowserNode::marked_nodes()) {
             if ((drawn[bn->get_data()] == 0) &&
                 IsaSimpleRelation(bn->get_type()))
                 SimpleRelationCanvas::drop(bn, cnv, drawn);
@@ -266,10 +257,8 @@ void DeploymentDiagramView::add_related_elements(DiagramItem * di, QString what,
         int x = re.x();
         int y = re.bottom() + Diagram_Margin;
         int future_y = y;
-        Q3PtrListIterator<BrowserNode> it(l);
-        BrowserNode * bn;
 
-        for (; (bn = it.current()) != 0; ++it) {
+        foreach (BrowserNode *bn, l) {
             if (drawn[bn->get_data()] == 0) {
                 DiagramCanvas * dc;
 
@@ -535,7 +524,6 @@ void DeploymentDiagramView::save(QTextStream & st, QString & warning,
                                  bool copy) const
 {
     DiagramItemList items(canvas()->allItems());
-    DiagramItem * di;
 
     if (!copy)
         // sort is useless for a copy
@@ -545,7 +533,7 @@ void DeploymentDiagramView::save(QTextStream & st, QString & warning,
 
     // save first package fragment deploymentnode component hub notes text and icons
 
-    for (di = items.first(); di != 0; di = items.next()) {
+    foreach (DiagramItem *di, items) {
         switch (di->type()) {
         case UmlDeploymentNode:
         case UmlArtifact:
@@ -568,7 +556,7 @@ void DeploymentDiagramView::save(QTextStream & st, QString & warning,
 
     // then saves relations
 
-    for (di = items.first(); di != 0; di = items.next()) {
+    foreach (DiagramItem *di, items) {
         switch (di->type()) {
         case UmlInherit:
         case UmlDependency:
@@ -585,7 +573,7 @@ void DeploymentDiagramView::save(QTextStream & st, QString & warning,
 
     // then saves anchors
 
-    for (di = items.first(); di != 0; di = items.next())
+    foreach (DiagramItem *di, items)
         if ((!copy || di->copyable()) && (di->type() == UmlAnchor))
             di->save(st, FALSE, warning);
 

@@ -70,7 +70,7 @@ protected:
 
 protected:
 
-    void exec_menu_choice(int index, Q3PtrList<BrowserOperation> & l);
+    void exec_menu_choice(int index, QList<BrowserOperation *> & l);
 
 public:
     BrowserClass(QString s, BrowserNode * p, ClassData * d, int id = 0);
@@ -87,12 +87,12 @@ public:
     BrowserNode * addOperation(BrowserOperation * oper = nullptr);
     BrowserNode * add_inherited_operation(BrowserOperation * model);
     BrowserNode * add_extra_member(BrowserExtraMember * em = 0);
-    Q3PtrList<BrowserOperation> inherited_operations(unsigned limit, QString parent_name = QString()) const;
+    QList<BrowserOperation *> inherited_operations(unsigned limit, QString parent_name = QString()) const;
     QString may_start(UmlCode l) const;
     QString may_connect(UmlCode l, BrowserClass * other);
     virtual BasicData * add_relation(UmlCode, BrowserNode *);
-    virtual Q3PtrList<BrowserNode> parents() const;
-    void get_all_parents(Q3PtrList<BrowserClass> &) const;
+    virtual QList<BrowserNode *> parents() const;
+    void get_all_parents(QList<BrowserClass *> &) const;
     // more modern interface to get all parents. Still a lot of qt3 compatibility inside
     QList<BrowserClass*> get_all_parents();
     QStringList get_parents_names();
@@ -111,9 +111,9 @@ public:
 
 
 
-    void get_attrs(BrowserNodeList &) const;
-    void get_rels(BrowserClass *, Q3PtrList<RelationData> &, int * rev = 0) const;
-    void get_rels(BrowserClass * target, Q3PtrList<BrowserRelation> & l) const;
+    void get_attrs(BrowserNodeList &);
+    void get_rels(BrowserClass *, QList<RelationData *> &, int * rev = 0) const;
+    void get_rels(BrowserClass * target, QList<BrowserRelation *> & l) const;
     void get_tree(BrowserNodeList &);
     virtual BrowserNode * get_associated() const;
     void set_associated_diagram(BrowserClassDiagram *, bool on_read = FALSE);
@@ -125,7 +125,7 @@ public:
 
     virtual void delete_it();
     virtual bool undelete(bool rec, QString & warning, QString & renamed);
-    virtual bool may_contains_them(const Q3PtrList<BrowserNode> &,
+    virtual bool may_contains_them(const QList<BrowserNode *> &,
                                    BooL & duplicable) const;
     virtual void move(BrowserNode *, BrowserNode * after);
     virtual BrowserNode * duplicate(BrowserNode * p,
@@ -185,7 +185,7 @@ public:
     static void read_stereotypes(char *& , char *&);
     static void save_stereotypes(QTextStream &);
 
-    virtual void referenced_by(Q3PtrList<BrowserNode> &, bool ondelete = FALSE);
+    virtual void referenced_by(QList<BrowserNode *> &, bool ondelete = FALSE);
 
     static bool new_java_enums(QString new_st);
 

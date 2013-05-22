@@ -72,7 +72,7 @@ void ArrowPointCanvas::delete_it()
 void ArrowPointCanvas::delete_available(BooL &,
                                         BooL & out_model) const
 {
-    out_model |= lines.getFirst()->may_join();
+    out_model |= lines.first()->may_join();
 }
 
 // not produced in SVG file
@@ -241,7 +241,7 @@ void ArrowPointCanvas::prepare_for_move(bool)
 
 ArrowCanvas * ArrowPointCanvas::get_other(const ArrowCanvas * l) const
 {
-    return (lines.getFirst() == l) ? lines.getLast() : lines.getFirst();
+    return (lines.first() == l) ? lines.last() : lines.first();
 }
 
 void ArrowPointCanvas::save(QTextStream & st, bool, QString &) const

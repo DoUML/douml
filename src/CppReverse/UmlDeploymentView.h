@@ -44,7 +44,7 @@ public:
 
 #ifdef ROUNDTRIP
     virtual bool set_roundtrip_expected();
-    virtual void mark_useless(Q3PtrList<UmlItem> & l);
+    virtual void mark_useless(QList<UmlItem *> & l);
     virtual void scan_it(int & n);
     virtual void send_it(int n);
 #endif

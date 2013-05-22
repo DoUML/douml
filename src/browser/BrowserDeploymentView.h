@@ -80,7 +80,7 @@ public:
     virtual QString get_stype() const;
     virtual int get_identifier() const;
     virtual const char * help_topic() const;
-    virtual bool may_contains_them(const Q3PtrList<BrowserNode> &,
+    virtual bool may_contains_them(const QList<BrowserNode *> &,
                                    BooL & duplicable) const;
     virtual BasicData * get_data() const;
     virtual void get_deploymentdiagramsettings(DeploymentDiagramSettings &) const;

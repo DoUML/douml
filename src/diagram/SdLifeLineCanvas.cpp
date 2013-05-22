@@ -157,10 +157,8 @@ void SdLifeLineCanvas::moveBy(double dx, double dy)
         // not called by update_pos() which is only called by obj->moveBy()
         obj->moveBy(dx, 0);
 
-    Q3PtrListIterator<SdDurationCanvas> it(durations);
-
-    for (; it.current(); ++it)
-        it.current()->update_hpos();
+    foreach (SdDurationCanvas *canvas, durations)
+        canvas->update_hpos();
 }
 
 UmlCode SdLifeLineCanvas::type() const
@@ -170,12 +168,11 @@ UmlCode SdLifeLineCanvas::type() const
 
 double SdLifeLineCanvas::instance_max_y() const
 {
-    Q3PtrListIterator<SdDurationCanvas> it(durations);
     double miny = 100000;
 
-    for (; it.current(); ++it)
-        if (it.current()->y() < miny)
-            miny = it.current()->y();
+    foreach (SdDurationCanvas *canvas, durations)
+        if (canvas->y() < miny)
+            miny = canvas->y();
 
     return miny - LIFE_LINE_TOPOFFSET * the_canvas()->zoom() - 5;
 }
@@ -264,18 +261,14 @@ void SdLifeLineCanvas::remove(SdDurationCanvas * d)
 
 void SdLifeLineCanvas::toFlat()
 {
-    Q3PtrListIterator<SdDurationCanvas> it(durations);
-
-    for (; it.current(); ++it)
-        it.current()->toFlat();
+    foreach (SdDurationCanvas *canvas, durations)
+        canvas->toFlat();
 }
 
 void SdLifeLineCanvas::toOverlapping()
 {
-    Q3PtrListIterator<SdDurationCanvas> it(durations);
-
-    for (; it.current(); ++it)
-        it.current()->toOverlapping();
+    foreach (SdDurationCanvas *canvas, durations)
+        canvas->toOverlapping();
 }
 
 void SdLifeLineCanvas::set_masked(bool y)
@@ -288,11 +281,10 @@ void SdLifeLineCanvas::set_masked(bool y)
 void SdLifeLineCanvas::update_instance_dead()
 {
     if (obj->is_mortal() && !durations.isEmpty()) {
-        Q3PtrListIterator<SdDurationCanvas> it(durations);
         int new_end = 0;
 
-        for (; it.current(); ++it) {
-            int b = (int)(it.current()->y() + it.current()->height());
+        foreach (SdDurationCanvas *canvas, durations) {
+            int b = (int)(canvas->y() + canvas->height());
 
             if (b > new_end)
                 new_end = b;
@@ -420,10 +412,8 @@ void SdLifeLineCanvas::apply_shortcut(QString s)
 
 bool SdLifeLineCanvas::copyable() const
 {
-    Q3PtrListIterator<SdDurationCanvas> it(durations);
-
-    for (; it.current(); ++it)
-        if (it.current()->copyable())
+    foreach (SdDurationCanvas *canvas, durations)
+        if (canvas->copyable())
             return TRUE;
 
     return FALSE;
@@ -440,10 +430,8 @@ void SdLifeLineCanvas::history_save(QBuffer & b) const
     ::save(end, b);
     ::save((int) durations.count(), b);
 
-    Q3PtrListIterator<SdDurationCanvas> it(durations);
-
-    for (; it.current(); ++it)
-        ::save(it.current(), b);
+    foreach (SdDurationCanvas *canvas, durations)
+        ::save(canvas, b);
 }
 
 void SdLifeLineCanvas::history_load(QBuffer & b)
@@ -461,12 +449,12 @@ void SdLifeLineCanvas::history_load(QBuffer & b)
 }
 
 void SdLifeLineCanvas::send(ToolCom * com, const Q3CanvasItemList & l,
-                            Q3PtrList<FragmentCanvas> & fragments,
-                            Q3PtrList<FragmentCanvas> & refs)
+                            QList<FragmentCanvas *> & fragments,
+                            QList<FragmentCanvas *> & refs)
 {
     int api_format = com->api_format();
     Q3PtrDict<SdLifeLineCanvas> used_refs; // the key is the fragment ref
-    Q3PtrList<SdLifeLineCanvas> lls;
+    QList<SdLifeLineCanvas *> lls;
     Q3CanvasItemList::ConstIterator cit;
     unsigned n = 0;
 
@@ -482,20 +470,16 @@ void SdLifeLineCanvas::send(ToolCom * com, const Q3CanvasItemList & l,
 
             lls.append(ll);
 
-            Q3PtrListIterator<SdDurationCanvas> iter(ll->durations);
-
             // standard msgs
-            for (; iter.current(); ++iter)
-                n += iter.current()->count_msg(api_format);
+            foreach (SdDurationCanvas *canvas, ll->durations)
+                n += canvas->count_msg(api_format);
 
             if (com->api_format() >= 41) {
                 if (ll->end != LIFE_LINE_HEIGHT)
                     // deletion message, ll can't masked by user
                     n += 1;
 
-                FragmentCanvas * f;
-
-                for (f = refs.first(); f != 0; f = refs.next()) {
+                foreach (FragmentCanvas *f, refs) {
                     if (f->collidesWith(ll)) {
                         // interaction use message
                         if (used_refs.find((void *) f) == 0) {
@@ -512,15 +496,12 @@ void SdLifeLineCanvas::send(ToolCom * com, const Q3CanvasItemList & l,
 
     com->write_unsigned(n);
 
-    SdLifeLineCanvas * ll;
-
-    for (ll = lls.first(); ll != 0; ll = lls.next()) {
+    foreach (SdLifeLineCanvas *ll, lls) {
         int id = ll->obj->get_ident();
-        Q3PtrListIterator<SdDurationCanvas> iter(ll->durations);
 
         // write standard messages
-        for (; iter.current(); ++iter)
-            iter.current()->send(com, id);
+        foreach (SdDurationCanvas *d, ll->durations)
+            d->send(com, id);
 
         if ((ll->end != LIFE_LINE_HEIGHT) && (com->api_format() >= 41)) {
             // deletion message, lf can't masked by user
@@ -534,6 +515,7 @@ void SdLifeLineCanvas::send(ToolCom * com, const Q3CanvasItemList & l,
     if (com->api_format() >= 41) {
         // interaction use messages
         Q3PtrDictIterator<SdLifeLineCanvas>itref(used_refs);
+        SdLifeLineCanvas *ll;
 
         while ((ll = itref.current()) != 0) {
             FragmentCanvas * f = (FragmentCanvas *) itref.currentKey();
@@ -547,18 +529,16 @@ void SdLifeLineCanvas::send(ToolCom * com, const Q3CanvasItemList & l,
         }
 
         // send life lines covered by fragment
-        FragmentCanvas * f;
+        foreach (FragmentCanvas *f, fragments) {
+            QList<SdLifeLineCanvas *> covered;
 
-        for (f = fragments.first(); f != 0; f = fragments.next()) {
-            Q3PtrList<SdLifeLineCanvas> covered;
-
-            for (ll = lls.first(); ll != 0; ll = lls.next())
+            foreach (SdLifeLineCanvas *ll, lls)
                 if (f->collidesWith(ll))
                     covered.append(ll);
 
             com->write_unsigned(covered.count());
 
-            for (ll = covered.first(); ll != 0; ll = covered.next())
+            foreach (SdLifeLineCanvas *ll, covered)
                 com->write_unsigned((unsigned) ll->obj->get_ident());
         }
     }

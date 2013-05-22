@@ -201,7 +201,7 @@ int main(int argc, char ** argv)
                     (*v)->set_isMarked(FALSE);
             }
 
-            Q3PtrList<UmlItem> useless;
+            QList<UmlItem *> useless;
 
             item->mark_useless(useless);
 
@@ -212,13 +212,11 @@ int main(int argc, char ** argv)
                                       "Delete them ?",
                                       "Yes", "No", QString(), 1, 1)
                  == 0)) {
-                Q3PtrListIterator<UmlItem> iter(useless);
 
-                do {
-                    if (iter.current()->isMarked())
-                        iter.current()->deleteIt();
-                }
-                while (++iter, iter.current() != 0);
+                foreach (UmlItem *item, useless) {
+                    if (item->isMarked())
+                        item->deleteIt();
+                };
             }
 
             UmlPackage::getProject()->set_childrenVisible(TRUE);

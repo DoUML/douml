@@ -66,7 +66,7 @@ public:
     virtual bool set_roundtrip_expected();
     virtual void scan_it(int & n);
     virtual void send_it(int n);
-    virtual void mark_useless(Q3PtrList<UmlItem> & l);
+    virtual void mark_useless(QList<UmlItem *> & l);
     bool set_roundtrip_expected_for_class();
     bool is_roundtrip_expected() const {
         return roundtrip_expected;

@@ -508,12 +508,8 @@ void ArrowCanvas::go_up(double nz)
                 a->label->setZ(nz);
         }
 
-        Q3PtrListIterator<ArrowCanvas> it(a->lines);
-
-        while (it.current()) {
-            it.current()->go_up(nz);
-            ++it;
-        }
+        foreach (ArrowCanvas *canvas, a->lines)
+            canvas->go_up(nz);
 
         if ((a->end != 0) && (a->end->type() == UmlArrowPoint)) {
             if (((ArrowPointCanvas *) a->end)->z() < (nz + 1))
@@ -1343,7 +1339,7 @@ ArrowCanvas * ArrowCanvas::join(ArrowCanvas * other, ArrowPointCanvas * ap)
         end->add_line(this);	// add before remove in case end is
         end->remove_line(other, TRUE);	// an arrow junction and not del it
 
-        Q3PtrList<ArrowCanvas> olines = other->lines;
+        QList<ArrowCanvas *> olines = other->lines;
         LabelCanvas * olabel = other->label;
         LabelCanvas * ostereotype = other->stereotype;
 
@@ -1361,9 +1357,7 @@ ArrowCanvas * ArrowCanvas::join(ArrowCanvas * other, ArrowPointCanvas * ap)
         show();
 
         //gets other's lines (anchor to note)
-        while (! olines.isEmpty()) {
-            ArrowCanvas * l = olines.take();
-
+        foreach (ArrowCanvas *l, olines) {
             l->hide();
 
             if (l->begin == other)
@@ -1375,6 +1369,7 @@ ArrowCanvas * ArrowCanvas::join(ArrowCanvas * other, ArrowPointCanvas * ap)
             l->update_pos();
             l->show();
         }
+        olines.clear();
 
         //gets label and stereotype
         QFontMetrics fm(the_canvas()->get_font(UmlNormalFont));
@@ -2202,34 +2197,26 @@ void ArrowCanvas::history_hide()
 
 //
 
-Q3PtrList<ArrowCanvas> ArrowCanvas::RelsToDel;
+QList<ArrowCanvas *> ArrowCanvas::RelsToDel;
 
 void ArrowCanvas::post_load()
 {
-    while (! RelsToDel.isEmpty()) {
-        ArrowCanvas * ar = RelsToDel.take(0);
-
+    foreach (ArrowCanvas *ar, RelsToDel)
         if (ar->visible())
             ar->delete_it();
-    }
+    RelsToDel.clear();
 }
 
 // to remove redondant relation made by release 2.22
-Q3PtrList<ArrowCanvas> ArrowCanvas::RelsToCheck;
+QList<ArrowCanvas *> ArrowCanvas::RelsToCheck;
 
 void ArrowCanvas::remove_redondant_rels()
 {
-    Q3PtrListIterator<ArrowCanvas> liter(RelsToCheck);
     // the key is <source address>_<browser node address>_<target address>
     QMap<QString, ArrowCanvas *> arrows;
     char s[128];
 
-    for (;;) {
-        ArrowCanvas * r = liter.current();
-
-        if (r == 0)
-            break;
-
+    foreach (ArrowCanvas *r, RelsToCheck) {
         if (r->visible()) {
             sprintf(s, "%lx_%lx_%lx",
                     (long) r->get_start(),
@@ -2241,10 +2228,7 @@ void ArrowCanvas::remove_redondant_rels()
             else
                 arrows.insert(s, r);
         }
-
-        ++liter;
     }
-
     RelsToCheck.clear();
 }
 

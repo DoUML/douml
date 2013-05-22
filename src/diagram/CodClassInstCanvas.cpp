@@ -441,7 +441,7 @@ bool CodClassInstCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void CodClassInstCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void CodClassInstCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         StateSpecVector st(2);
@@ -459,21 +459,20 @@ void CodClassInstCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if (dialog.exec() == QDialog::Accepted) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
+            foreach (DiagramItem *item, l) {
+                CodClassInstCanvas *canvas = (CodClassInstCanvas *)item;
                 if (!st[0].name.isEmpty())
-                    ((CodClassInstCanvas *) it.current())->write_horizontally =
+                    canvas->write_horizontally =
                         write_horizontally;
 
                 if (!st[1].name.isEmpty())
-                    ((CodClassInstCanvas *) it.current())->show_context_mode =
+                    canvas->show_context_mode =
                         show_context_mode;
 
                 if (!co[0].name.isEmpty())
-                    ((CodClassInstCanvas *) it.current())->itscolor = itscolor;
+                    canvas->itscolor = itscolor;
 
-                ((CodClassInstCanvas *) it.current())->modified();	// call package_modified()
+                canvas->modified();	// call package_modified()
             }
         }
 
@@ -482,20 +481,13 @@ void CodClassInstCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void CodClassInstCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void CodClassInstCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    CodClassInstCanvas * x = (CodClassInstCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        CodClassInstCanvas * o = (CodClassInstCanvas *) it.current();
-
-        o->write_horizontally = x->write_horizontally;
-        o->show_context_mode = x->show_context_mode;
-        o->itscolor = x->itscolor;
-        o->modified();	// call package_modified()
-    }
+    const CodClassInstCanvas * x = (const CodClassInstCanvas *) src;
+    write_horizontally = x->write_horizontally;
+    show_context_mode = x->show_context_mode;
+    itscolor = x->itscolor;
+    modified();
 }
 
 bool CodClassInstCanvas::get_show_stereotype_properties() const
@@ -637,7 +629,7 @@ void CodClassInstCanvas::history_load(QBuffer & b)
 
 void CodClassInstCanvas::send(ToolCom * com, Q3CanvasItemList & all)
 {
-    Q3PtrList<CodClassInstCanvas> l;
+    QList<CodClassInstCanvas *> l;
     Q3CanvasItemList::Iterator cit;
 
     for (cit = all.begin(); cit != all.end(); ++cit) {
@@ -658,11 +650,7 @@ void CodClassInstCanvas::send(ToolCom * com, Q3CanvasItemList & all)
 
     com->write_unsigned(l.count());
 
-    Q3PtrListIterator<CodClassInstCanvas> it(l);
-
-    for (; it.current(); ++it) {
-        CodClassInstCanvas * i = it.current();
-
+    foreach (CodClassInstCanvas *i, l) {
         com->write_unsigned((unsigned) i->get_ident());
 
         if (i->browser_node->get_type() == UmlClass) {

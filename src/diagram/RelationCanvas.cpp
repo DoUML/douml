@@ -1232,12 +1232,7 @@ void RelationCanvas::show_assoc_class(CdClassCanvas * cc)
 
     for (;;) {
         // goes throw the line and check / search assoc
-        Q3PtrList<ArrowCanvas> l = rc->lines;
-        Q3PtrListIterator<ArrowCanvas> it(l);
-
-        for (; it.current(); ++it) {
-            ArrowCanvas * a = it.current();
-
+        foreach (ArrowCanvas *a, rc->lines) {
             if (a->type() == UmlAnchor) {
                 DiagramItem * s = a->get_start();
                 DiagramItem * e = a->get_end();
@@ -1286,11 +1281,7 @@ void RelationCanvas::hide_assoc_class()
 
     for (;;) {
         // goes through the line to remove existing assoc
-        Q3PtrListIterator<ArrowCanvas> it(rc->lines);
-
-        for (; it.current(); ++it) {
-            ArrowCanvas * a = it.current();
-
+        foreach (ArrowCanvas *a, rc->lines) {
             if ((a->type() == UmlAnchor) &&
                 ((a->get_start()->type() == UmlClass) ||
                  (a->get_end()->type() == UmlClass))) {

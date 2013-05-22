@@ -60,7 +60,7 @@ protected:
     ActivityObjectData * data;
     QStringList list;
     BrowserNodeList nodes;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
     int offset;
     BrowserNode * view;
 

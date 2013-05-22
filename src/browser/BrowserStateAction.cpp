@@ -119,7 +119,7 @@ void BrowserStateAction::prepare_update_lib() const
         ((BrowserNode *) child)->prepare_update_lib();
 }
 
-void BrowserStateAction::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserStateAction::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
     BrowserTransition::compute_referenced_by(l, this);

@@ -67,7 +67,7 @@ class BasicData : public QObject
     Q_OBJECT
 
 protected:
-    static Q3PtrList<BasicData> removed;
+    static QList<BasicData *> removed;
 
     WrapperStr stereotype;
     BrowserNode * browser_node;

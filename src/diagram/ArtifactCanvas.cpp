@@ -252,14 +252,10 @@ void ArtifactCanvas::draw_all_relations()
     else if (!DrawingSettings::just_modified() &&
              !on_load_diagram()) {
         // remove all association starting from 'this'
-        Q3PtrListIterator<ArrowCanvas> it(lines);
-
-        while (it.current()) {
-            if ((it.current()->type() == UmlContain) &&
-                (((AssocContainCanvas *) it.current())->get_start() == this))
-                it.current()->delete_it();
-            else
-                ++it;
+        foreach (ArrowCanvas *canvas, lines) {
+            if ((canvas->type() == UmlContain) &&
+                (((AssocContainCanvas *) canvas)->get_start() == this))
+                canvas->delete_it();
         }
 
         // update non source artifact vis a vis 'this'
@@ -287,18 +283,15 @@ void ArtifactCanvas::update_relations(ArtifactCanvas * other)
     bool association_must_exist =
         ((associated != 0) &&
          (associated->find((BrowserArtifact *) other->browser_node) != 0));
-    Q3PtrListIterator<ArrowCanvas> it(lines);
 
-    while (it.current()) {
-        if ((it.current()->type() == UmlContain) &&
-            (((AssocContainCanvas *) it.current())->get_end() == other)) {
+    foreach (ArrowCanvas *canvas, lines) {
+        if ((canvas->type() == UmlContain) &&
+            (((AssocContainCanvas *) canvas)->get_end() == other)) {
             if (! association_must_exist)
-                it.current()->delete_it();
+                canvas->delete_it();
 
             return;
         }
-
-        ++it;
     }
 
     // association not yet exist
@@ -314,12 +307,10 @@ void ArtifactCanvas::update_relations()
     const Q3PtrDict<BrowserArtifact> * associated =
         ((ArtifactData *) browser_node->get_data())->get_associated();
     Q3PtrDict<BrowserArtifact> associations;
-    Q3PtrListIterator<ArrowCanvas> it(lines);
-
-    while (it.current()) {
-        if ((it.current()->type() == UmlContain) &&
-            (((AssocContainCanvas *) it.current())->get_start() == this)) {
-            DiagramItem * adi = ((AssocContainCanvas *) it.current())->get_end();
+    foreach (ArrowCanvas *canvas, lines) {
+        if ((canvas->type() == UmlContain) &&
+            (((AssocContainCanvas *)canvas)->get_start() == this)) {
+            DiagramItem * adi = ((AssocContainCanvas *) canvas)->get_end();
 
             if ((adi->type() == UmlArtifact) &&
                 (associated != 0) &&
@@ -330,14 +321,11 @@ void ArtifactCanvas::update_relations()
                                       ((ArtifactCanvas *) adi)->browser_node;
 
                 associations.insert(c, c);
-                ++it;
             }
             else
                 // association must not exist
-                it.current()->delete_it();
+                canvas->delete_it();
         }
-        else
-            ++it;
     }
 
     if (associated != 0) {
@@ -787,7 +775,7 @@ bool ArtifactCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void ArtifactCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void ArtifactCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         ColorSpecVector co(1);
@@ -800,11 +788,10 @@ void ArtifactCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if ((dialog.exec() == QDialog::Accepted) && !co[0].name.isEmpty()) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
-                ((ArtifactCanvas *) it.current())->itscolor = itscolor;
-                ((ArtifactCanvas *) it.current())->modified();	// call package_modified()
+            foreach (DiagramItem *item, l) {
+                ArtifactCanvas *canvas = (ArtifactCanvas *)item;
+                canvas->itscolor = itscolor;
+                canvas->modified();
             }
         }
 
@@ -813,18 +800,11 @@ void ArtifactCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void ArtifactCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void ArtifactCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    ArtifactCanvas * x = (ArtifactCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        ArtifactCanvas * o = (ArtifactCanvas *) it.current();
-
-        o->itscolor = x->itscolor;
-        o->modified();	// call package_modified()
-    }
+    const ArtifactCanvas * x = (const ArtifactCanvas *) src;
+    itscolor = x->itscolor;
+    modified();
 }
 
 QString ArtifactCanvas::may_start(UmlCode & l) const

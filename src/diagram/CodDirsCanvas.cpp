@@ -77,7 +77,7 @@ void CodDirsCanvas::remove_it(ColMsg * msg)
     if (unsubscribe(oper_data))
         disconnect(oper_data, 0, this, 0);
 
-    msgs.removeRef(msg);
+    msgs.remove(msg);
 }
 
 
@@ -140,19 +140,17 @@ void CodDirsCanvas::update_msgs()
     // cannot be modified in this case
     msgs.sort();
 
-    Q3PtrListIterator<ColMsg> it(msgs);
     QString nl = "\n";
     QString null;
     const QString * forward_pfix = &null;
     const QString * backward_pfix = &null;
     QString forward;
     QString backward;
-    ColMsg * msg;
     CollaborationDiagramSettings  dflt = settings;
 
     the_canvas()->browser_diagram()->get_collaborationdiagramsettings(dflt);
 
-    for (; (msg = it.current()) != 0; ++it) {
+    foreach (ColMsg *msg, msgs) {
         const BasicData * oper_data = msg->get_operation();
 
         if ((oper_data != 0) && subscribe(oper_data)) {
@@ -486,10 +484,7 @@ void CodDirsCanvas::history_load(QBuffer & b)
     ::load(angle, b);
     connect(DrawingSettings::instance(), SIGNAL(changed()), this, SLOT(modified()));
 
-    Q3PtrListIterator<ColMsg> it(msgs);
-    ColMsg * msg;
-
-    for (; (msg = it.current()) != 0; ++it) {
+    foreach (ColMsg *msg, msgs) {
         const BasicData * oper_data = msg->get_operation();
 
         if ((oper_data != 0) && subscribe(oper_data)) {
@@ -504,10 +499,7 @@ void CodDirsCanvas::history_hide()
     Q3CanvasItem::setVisible(FALSE);
     disconnect(DrawingSettings::instance(), SIGNAL(changed()), this, SLOT(modified()));
 
-    Q3PtrListIterator<ColMsg> it(msgs);
-    ColMsg * msg;
-
-    for (; (msg = it.current()) != 0; ++it) {
+    foreach (ColMsg *msg, msgs) {
         const BasicData * oper_data = msg->get_operation();
 
         if ((oper_data != 0) && unsubscribe(oper_data)) {

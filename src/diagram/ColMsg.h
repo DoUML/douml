@@ -48,10 +48,12 @@ class ColMsg;
 //[lgfreitas] q3ptrlist needed
 #include <q3ptrlist.h>
 
-class ColMsgList : public Q3PtrList<ColMsg>
+class ColMsgList : public QList<ColMsg *>
 {
+public:
+    void sort();
 protected:
-    virtual int compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2);
+    static bool compareItems(ColMsg *a, ColMsg *b);
 };
 
 

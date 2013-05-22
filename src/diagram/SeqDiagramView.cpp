@@ -382,7 +382,6 @@ void SeqDiagramView::save(QTextStream & st, QString & warning,
                           bool copy) const
 {
     DiagramItemList items(canvas()->allItems());
-    DiagramItem * di;
 
     if (!copy)
         // sort is useless for a copy
@@ -392,7 +391,7 @@ void SeqDiagramView::save(QTextStream & st, QString & warning,
 
     // save first the fragments, continuation, actors, classes instances, notes, icons and text
 
-    for (di = items.first(); di != 0; di = items.next()) {
+    foreach (DiagramItem *di, items) {
         switch (di->type()) {
         case UmlFragment:
         case UmlContinuation:
@@ -413,21 +412,21 @@ void SeqDiagramView::save(QTextStream & st, QString & warning,
 
     // then save durations
 
-    for (di = items.first(); di != 0; di = items.next())
+    foreach (DiagramItem *di, items)
         if ((!copy || di->copyable()) &&
             (di->type() == UmlActivityDuration))
             di->save(st, FALSE, warning);
 
     // then save lost/found start/end
 
-    for (di = items.first(); di != 0; di = items.next())
+    foreach (DiagramItem *di, items)
         if ((!copy || di->copyable()) &&
             (di->type() == UmlLostFoundMsgSupport))
             di->save(st, FALSE, warning);
 
     // then save messages
 
-    for (di = items.first(); di != 0; di = items.next()) {
+    foreach (DiagramItem *di, items) {
         switch (di->type()) {
         case UmlSyncMsg:
         case UmlAsyncMsg:
@@ -449,7 +448,7 @@ void SeqDiagramView::save(QTextStream & st, QString & warning,
 
     // then save anchors
 
-    for (di = items.first(); di != 0; di = items.next())
+    foreach (DiagramItem *di, items)
         if ((!copy || di->copyable()) && (di->type() == UmlAnchor))
             di->save(st, FALSE, warning);
 
@@ -510,8 +509,8 @@ void SeqDiagramView::read(char * st, char * k)
 void SeqDiagramView::send(ToolCom * com)
 {
     Q3CanvasItemList l = canvas()->allItems();
-    Q3PtrList<FragmentCanvas> fragments;
-    Q3PtrList<FragmentCanvas> refs;
+    QList<FragmentCanvas *> fragments;
+    QList<FragmentCanvas *> refs;
 
     FragmentCanvas::send(com, l, fragments, refs);
     SdClassInstCanvas::send(com, l);

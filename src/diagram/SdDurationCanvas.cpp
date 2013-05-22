@@ -119,10 +119,8 @@ void SdDurationCanvas::update_hpos()
 {
     move(support->sub_x(width()), 100000);
 
-    Q3PtrListIterator<SdDurationCanvas> itd(durations);
-
-    for (; itd.current(); ++itd)
-        itd.current()->update_hpos();
+    foreach (SdDurationCanvas *canvas, durations)
+        canvas->update_hpos();
 }
 
 void SdDurationCanvas::draw(QPainter & p)
@@ -202,10 +200,8 @@ void SdDurationCanvas::moveBy(double dx, double dy)
         DiagramCanvas::moveBy(dx, 0);
 
         // update messages position (even selected, this case is managed by the messages)
-        Q3PtrListIterator<SdMsgBaseCanvas> it(msgs);
-
-        for (; it.current(); ++it)
-            it.current()->update_hpos();
+        foreach (SdMsgBaseCanvas *canvas, msgs)
+            canvas->update_hpos();
     }
     else {
         double my = min_y();
@@ -217,10 +213,8 @@ void SdDurationCanvas::moveBy(double dx, double dy)
         DiagramCanvas::moveBy(0, dy);
 
         // move messages (even selected, this case is managed by the messages)
-        Q3PtrListIterator<SdMsgBaseCanvas> it(msgs);
-
-        for (; it.current(); ++it)
-            it.current()->moveBy(100000, dy);
+        foreach (SdMsgBaseCanvas *canvas, msgs)
+            canvas->moveBy(100000, dy);
     }
 
     support->update_v_to_contain(this, FALSE);
@@ -232,12 +226,10 @@ void SdDurationCanvas::prepare_for_move(bool on_resize)
     DiagramCanvas::prepare_for_move(on_resize);
 
     if (! on_resize) {
-        Q3PtrListIterator<SdDurationCanvas> itd(durations);
-
-        for (; itd.current(); ++itd) {
-            if (! itd.current()->selected()) {
-                the_canvas()->select(itd.current());
-                itd.current()->prepare_for_move(on_resize);
+        foreach (SdDurationCanvas *canvas, durations) {
+            if (! canvas->selected()) {
+                the_canvas()->select(canvas);
+                canvas->prepare_for_move(on_resize);
             }
         }
     }
@@ -304,11 +296,10 @@ void SdDurationCanvas::update_v_to_contain(SdDurationCanvas * d, bool force)
 
 void SdDurationCanvas::update_self()
 {
-    Q3PtrListIterator<SdMsgBaseCanvas> it(msgs);
     QRect r = rect();
 
-    for (; it.current(); ++it)
-        it.current()->check_vpos(r);
+    foreach (SdMsgBaseCanvas *canvas, msgs)
+        canvas->check_vpos(r);
 }
 
 QString SdDurationCanvas::may_start(UmlCode &) const
@@ -446,7 +437,7 @@ void SdDurationCanvas::add(SdMsgBaseCanvas * m)
 
 void SdDurationCanvas::remove(SdMsgBaseCanvas * m)
 {
-    msgs.removeRef(m);
+    msgs.remove(m);
 
     if (msgs.isEmpty() && durations.isEmpty())
         // now useless, remove it
@@ -469,20 +460,15 @@ void SdDurationCanvas::remove(SdDurationCanvas * d)
 
 void SdDurationCanvas::cut_internal(int py)
 {
-    Q3PtrListIterator<SdDurationCanvas> itd(durations);
-
-    for (; itd.current(); ++itd)
-        itd.current()->cut_internal(py);
+    foreach (SdDurationCanvas *canvas, durations)
+        canvas->cut_internal(py);
 
     QRect r = rect();
     resize(width(), py - r.top());
     SdDurationCanvas * newone = 0;
 
-    Q3PtrList<SdMsgBaseCanvas> ms(msgs);
-    Q3PtrListIterator<SdMsgBaseCanvas> it(ms);
-
-    for (; it.current(); ++it) {
-        if (it.current()->rect().center().y() > py) {
+    foreach (SdMsgBaseCanvas *canvas, msgs) {
+        if (canvas->rect().center().y() > py) {
             // on the new duration
             if (newone == 0) {
                 // width and height to 0 on creation to not have
@@ -494,17 +480,14 @@ void SdDurationCanvas::cut_internal(int py)
                 newone->show();
             }
 
-            remove(it.current());
-            newone->add(it.current());
-            it.current()->change_duration(this, newone);
+            remove(canvas);
+            newone->add(canvas);
+            canvas->change_duration(this, newone);
         }
     }
 
-    Q3PtrList<SdDurationCanvas> durs(durations);
-    Q3PtrListIterator<SdDurationCanvas> itdur(durs);
-
-    for (itdur.toFirst() ; itdur.current(); ++itdur) {
-        if (itdur.current()->rect().center().y() > py) {
+    foreach (SdDurationCanvas *canvas, durations) {
+        if (canvas->rect().center().y() > py) {
             // on the new duration
             if (newone == 0) {
                 // width and height to 0 on creation to not have
@@ -516,12 +499,12 @@ void SdDurationCanvas::cut_internal(int py)
                 newone->show();
             }
 
-            remove(itdur.current());
-            newone->add(itdur.current());
-            itdur.current()->support =  newone;
+            remove(canvas);
+            newone->add(canvas);
+            canvas->support =  newone;
         }
 
-        itdur.current()->update_v_to_contain(itdur.current(), TRUE);
+        canvas->update_v_to_contain(canvas, TRUE);
     }
 }
 
@@ -531,16 +514,15 @@ void SdDurationCanvas::cut(const QPoint & p)
     package_modified();
 }
 
-void SdDurationCanvas::merge(Q3PtrList<SdDurationCanvas> & l)
+void SdDurationCanvas::merge(QList<SdDurationCanvas *> & l)
 {
-    l.removeRef(this);
+    l.remove(this);
 
     QRect r = rect();
     int vmin = r.top();
     int vmax = r.bottom();
-    SdDurationCanvas * d;
 
-    for (d = l.first(); d != 0; d = l.next()) {
+    foreach (SdDurationCanvas *d, l) {
         QRect dr = d->rect();
 
         if (dr.top() < vmin)
@@ -561,23 +543,17 @@ void SdDurationCanvas::merge(Q3PtrList<SdDurationCanvas> & l)
 
 void SdDurationCanvas::collapse(SdDurationCanvas * d)
 {
-    Q3PtrList<SdMsgBaseCanvas> & ms = d->msgs;
-
-    while (! ms.isEmpty()) {
-        SdMsgBaseCanvas * m = ms.take(0);
-
-        msgs.append(m);
+    foreach (SdMsgBaseCanvas *m, d->msgs) {
+        msgs << m;
         m->change_duration(d, this);
     }
+    d->msgs.clear();
 
-    Q3PtrList<SdDurationCanvas> & durs = d->durations;
-
-    while (! durs.isEmpty()) {
-        SdDurationCanvas * dur = durs.take(0);
-
-        durations.append(dur);
+    foreach (SdDurationCanvas *dur, d->durations) {
+        durations << dur;
         dur->support = this;
     }
+    d->durations.clear();
 
     d->delete_it();
 }
@@ -596,7 +572,7 @@ void SdDurationCanvas::go_up(SdMsgBaseCanvas * m, bool isdest)
     m->change_duration(this, d);
     d->update_hpos(); // update sub duration and msg hpos
     d->update_self();
-    msgs.removeRef(m);
+    msgs.remove(m);
     m->upper();
 }
 
@@ -615,7 +591,7 @@ void SdDurationCanvas::go_down(SdMsgBaseCanvas * m)
 void SdDurationCanvas::toFlat()
 {
     while (! durations.isEmpty()) {
-        SdDurationCanvas * d = durations.getFirst();
+        SdDurationCanvas * d = durations.first();
 
         d->toFlat();
         collapse(d);
@@ -633,7 +609,7 @@ void SdDurationCanvas::toOverlapping()
     unsigned index = 0;
 
     while (! msgs.isEmpty())
-        v[index++] = msgs.take(0);
+        v[index++] = msgs.takeFirst();
 
     unsigned sup = sz;
 
@@ -719,17 +695,13 @@ void SdDurationCanvas::toOverlapping(SdMsgBaseCanvas ** v,
 
 void SdDurationCanvas::postToOverlapping()
 {
-    Q3PtrListIterator<SdDurationCanvas> itd(durations);
+    foreach (SdDurationCanvas *canvas, durations)
+        canvas->postToOverlapping();
 
-    for (; itd.current(); ++itd)
-        itd.current()->postToOverlapping();
-
-    Q3PtrListIterator<SdMsgBaseCanvas> it(msgs);
-
-    for (; it.current(); ++it) {
-        it.current()->upper();
-        it.current()->update_hpos();
-        ((DiagramItem *) it.current())->update();	// not QCanvasItem::update
+    foreach (SdMsgBaseCanvas *canvas, msgs) {
+        canvas->upper();
+        canvas->update_hpos();
+        canvas->DiagramItem::update();	// not QCanvasItem::update
     }
 }
 
@@ -751,7 +723,7 @@ void SdDurationCanvas::menu(const QPoint & p)
 {
     Q3PopupMenu m(0);
     Q3CanvasItemList items = collisions(TRUE);
-    Q3PtrList<SdDurationCanvas> l;
+    QList<SdDurationCanvas *> l;
     Q3CanvasItemList::ConstIterator it;
     Q3CanvasItemList::ConstIterator end = items.end();
 
@@ -899,7 +871,7 @@ bool SdDurationCanvas::has_drawing_settings() const
     return TRUE;
 }
 
-void SdDurationCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void SdDurationCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         ColorSpecVector co(1);
@@ -912,11 +884,10 @@ void SdDurationCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if ((dialog.exec() == QDialog::Accepted) && !co[0].name.isEmpty()) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
-                ((SdDurationCanvas *) it.current())->itscolor = itscolor;
-                ((SdDurationCanvas *) it.current())->modified();	// call package_modified()
+            foreach (DiagramItem *item, l) {
+                SdDurationCanvas *canvas = (SdDurationCanvas *)item;
+                canvas->itscolor = itscolor;
+                canvas->modified();
             }
         }
 
@@ -925,18 +896,11 @@ void SdDurationCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void SdDurationCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void SdDurationCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    SdDurationCanvas * x = (SdDurationCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        SdDurationCanvas * o = (SdDurationCanvas *) it.current();
-
-        o->itscolor = x->itscolor;
-        o->modified();	// call package_modified()
-    }
+    const SdDurationCanvas * x = (const SdDurationCanvas *) src;
+    itscolor = x->itscolor;
+    modified();
 }
 
 aCorner SdDurationCanvas::on_resize_point(const QPoint & p)
@@ -999,11 +963,9 @@ void SdDurationCanvas::select_associated()
     if (! selected())
         the_canvas()->select(this);
 
-    Q3PtrListIterator<SdMsgBaseCanvas> it(msgs);
-
-    for (; it.current(); ++it)
-        if (! it.current()->selected())
-            it.current()->select_associated();
+    foreach (SdMsgBaseCanvas *canvas, msgs)
+        if (! canvas->selected())
+            canvas->select_associated();
 }
 
 bool SdDurationCanvas::copyable() const
@@ -1011,10 +973,8 @@ bool SdDurationCanvas::copyable() const
     if (! selected())
         return FALSE;
 
-    Q3PtrListIterator<SdMsgBaseCanvas> it(msgs);
-
-    for (; it.current(); ++it)
-        if (it.current()->copyable())
+    foreach (SdMsgBaseCanvas *canvas, msgs)
+        if (canvas->copyable())
             return TRUE;
 
     return FALSE;
@@ -1052,29 +1012,21 @@ double SdDurationCanvas::getZ() const
     return z();
 }
 
-void SdDurationCanvas::propag_visible(Q3PtrList<SdDurationCanvas> & l, bool y)
+void SdDurationCanvas::propag_visible(QList<SdDurationCanvas *> & l, bool y)
 {
-    Q3PtrListIterator<SdDurationCanvas> itd(l);
-    SdDurationCanvas * d;
-
-    for (; (d = itd.current()) != 0; ++itd) {
+    foreach (SdDurationCanvas *d, l) {
         d->Q3CanvasItem::setVisible(y);
 
-        Q3PtrListIterator<SdMsgBaseCanvas> itm(d->msgs);
-
-        for (; itm.current(); ++itm)
-            itm.current()->Q3CanvasItem::setVisible(y);
+        foreach (SdMsgBaseCanvas *msg, d->msgs)
+            msg->Q3CanvasItem::setVisible(y);
 
         propag_visible(d->durations, y);
     }
 }
 
-void SdDurationCanvas::propag_dz(Q3PtrList<SdDurationCanvas> & l, double dz)
+void SdDurationCanvas::propag_dz(QList<SdDurationCanvas *> & l, double dz)
 {
-    Q3PtrListIterator<SdDurationCanvas> it(l);
-    SdDurationCanvas * d;
-
-    for (; (d = it.current()) != 0; ++it) {
+    foreach (SdDurationCanvas *d, l) {
         d->Q3CanvasItem::setZ(d->z() + dz);
         propag_dz(d->durations, dz);
     }
@@ -1104,10 +1056,8 @@ void SdDurationCanvas::save_internal(QTextStream & st) const
     nl_indent(st);
     save_xyzwh(st, this, "xyzwh");
 
-    Q3PtrListIterator<SdDurationCanvas> itd(durations);
-
-    for (; itd.current(); ++itd)
-        itd.current()->save_sub(st);
+    foreach (SdDurationCanvas *canvas, durations)
+        canvas->save_sub(st);
 
     indent(-1);
     nl_indent(st);
@@ -1216,19 +1166,15 @@ void SdDurationCanvas::history_save(QBuffer & b) const
     ::save(height(), b);
     ::save_ptr(support, b);
 
-    Q3PtrListIterator<SdMsgBaseCanvas> it(msgs);
-
     ::save((int) msgs.count(), b);
 
-    for (; it.current(); ++it)
-        ::save(it.current(), b);
-
-    Q3PtrListIterator<SdDurationCanvas> itd(durations);
+    foreach (SdMsgBaseCanvas *canvas, msgs)
+        ::save(canvas, b);
 
     ::save((int) durations.count(), b);
 
-    for (; itd.current(); ++itd)
-        ::save(itd.current(), b);
+    foreach (SdDurationCanvas *canvas, durations)
+        ::save(canvas, b);
 }
 
 void SdDurationCanvas::history_load(QBuffer & b)
@@ -1267,16 +1213,15 @@ void SdDurationCanvas::history_load(QBuffer & b)
 unsigned SdDurationCanvas::count_msg(int api_format) const
 {
     unsigned count = 0;
-    Q3PtrListIterator<SdMsgBaseCanvas> itm(msgs);
     double maxy = 0;
     bool isreturn = FALSE;
 
-    for (; itm.current(); ++itm) {
-        switch (itm.current()->type()) {
+    foreach (SdMsgBaseCanvas *canvas, msgs) {
+        switch (canvas->type()) {
         case UmlSyncMsg:
         case UmlAsyncMsg:
         case UmlReturnMsg:
-            if (itm.current()->get_dest() == (const SdMsgSupport *) this)
+            if (canvas->get_dest() == (const SdMsgSupport *) this)
                 break;
 
             // no break
@@ -1285,10 +1230,10 @@ unsigned SdDurationCanvas::count_msg(int api_format) const
             count += 1;
         }
 
-        if (itm.current()->y() > maxy) {
-            maxy = itm.current()->y();
+        if (canvas->y() > maxy) {
+            maxy = canvas->y();
 
-            switch (itm.current()->type()) {
+            switch (canvas->type()) {
             case UmlReturnMsg:
             case UmlSelfReturnMsg:
                 isreturn = TRUE;
@@ -1303,38 +1248,35 @@ unsigned SdDurationCanvas::count_msg(int api_format) const
     if (!isreturn)
         count += 1;
 
-    Q3PtrListIterator<SdDurationCanvas> itd(durations);
-
-    for (; itd.current(); ++itd)
-        count += itd.current()->count_msg(api_format);
+    foreach (SdDurationCanvas *canvas, durations)
+        count += canvas->count_msg(api_format);
 
     return count;
 }
 
 void SdDurationCanvas::send(ToolCom * com, int id) const
 {
-    Q3PtrListIterator<SdMsgBaseCanvas> itm(msgs);
     double maxy = 0;
     bool isreturn = FALSE;
 
-    for (; itm.current(); ++itm) {
-        switch (itm.current()->type()) {
+    foreach (SdMsgBaseCanvas *canvas, msgs) {
+        switch (canvas->type()) {
         case UmlSyncMsg:
         case UmlAsyncMsg:
         case UmlReturnMsg:
-            if (itm.current()->get_dest() == (const SdMsgSupport *) this)
+            if (canvas->get_dest() == (const SdMsgSupport *) this)
                 break;
 
             // no break
         default:
             // msg start from duration, except for found msg
-            itm.current()->send(com, id);
+            canvas->send(com, id);
         }
 
-        if (itm.current()->y() > maxy) {
-            maxy = itm.current()->y();
+        if (canvas->y() > maxy) {
+            maxy = canvas->y();
 
-            switch (itm.current()->type()) {
+            switch (canvas->type()) {
             case UmlReturnMsg:
             case UmlSelfReturnMsg:
                 isreturn = TRUE;
@@ -1351,8 +1293,6 @@ void SdDurationCanvas::send(ToolCom * com, int id) const
                               (unsigned) y() + height(),
                               anImplicitReturn, "", "", "");
 
-    Q3PtrListIterator<SdDurationCanvas> itd(durations);
-
-    for (; itd.current(); ++itd)
-        itd.current()->send(com, id);
+    foreach (SdDurationCanvas *canvas, durations)
+        canvas->send(com, id);
 }

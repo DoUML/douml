@@ -60,8 +60,8 @@ public:
 #ifdef REVERSE
                         , bool libp
 # ifdef ROUNDTRIP
-                        , bool roundtrip, Q3PtrList<UmlItem> & expected_order
-                        , bool container_roundtrip, Q3PtrList<UmlItem> & container_expected_order
+                        , bool roundtrip, QList<UmlItem *> & expected_order
+                        , bool container_roundtrip, QList<UmlItem *> & container_expected_order
 # endif
 #endif
                        );
@@ -97,7 +97,7 @@ public:
 # ifdef ROUNDTRIP
     virtual void upload(ClassContainer * cnt);
     virtual bool set_roundtrip_expected();
-    virtual void mark_useless(Q3PtrList<UmlItem> & l);
+    virtual void mark_useless(QList<UmlItem *> & l);
     virtual void scan_it(int & n);
     virtual void send_it(int n);
     bool is_created() const {
@@ -112,7 +112,7 @@ public:
     UmlItem * search_for_att_rel(const WrapperStr & name);
     UmlExtraClassMember * search_for_extra(const WrapperStr & name, const WrapperStr & decl);
     UmlRelation * search_for_inherit(UmlClass * mother);
-    void reorder(Q3PtrList<UmlItem> & expected_order);
+    void reorder(QList<UmlItem *> & expected_order);
 # endif
 #endif
 
@@ -122,12 +122,12 @@ private:
                                   , bool libp
 # ifdef ROUNDTRIP
                                   , bool container_roundtrip
-                                  , Q3PtrList<UmlItem> & container_expected_order
+                                  , QList<UmlItem *> & container_expected_order
 # endif
 #endif
                                  );
 
-    static Q3PtrList<UmlClass> UnderConstruction;
+    static QList<UmlClass *> UnderConstruction;
     static Q3Dict<UmlClass> Usings;
     static Q3ValueList<Q3Dict<UmlClass> > UsingScope;
 };

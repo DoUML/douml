@@ -208,7 +208,7 @@ void BrowserClassInstance::update_stereotype(bool)
     }
 }
 
-void BrowserClassInstance::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserClassInstance::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
     BrowserClassInstance::compute_referenced_by(l, this);
@@ -220,7 +220,7 @@ void BrowserClassInstance::referenced_by(Q3PtrList<BrowserNode> & l, bool ondele
     }
 }
 
-void BrowserClassInstance::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserClassInstance::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserNode * target)
 {
     IdIterator<BrowserClassInstance> it(all);

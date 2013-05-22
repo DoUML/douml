@@ -126,7 +126,7 @@ void BrowserExpansionRegion::prepare_update_lib() const
         ((BrowserNode *) child)->prepare_update_lib();
 }
 
-void BrowserExpansionRegion::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserExpansionRegion::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
 
@@ -619,17 +619,16 @@ bool BrowserExpansionRegion::tool_cmd(ToolCom * com, const char * args)
     }
 }
 
-bool BrowserExpansionRegion::may_contains_them(const Q3PtrList<BrowserNode> & l,
+bool BrowserExpansionRegion::may_contains_them(const QList<BrowserNode *> & l,
         BooL & duplicable) const
 {
     BrowserNode * activity = get_container(UmlActivity);
-    Q3PtrListIterator<BrowserNode> it(l);
 
-    for (; it.current(); ++it) {
-        switch (it.current()->get_type()) {
+    foreach (BrowserNode *node, l) {
+        switch (node->get_type()) {
         case UmlInterruptibleActivityRegion:
         case UmlExpansionRegion:
-            if (((const BrowserNode *) it.current()->get_container(UmlActivity)) != activity)
+            if (((const BrowserNode *) node->get_container(UmlActivity)) != activity)
                 return FALSE;
 
             break;
@@ -644,7 +643,7 @@ bool BrowserExpansionRegion::may_contains_them(const Q3PtrList<BrowserNode> & l,
         case MergeAN:
         case ForkAN:
         case JoinAN:
-            if (((const BrowserNode *) it.current()->get_container(UmlActivity)) != activity)
+            if (((const BrowserNode *) node->get_container(UmlActivity)) != activity)
                 return FALSE;
 
             break;
@@ -653,10 +652,10 @@ bool BrowserExpansionRegion::may_contains_them(const Q3PtrList<BrowserNode> & l,
             return FALSE;
         }
 
-        if (! may_contains(it.current(), TRUE))
+        if (! may_contains(node, TRUE))
             return FALSE;
 
-        duplicable = may_contains_it(it.current());
+        duplicable = may_contains_it(node);
     }
 
     return TRUE;

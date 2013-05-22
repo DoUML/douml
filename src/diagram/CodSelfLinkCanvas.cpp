@@ -85,7 +85,7 @@ void CodSelfLinkCanvas::remove_it(ColMsg * msg)
     if (unsubscribe(oper_data))
         disconnect(oper_data, 0, this, 0);
 
-    msgs.removeRef(msg);
+    msgs.remove(msg);
 }
 
 void CodSelfLinkCanvas::delete_available(BooL &, BooL & out_model) const
@@ -166,23 +166,22 @@ void CodSelfLinkCanvas::update_msgs()
 
         the_canvas()->browser_diagram()->get_collaborationdiagramsettings(dflt);
 
-        Q3PtrListIterator<ColMsg> it(msgs);
         QString nl = "\n";
         QString null;
         const QString * pfix = &null;
 
-        for (; it.current() != 0; ++it) {
-            const BasicData * oper_data = it.current()->get_operation();
+        foreach (ColMsg *msg, msgs) {
+            const BasicData *oper_data = msg->get_operation();
 
             if ((oper_data != 0) && subscribe(oper_data)) {
                 connect(oper_data, SIGNAL(changed()), this, SLOT(modified()));
                 connect(oper_data, SIGNAL(deleted()), this, SLOT(modified()));
             }
 
-            QString m = it.current()->def(dflt.show_hierarchical_rank == UmlYes,
-                                          dflt.show_full_operations_definition == UmlYes,
-                                          dflt.drawing_language,
-                                          dflt.show_msg_context_mode);
+            QString m = msg->def(dflt.show_hierarchical_rank == UmlYes,
+                                 dflt.show_full_operations_definition == UmlYes,
+                                 dflt.drawing_language,
+                                 dflt.show_msg_context_mode);
 
             if (!m.isEmpty()) {
                 s += *pfix + m;
@@ -449,10 +448,8 @@ void CodSelfLinkCanvas::history_load(QBuffer & b)
     ::load(delta_y, b);
     ::load(angle, b);
 
-    Q3PtrListIterator<ColMsg> it(msgs);
-
-    for (; it.current() != 0; ++it) {
-        const BasicData * oper_data = it.current()->get_operation();
+    foreach (ColMsg *msg, msgs) {
+        const BasicData *oper_data = msg->get_operation();
 
         if ((oper_data != 0) && subscribe(oper_data)) {
             connect(oper_data, SIGNAL(changed()), this, SLOT(modified()));
@@ -466,13 +463,10 @@ void CodSelfLinkCanvas::history_hide()
     DiagramCanvas::setVisible(FALSE);
     disconnect(DrawingSettings::instance(), SIGNAL(changed()), this, SLOT(modified()));
 
-    Q3PtrListIterator<ColMsg> it(msgs);
-
-    for (; it.current() != 0; ++it) {
-        const BasicData * oper_data = it.current()->get_operation();
+    foreach (ColMsg *msg, msgs) {
+        const BasicData * oper_data = msg->get_operation();
 
         if ((oper_data != 0) && unsubscribe(oper_data))
             disconnect(oper_data, 0, this, 0);
     }
 }
-

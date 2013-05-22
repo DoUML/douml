@@ -39,7 +39,7 @@
 #include "SynchroDialog.h"
 #include "BrowserView.h"
 
-SynchroDialog::SynchroDialog(Q3PtrList<BrowserView> & b)
+SynchroDialog::SynchroDialog(QList<BrowserView *> & b)
     : QDialog(0, "Synchronize", TRUE), browsers(b)
 {
     setCaption("Synchronize");

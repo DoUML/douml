@@ -142,7 +142,7 @@ void BrowserActivity::prepare_update_lib() const
         ((BrowserNode *) child)->prepare_update_lib();
 }
 
-void BrowserActivity::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserActivity::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
 
@@ -153,7 +153,7 @@ void BrowserActivity::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
 }
 
 // callers suppose this only take specification into acount
-void BrowserActivity::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserActivity::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserOperation * op)
 {
     IdIterator<BrowserActivity> it(all);
@@ -749,13 +749,11 @@ bool BrowserActivity::tool_cmd(ToolCom * com, const char * args)
     }
 }
 
-bool BrowserActivity::may_contains_them(const Q3PtrList<BrowserNode> & l,
+bool BrowserActivity::may_contains_them(const QList<BrowserNode *> & l,
                                         BooL & duplicable) const
 {
-    Q3PtrListIterator<BrowserNode> it(l);
-
-    for (; it.current(); ++it) {
-        switch (it.current()->get_type()) {
+    foreach (BrowserNode *node, l) {
+        switch (node->get_type()) {
         case UmlInterruptibleActivityRegion:
         case UmlExpansionRegion:
         case UmlParameter:
@@ -771,16 +769,16 @@ bool BrowserActivity::may_contains_them(const Q3PtrList<BrowserNode> & l,
         case ForkAN:
         case JoinAN:
         case UmlDependOn:
-            return (((const BrowserNode *) it.current()->get_container(UmlActivity)) == this);
+            return (((const BrowserNode *) node->get_container(UmlActivity)) == this);
 
         default:
             return FALSE;
         }
 
-        if (! may_contains(it.current(), FALSE))
+        if (! may_contains(node, FALSE))
             return FALSE;
 
-        duplicable = may_contains_it(it.current());
+        duplicable = may_contains_it(node);
     }
 
     return TRUE;

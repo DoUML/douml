@@ -48,7 +48,7 @@
 QSize OperationListDialog::previous_size;
 
 OperationListDialog::OperationListDialog(const char * m,
-        Q3PtrList<BrowserOperation> & l)
+        QList<BrowserOperation *> & l)
     : QDialog(0, m, TRUE)
 {
     setCaption(m);
@@ -62,7 +62,7 @@ OperationListDialog::OperationListDialog(const char * m,
     cb = new Q3ComboBox(FALSE, this);
     vbox->addWidget(cb);
 
-    for (BrowserOperation * oper = l.first(); oper; oper = l.next()) {
+    foreach (BrowserOperation *oper, l) {
         QString s = ((BrowserNode *) oper->parent())->get_name() +
                     QString("::") + oper->get_data()->definition(TRUE, FALSE);
 

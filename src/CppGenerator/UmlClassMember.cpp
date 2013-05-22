@@ -153,7 +153,7 @@ void UmlClassMember::remove_arrays(WrapperStr & s)
 // Between template < and > I suppose that a type is not included
 // because I cannot know how the type is used and I do not want to
 // produce circular #include
-bool UmlClassMember::compute_dependency(Q3PtrList<CppRefType> & dependencies,
+bool UmlClassMember::compute_dependency(QList<CppRefType *> & dependencies,
                                         WrapperStr decl, const UmlTypeSpec & t,
                                         bool force_incl)
 {

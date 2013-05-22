@@ -61,7 +61,7 @@
 #include "translate.h"
 
 IdDict<BrowserRelation> BrowserRelation::all(1021, __FILE__);
-static Q3PtrList<BrowserRelation> Unconsistent;
+static QList<BrowserRelation *> Unconsistent;
 
 BrowserRelation::BrowserRelation(BrowserNode * p, RelationData * d, int id)
     : BrowserNode(d->get_name(), p), Labeled<BrowserRelation>(all, id),
@@ -214,7 +214,7 @@ UmlVisibility BrowserRelation::get_visibility() const
     return def->get_uml_visibility_a();
 }
 
-void BrowserRelation::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserRelation::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserClass * target)
 {
     IdIterator<BrowserRelation> it(all);
@@ -232,7 +232,7 @@ void BrowserRelation::compute_referenced_by(Q3PtrList<BrowserNode> & l,
     }
 }
 
-void BrowserRelation::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserRelation::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
     BrowserClassInstance::compute_referenced_by(l, this);
@@ -1000,12 +1000,12 @@ void BrowserRelation::post_load()
         ++it;
     }
 
-    while (!Unconsistent.isEmpty()) {
-        br = Unconsistent.take(0);
+    foreach (BrowserRelation *br, Unconsistent) {
         br->def->set_unconsistent();
         br->def = 0;
         br->must_be_deleted();
     }
+    Unconsistent.clear();
 
     if (RelationData::has_unconsistencies()) {
         IdIterator<BrowserRelation> it2(all);

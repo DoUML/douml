@@ -129,7 +129,7 @@ void BrowserState::prepare_update_lib() const
         ((BrowserNode *) child)->prepare_update_lib();
 }
 
-void BrowserState::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserState::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
     BrowserTransition::compute_referenced_by(l, this);
@@ -151,7 +151,7 @@ void BrowserState::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
 }
 
 // callers suppose this only take specification into acount
-void BrowserState::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserState::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserOperation * op)
 {
     IdIterator<BrowserState> it(all);
@@ -754,14 +754,13 @@ BrowserState * BrowserState::get_machine(const BrowserNode * bn)
     }
 }
 
-bool BrowserState::may_contains_them(const Q3PtrList<BrowserNode> & l,
+bool BrowserState::may_contains_them(const QList<BrowserNode *> & l,
                                      BooL & duplicable) const
 {
     BrowserNode * machine = get_machine(this);
-    Q3PtrListIterator<BrowserNode> it(l);
 
-    for (; it.current(); ++it) {
-        switch (it.current()->get_type()) {
+    foreach (BrowserNode *node, l) {
+        switch (node->get_type()) {
         case UmlTransition:
 
             // no break !
@@ -787,7 +786,7 @@ bool BrowserState::may_contains_them(const Q3PtrList<BrowserNode> & l,
             // no break
         case EntryPointPS:
         case ExitPointPS:
-            if (get_machine(it.current()) != machine)
+            if (get_machine(node) != machine)
                 return FALSE;
 
             break;
@@ -796,10 +795,10 @@ bool BrowserState::may_contains_them(const Q3PtrList<BrowserNode> & l,
             return FALSE;
         }
 
-        if (! BrowserNode::may_contains(it.current(), TRUE))
+        if (! BrowserNode::may_contains(node, TRUE))
             return FALSE;
 
-        duplicable = may_contains_it(it.current());
+        duplicable = may_contains_it(node);
     }
 
     return TRUE;

@@ -46,7 +46,7 @@
 QSize BodyDialog::previous_size;
 
 BodyDialog::BodyDialog(QString t, Q3TabDialog * d, post_edit pf,
-                       EditType k, QString what, Q3PtrList<BodyDialog> & edits)
+                       EditType k, QString what, QList<BodyDialog *> & edits)
     : QDialog(d, what, d->isModal(), Qt::WDestructiveClose), dlg(d), f(pf), eds(edits)
 {
     eds.append(this);

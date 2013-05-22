@@ -58,9 +58,9 @@ class UmlCanvas;
 class DiagramItem : public Labeled<DiagramItem>
 {
 protected:
-    Q3PtrList<ArrowCanvas> lines;
+    QList<ArrowCanvas *> lines;
 
-    static Q3PtrList<DiagramItem> Undefined;
+    static QList<DiagramItem *> Undefined;
 
 public:
     DiagramItem(int id, UmlCanvas * canvas);
@@ -133,8 +133,8 @@ public:
     }
 
     virtual bool has_drawing_settings() const;
-    virtual void edit_drawing_settings(Q3PtrList<DiagramItem> &);
-    virtual void same_drawing_settings(Q3PtrList<DiagramItem> &);
+    virtual void edit_drawing_settings(QList<DiagramItem *> &);
+    virtual void clone_drawing_settings(const DiagramItem *src);
 
     virtual void apply_shortcut(QString);
 
@@ -146,12 +146,14 @@ public:
     virtual bool represents(BrowserNode *);
 };
 
-class DiagramItemList : public Q3PtrList<DiagramItem>
+class DiagramItemList : public QList<DiagramItem *>
 {
 public:
     DiagramItemList(Q3CanvasItemList);
     virtual ~DiagramItemList();
-    virtual int compareItems(Q3PtrCollection::Item, Q3PtrCollection::Item);
+
+    void sort();
+    static bool lessThan(DiagramItem *a, DiagramItem *b);
 };
 
 

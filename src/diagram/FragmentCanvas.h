@@ -47,7 +47,7 @@ protected:
     QString name;
     int min_width;
     int min_height;
-    Q3PtrList<FragmentSeparatorCanvas> separators;
+    QList<FragmentSeparatorCanvas *> separators;
     BrowserNode * refer;
     QString form;
 
@@ -86,8 +86,8 @@ public:
     virtual void history_hide();
 
     virtual bool has_drawing_settings() const;
-    virtual void edit_drawing_settings(Q3PtrList<DiagramItem> &);
-    virtual void same_drawing_settings(Q3PtrList<DiagramItem> &);
+    virtual void edit_drawing_settings(QList<DiagramItem *> &);
+    virtual void clone_drawing_settings(const DiagramItem *src);
     void edit_drawing_settings();
 
     virtual void apply_shortcut(QString s);
@@ -97,8 +97,8 @@ public:
     }
 
     static void send(ToolCom * com, Q3CanvasItemList & all,
-                     Q3PtrList<FragmentCanvas> & fragments,
-                     Q3PtrList<FragmentCanvas> & refs);
+                     QList<FragmentCanvas *> & fragments,
+                     QList<FragmentCanvas *> & refs);
 
 private slots:
     void modified();

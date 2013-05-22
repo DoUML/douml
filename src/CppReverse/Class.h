@@ -62,7 +62,7 @@ protected:
     void manage_member(WrapperStr s, aVisibility visibility,
                        ClassContainer * container, const WrapperStr & path
 #ifdef ROUNDTRIP
-                       , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                       , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                       );
 
@@ -87,7 +87,7 @@ public:
     virtual void declaration(const WrapperStr & name, const WrapperStr & stereotype,
                              const WrapperStr & decl
 #ifdef ROUNDTRIP
-                             , bool roundtrip, Q3PtrList<UmlItem> & expected_order
+                             , bool roundtrip, QList<UmlItem *> & expected_order
 #endif
                             );
 
@@ -137,19 +137,19 @@ public:
                            const Q3ValueList<FormalParameterList> & tmplt,
                            const WrapperStr & path, WrapperStr name
 #ifdef ROUNDTRIP
-                           , bool rndtrp, Q3PtrList<UmlItem> & expectedorder
+                           , bool rndtrp, QList<UmlItem *> & expectedorder
 #endif
                           );
     static Class * reverse_enum(ClassContainer * container,
                                 const WrapperStr & path, WrapperStr name
 #ifdef ROUNDTRIP
-                                , bool rndtrp, Q3PtrList<UmlItem> & expectedorder
+                                , bool rndtrp, QList<UmlItem *> & expectedorder
 #endif
                                );
     static bool reverse_typedef(ClassContainer * container, const WrapperStr & path,
                                 Q3ValueList<FormalParameterList> & tmplts
 #ifdef ROUNDTRIP
-                                , bool rndtrp, Q3PtrList<UmlItem> & expectedorder
+                                , bool rndtrp, QList<UmlItem *> & expectedorder
 #endif
                                );
 };

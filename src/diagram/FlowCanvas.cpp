@@ -420,7 +420,7 @@ bool FlowCanvas::has_drawing_settings() const
     return ((aplabel != 0) || (apstereotype != 0));
 }
 
-void FlowCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
+void FlowCanvas::edit_drawing_settings(QList<DiagramItem *> & l)
 {
     for (;;) {
         StateSpecVector st(1);
@@ -436,16 +436,15 @@ void FlowCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
         dialog.raise();
 
         if (dialog.exec() == QDialog::Accepted) {
-            Q3PtrListIterator<DiagramItem> it(l);
-
-            for (; it.current(); ++it) {
+            foreach (DiagramItem *item, l) {
+                FlowCanvas *canvas = (FlowCanvas *)item;
                 if (!st[0].name.isEmpty())
-                    ((FlowCanvas *) it.current())->write_horizontally =
+                    canvas->write_horizontally =
                         write_horizontally;
 
-                ((FlowCanvas *) it.current())->settings.set(st, 1);
-                ((FlowCanvas *) it.current())->propagate_drawing_settings();
-                ((FlowCanvas *) it.current())->modified();
+                canvas->settings.set(st, 1);
+                canvas->propagate_drawing_settings();
+                canvas->modified();
             }
         }
 
@@ -454,20 +453,13 @@ void FlowCanvas::edit_drawing_settings(Q3PtrList<DiagramItem> & l)
     }
 }
 
-void FlowCanvas::same_drawing_settings(Q3PtrList<DiagramItem> & l)
+void FlowCanvas::clone_drawing_settings(const DiagramItem *src)
 {
-    Q3PtrListIterator<DiagramItem> it(l);
-
-    FlowCanvas * x = (FlowCanvas *) it.current();
-
-    while (++it, it.current() != 0) {
-        FlowCanvas * o = (FlowCanvas *) it.current();
-
-        o->write_horizontally = x->write_horizontally;
-        o->settings = x->settings;
-        o->propagate_drawing_settings();
-        o->modified();
-    }
+    const FlowCanvas * x = (const FlowCanvas *) src;
+    write_horizontally = x->write_horizontally;
+    settings = x->settings;
+    propagate_drawing_settings();
+    modified();
 }
 
 ArrowPointCanvas * FlowCanvas::brk(const QPoint & p)

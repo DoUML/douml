@@ -366,7 +366,7 @@ QString BrowserExpansionNode::full_name(bool rev, bool) const
     return fullname(s, rev);
 }
 
-void BrowserExpansionNode::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserExpansionNode::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
     BrowserFlow::compute_referenced_by(l, this);
@@ -375,7 +375,7 @@ void BrowserExpansionNode::referenced_by(Q3PtrList<BrowserNode> & l, bool ondele
         BrowserActivityDiagram::compute_referenced_by(l, this, "expansionnodecanvas", "expansionnode_ref");
 }
 
-void BrowserExpansionNode::compute_referenced_by(Q3PtrList<BrowserNode> & l,
+void BrowserExpansionNode::compute_referenced_by(QList<BrowserNode *> & l,
         BrowserNode * target)
 {
     IdIterator<BrowserExpansionNode> it(all);

@@ -54,7 +54,7 @@ protected:
     MultiLineEdit * comment;
     KeyValuesTable * kvtable;
     QSize & previous_size;
-    Q3PtrList<BodyDialog> edits;
+    QList<BodyDialog *> edits;
 
     static void post_edit_description(BasicDialog * d, QString s);
 

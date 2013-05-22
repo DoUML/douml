@@ -121,7 +121,7 @@ void BrowserActivityNode::prepare_update_lib() const
         ((BrowserNode *) child)->prepare_update_lib();
 }
 
-void BrowserActivityNode::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserActivityNode::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
     BrowserFlow::compute_referenced_by(l, this);
@@ -201,7 +201,7 @@ const QPixmap * BrowserActivityNode::pixmap(int) const
 
 bool BrowserActivityNode::target_of_flow() const
 {
-    Q3PtrList<BrowserNode> l;
+    QList<BrowserNode *> l;
 
     BrowserFlow::compute_referenced_by(l, this);
     return !l.isEmpty();

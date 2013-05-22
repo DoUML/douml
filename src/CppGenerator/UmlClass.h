@@ -52,7 +52,7 @@ class UmlClass : public UmlBaseClass
 private:
     bool managed;
 
-    static Q3PtrList<UmlClass> context;
+    static QList<UmlClass *> context;
 
     static Q3ValueList<UmlActualParameter> noactuals;
 
@@ -62,9 +62,9 @@ public:
 
     WrapperStr cpp_stereotype();
 
-    void compute_dependencies(Q3PtrList<CppRefType> &, bool all_in_h);
+    void compute_dependencies(QList<CppRefType *> &, bool all_in_h);
 
-    virtual void compute_dependency(Q3PtrList<CppRefType> & dependency,
+    virtual void compute_dependency(QList<CppRefType *> & dependency,
                                     const WrapperStr & cl_stereotype,
                                     bool all_in_h);
     virtual void generate_decl(aVisibility & current_visibility,

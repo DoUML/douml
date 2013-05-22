@@ -123,7 +123,7 @@ void BrowserActivityPartition::prepare_update_lib() const
         ((BrowserNode *) child)->prepare_update_lib();
 }
 
-void BrowserActivityPartition::referenced_by(Q3PtrList<BrowserNode> & l, bool ondelete)
+void BrowserActivityPartition::referenced_by(QList<BrowserNode *> & l, bool ondelete)
 {
     BrowserNode::referenced_by(l, ondelete);
 
@@ -510,25 +510,23 @@ bool BrowserActivityPartition::tool_cmd(ToolCom * com, const char * args)
     }
 }
 
-bool BrowserActivityPartition::may_contains_them(const Q3PtrList<BrowserNode> & l,
+bool BrowserActivityPartition::may_contains_them(const QList<BrowserNode *> & l,
         BooL & duplicable) const
 {
     BrowserNode * activity = get_container(UmlActivity);
-    Q3PtrListIterator<BrowserNode> it(l);
-
-    for (; it.current(); ++it) {
-        switch (it.current()->get_type()) {
+    foreach (BrowserNode *node, l) {
+        switch (node->get_type()) {
         case UmlActivityPartition:
-            return (((const BrowserNode *) it.current()->get_container(UmlActivity)) == activity);
+            return (((const BrowserNode *) node->get_container(UmlActivity)) == activity);
 
         default:
             return FALSE;
         }
 
-        if (! may_contains(it.current(), FALSE))
+        if (! may_contains(node, FALSE))
             return FALSE;
 
-        duplicable = may_contains_it(it.current());
+        duplicable = may_contains_it(node);
     }
 
     return TRUE;

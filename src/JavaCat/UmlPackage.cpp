@@ -189,7 +189,7 @@ bool UmlPackage::set_roundtrip_expected()
     return result;
 }
 
-void UmlPackage::mark_useless(Q3PtrList<UmlItem> & l)
+void UmlPackage::mark_useless(QList<UmlItem *> & l)
 {
     Q3PtrVector<UmlItem> ch = UmlItem::children();
     UmlClassItem ** v = (UmlClassItem **) ch.data();

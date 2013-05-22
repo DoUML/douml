@@ -247,7 +247,7 @@ void same_width(QWidget * l1, QWidget * l2, QWidget * l3,
 }
 
 void edit(const QString & s, QString name, void * id, EditType k,
-          Q3TabDialog * d, post_edit pf, Q3PtrList<BodyDialog> & edits)
+          Q3TabDialog * d, post_edit pf, QList<BodyDialog *> & edits)
 {
     QString ed = DoumlEditor;
 
@@ -321,7 +321,7 @@ void edit(const QString & s, QString name, void * id, EditType k,
         (new BodyDialog(s, d, pf, k, name, edits))->show();
 }
 
-bool check_edits(Q3PtrList<BodyDialog> & edits)
+bool check_edits(QList<BodyDialog *> & edits)
 {
     if (edits.isEmpty())
         return TRUE;

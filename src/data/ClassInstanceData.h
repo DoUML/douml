@@ -75,7 +75,7 @@ private:
     BrowserClass * cl;	// type of instance
     Q3ValueList<SlotAttr> attributes;
     Q3ValueList<SlotRel> relations;
-    Q3PtrList<BasicData> connect_list;	// ClassData and ClassInstanceData
+    QList<BasicData *> connect_list;	// ClassData and ClassInstanceData
 
 protected:
     virtual void send_uml_def(ToolCom * com, BrowserNode * bn,
