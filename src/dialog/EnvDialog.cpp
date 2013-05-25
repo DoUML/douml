@@ -231,10 +231,11 @@ EnvDialog::EnvDialog(bool conv, bool noid)
     else
         s = codec();
 
-    if (!s.isEmpty() && ((i = l.findIndex(s)) != -1))
-        cb_charset->setCurrentItem(i);
+    if(s.isEmpty())
+        s = "UTF-8";
 
-    //
+    if((i = l.findIndex(s)) != -1)
+        cb_charset->setCurrentItem(i);
 
     new QLabel(grid);
     new QLabel(TR("\nIn case you have a multiple screens configuration the best for you is to ask Bouml to place by default the dialogs in one of these\n"

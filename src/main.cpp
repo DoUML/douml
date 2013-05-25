@@ -57,9 +57,7 @@
 #include "ui/constructorinitializerdialog.h"
 #include "misc/TypeIdentifier.h"
 #include <QSettings>
-
 #include "translate.h"
-#include "settings_ini.h"
 
 bool ExitOnError = FALSE;
 int main(int argc, char ** argv)
@@ -97,26 +95,27 @@ int main(int argc, char ** argv)
     factory->AddFactory(TypeIdentifier<ConstructorInitializerDialog>::id(), CreateLimitedDialogMenu);
     factory->AddConnectionFunctorQt4(TypeIdentifier<ConstructorInitializerDialog>::id(), ConnectToLimitedDialog<EdgeMenuDialogQt4>);
 
-
     UmlDesktop::init();
 
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, "DoUML", "settings");
     settings.setIniCodec(QTextCodec::codecForName("UTF-8"));
-
-    QFileInfo settings_info(settings.fileName());
-    if(!settings_info.exists())
+    QFileInfo info(settings.fileName());
+    bool conv_env = !info.exists();
+    if(conv_env)
     {
-      QDir settings_path(settings_info.absolutePath());
-      if(!settings_path.exists())
-      {
-        settings_path.mkpath(settings_path.absolutePath());
-      }
-      QFile settings_file(settings_info.absoluteFilePath());
-      settings_file.open(QIODevice::WriteOnly);
-      QByteArray data((const char *)settings_ini, settings_ini_len);
-      settings_file.write(data);
-      settings_file.close();
-      EnvDialog::edit(TRUE);
+      settings.setIniCodec(QTextCodec::codecForName("ISO 8859-1"));
+      settings.setValue("/test", "test");
+      settings.setValue("Main/compatibility_save", "1");
+      settings.setValue("Main/fileformat", "77");
+      settings.setValue("Main/encoding", "UTF-8");
+      settings.setValue("Failing_Tools/Tools", "Import Rose,Uml projection,C++ state machine,Generate XMI 1.2,Generate .pro");
+      settings.setValue("headers/quickedit", QByteArray("\0\0\0ÿ\0\0\0\0\0\0\0\x1\0\0\0\x1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x6Ý\0\0\0\x17\x1\0\0\x1\0\0\0\0\0\0\0\0\0\0\0\0\x64ÿÿÿÿ\0\0\0\0\0\0\0\0\0\0\x17\0\0\x1\x11\0\0\0\x1\0\0\0\0\0\0\0\"\0\0\0\x1\0\0\0\0\0\0\0.\0\0\0\x1\0\0\0\0\0\0\0>\0\0\0\x1\0\0\0\0\0\0\0\x37\0\0\0\x1\0\0\0\0\0\0\0+\0\0\0\x1\0\0\0\0\0\0\0L\0\0\0\x1\0\0\0\0\0\0\0\x35\0\0\0\x1\0\0\0\0\0\0\0\x64\0\0\0\x1\0\0\0\0\0\0\0\x42\0\0\0\x1\0\0\0\0\0\0\0\x1d\0\0\0\x1\0\0\0\0\0\0\0\x32\0\0\0\x1\0\0\0\0\0\0\0\x35\0\0\0\x1\0\0\0\0\0\0\0#\0\0\0\x1\0\0\0\0\0\0\0$\0\0\0\x1\0\0\0\0\0\0\0(\0\0\0\x1\0\0\0\0\0\0\0.\0\0\0\x1\0\0\0\0\0\0\0!\0\0\0\x1\0\0\0\0\0\0\0\x41\0\0\0\x1\0\0\0\0\0\0\0-\0\0\0\x1\0\0\0\0\0\0\0\x38\0\0\0\x1\0\0\0\0\0\0\0\x64\0\0\0\x1\0\0\0\0\0\0\x1i\0\0\0\x1\0\0\0\0", 361));
+      settings.setValue("quickedit_checkboxes/cpp", "true");
+      settings.setValue("quickedit_checkboxes/java", "false");
+      settings.setValue("quickedit_checkboxes/php", "false");
+      settings.setValue("quickedit_checkboxes/python", "false");
+      settings.setValue("quickedit_checkboxes/idl", "false");
+      settings.setValue("window/size", QSize(927, 595));
       settings.sync();
     }
 
@@ -131,10 +130,13 @@ int main(int argc, char ** argv)
                      "To disable the mode - change compatibility_save parameter to 0 in settings.ini\n"));
     }
 
+    if (conv_env)
+       EnvDialog::edit(TRUE);
+
     read_doumlrc(); // for virtual desktop
     init_pixmaps();
     init_font();
-    Shortcut::init(true);
+    Shortcut::init(conv_env);
 
     bool exec = FALSE;
     bool no_gui = FALSE;
