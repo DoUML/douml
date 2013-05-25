@@ -2,14 +2,15 @@ TEMPLATE    = app
 TARGET        = gxmi2
 CONFIG(Debug, Debug|Release) {
     CONFIG -= Debug Release
-    CONFIG += qt warn_on Debug precompile_header
+    CONFIG += qt warn_on Debug
     QMAKE_POST_LINK = " "
 }
 CONFIG(Release, Debug|Release) {
     CONFIG -= Debug Release
-    CONFIG += qt Release precompile_header
+    CONFIG += qt Release
     QMAKE_POST_LINK = " "
 }
+CONFIG += precompile_header
 DEFINES        = WITHCPP WITHJAVA WITHIDL WITHPYTHON WITHPHP
 QMAKE_CXXFLAGS += -std=gnu++11
 PRECOMPILED_HEADER += ../../src/misc/mystr.h

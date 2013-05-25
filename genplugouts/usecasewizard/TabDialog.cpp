@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <q3vbox.h>
 #include <qlabel.h>
-#include <Q3TextEdit.h>
+#include <Q3TextEdit>
 #include <q3groupbox.h>
 #include <qtextcodec.h>
 #include <qdir.h>

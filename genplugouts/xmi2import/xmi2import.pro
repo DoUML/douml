@@ -2,16 +2,17 @@ TEMPLATE    = app
 TARGET        = ixmi2
 CONFIG(Debug, Debug|Release) {
     CONFIG -= Debug Release
-    CONFIG += qt warn_on Debug precompile_header
+    CONFIG += qt warn_on Debug
     QMAKE_POST_LINK = " "
 }
 CONFIG(Release, Debug|Release) {
     CONFIG -= Debug Release
-    CONFIG += qt Release precompile_header
+    CONFIG += qt Release
     QMAKE_POST_LINK = " "
 }
 DEFINES        = WITHCPP WITHJAVA WITHIDL WITHPHP WITHPYTHON BooL=bool
 PRECOMPILED_HEADER += ../../src/misc/mystr.h
+CONFIG += precompile_header
 HEADERS        = ./UmlActivityPartition.h \
           ./UmlBaseNode.h \
           ./UmlPackage.h \
