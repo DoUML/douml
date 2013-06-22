@@ -37,10 +37,10 @@
 #include "UmlCom.h"
 #include "util.h"
 
-const char * BodyPrefix = "// Bouml preserved body begin ";
-const char * BodyPostfix = "// Bouml preserved body end ";
-const char * BodyPythonPrefix = "## Bouml preserved body begin ";
-const char * BodyPythonPostfix = "## Bouml preserved body end ";
+const char * BodyPrefix = "// Douml preserved body begin ";
+const char * BodyPostfix = "// Douml preserved body end ";
+const char * BodyPythonPrefix = "## Douml preserved body begin ";
+const char * BodyPythonPostfix = "## Douml preserved body end ";
 const int BodyPrefixLength = 30;
 const int BodyPostfixLength = 28;
 
