@@ -182,13 +182,13 @@
 #if     SYSTEM == SYS_CYGWIN
 #define SYSTEM_EXT          "__CYGWIN__"
 #define SYSTEM_EXT2         "__CYGWIN32__"
-#define MBCHAR              SJIS
+#define MBCHAR              UTF8
 #define FNAME_FOLD          TRUE
 #define CYGWIN_ROOT_DIRECTORY   "c:/pub/compilers/cygwin"
 #endif  /* SYSTEM == SYS_CYGWIN */
 
 #ifndef MBCHAR
-#define MBCHAR              EUC_JP  /* UTF8 if you like */
+#define MBCHAR              UTF8  /* UTF8 if you like */
 #endif
 #ifndef FNAME_FOLD
 #define FNAME_FOLD          FALSE
@@ -202,7 +202,7 @@
 #define SYSTEM_SP_STD_VAL   "1"
 
 #ifndef MBCHAR
-#define MBCHAR              SJIS    /* Multi-byte char is encoded in SJIS   */
+#define MBCHAR              UTF8    /* Multi-byte char is encoded in SJIS   */
 #endif
 
 #if     COMPILER == MSC
@@ -467,7 +467,7 @@
  * Define MBCHAR (multi-byte character encoding) to SJIS, EUC_JP or other.
  */
 #ifndef MBCHAR
-#define MBCHAR              0
+#define MBCHAR              UTF8
 #endif
 
 /*
@@ -606,3 +606,5 @@
 #include        "xalloc.h"
 #endif
 
+/*  Defined for use with Douml*/
+#define MCPP_LIB 1
