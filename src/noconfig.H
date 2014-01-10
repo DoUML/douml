@@ -14,8 +14,27 @@
  *  'Host' means the O.S. and the compiler with which cpp is compiled.
  */
 
+////////  Defined for use with Douml/QT////////
+#define MCPP_LIB 1
+
+#include <QtGlobal>
 /* Define target operating-system.  */
+
+#ifdef Q_OS_WIN32
+#define SYSTEM              SYS_WIN32
+#elseif Q_OS_LINUX
+#define SYSTEM              SYS_LINUX
+#elseif Q_OS_FREEBSD
 #define SYSTEM              SYS_FREEBSD
+#elif Q_OS_CYGWIN
+#define SYSTEM              SYS_CYGWIN
+#elif Q_OS_MAC
+#define SYSTEM              SYS_MAC
+#else
+#define SYSTEM              SYS_UNIX
+#endif
+////////  Defined for use with Douml////////
+
 
 /* Define target compiler.          */
 #ifndef COMPILER
@@ -606,5 +625,3 @@
 #include        "xalloc.h"
 #endif
 
-/*  Defined for use with Douml*/
-#define MCPP_LIB 1
