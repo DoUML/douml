@@ -710,7 +710,8 @@ static char *   replace(
         } else {
             m_inf->locs.start_col = m_inf->locs.start_line = 0L;
         }
-        m_inf->args = m_inf->loc_args = NULL;       /* Default args */
+        m_inf->args = NULL; /* Default args */
+        m_inf->loc_args = NULL;
         for (num = 1, recurs = 0; num < m_num; num++)
             if (mac_inf[ num].defp == defp)
                 recurs++;           /* Recursively nested macro     */
@@ -1290,13 +1291,13 @@ static const char *     remove_magics(
         if (c == MAC_INF) {
             if (mac_n >= max_magics || arg_n >= max_magics * 2) {
                 max_magics *= 2;
-                mac_id = (char (*)[ MAC_S_LEN]) xrealloc( (void *) mac_id
+                mac_id = (char (*)[ MAC_S_LEN]) xrealloc( (char *) mac_id
                         , MAC_S_LEN * max_magics);
-                arg_id = (char (*)[ ARG_S_LEN]) xrealloc( (void *) arg_id
+                arg_id = (char (*)[ ARG_S_LEN]) xrealloc( (char *) arg_id
                         , ARG_S_LEN * max_magics * 2);
-                mac_loc = (char **) xrealloc( (void *) mac_loc
+                mac_loc = (char **) xrealloc( (char *) mac_loc
                         , sizeof (char *) * max_magics);
-                arg_loc = (char **) xrealloc( (void *) arg_loc
+                arg_loc = (char **) xrealloc( (char *) arg_loc
                         , sizeof (char *) * max_magics * 2);
                 mgc_index = xrealloc( mgc_index, max_magics * 3);
             }
@@ -1972,7 +1973,7 @@ static char *   rescan(
                         seq_len = mgc_seq.magic_end - mgc_seq.magic_start;
                         if (seq_len) {
                             insert_to_bptr( mgc_seq.magic_start, seq_len);
-                            mgc_cleared = remove_magics(
+                            mgc_cleared = (char*)remove_magics(
                                     (const char *) infile->bptr, FALSE);
                                         /* Remove pair of magics    */
                             strcpy( infile->bptr, mgc_cleared);

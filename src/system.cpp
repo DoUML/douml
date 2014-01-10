@@ -2291,7 +2291,7 @@ static void set_a_dir(
         if (sys_dirp)
             sys_pos = sys_dirp - incdir;
 #endif
-        incdir = (const char **) xrealloc( (void *) incdir
+        incdir = (const char **) xrealloc( (char *) incdir
                 , sizeof (char *) * max_inc * 2);
         incend = &incdir[ max_inc];
 #if COMPILER == GNUC
@@ -3431,7 +3431,7 @@ search:
     if (! fullname)                 /* Non-existent or directory    */
         return  FALSE;
     if (standard && included( fullname))        /* Once included    */
-        goto  true;
+        goto  l_true;
         
     if ((max_open != 0 && max_open <= include_nest)
                             /* Exceed the known limit of open files */
@@ -3458,12 +3458,12 @@ search:
         if ((fp = fopen( fullname, "r")) == NULL) {
             file->fp = fopen( cur_fullname, "r");
             fseek( file->fp, file->pos, SEEK_SET);
-            goto  false;
+            goto  l_false;
         }
         if (max_open == 0)      /* Remember the limit of the system */
             max_open = include_nest;
     } else if (fp == NULL)                  /* No read permission   */ 
-        goto  false;
+        goto  l_false;
     /* Truncate buffer of the includer to save memory   */
     len = (int) (file->bptr - file->buffer);
     if (len) {
@@ -3510,9 +3510,9 @@ search:
     if (mkdep && ((mkdep & MD_SYSHEADER) || ! infile->sys_header))
         put_depend( fullname);          /* Output dependency line   */
 
-true:
+l_true:
     return  TRUE;
-false:
+l_false:
     free( fullname);
     return  FALSE;
 }
@@ -3569,7 +3569,7 @@ static const char *     set_fname(
         fname_end = &fnamelist[ 0];
     } else if (fname_end - fnamelist >= max_fnamelist) {
                                 /* Buffer full: double the elements */
-        fnamelist = (INC_LIST *) xrealloc( (void *) fnamelist
+        fnamelist = (INC_LIST *) xrealloc( (char *) fnamelist
                 , sizeof (INC_LIST) * max_fnamelist * 2);
         fname_end = &fnamelist[ max_fnamelist];
         max_fnamelist *= 2;
@@ -4236,12 +4236,12 @@ static void do_once(
         once_end = &once_list[ 0];
     } else if (once_end - once_list >= max_once) {
                                             /* Double the elements  */
-        once_list = (INC_LIST *) xrealloc( (void *) once_list
+        once_list = (INC_LIST *) xrealloc( (char *) once_list
                 , sizeof (INC_LIST) * max_once * 2);
         once_end = &once_list[ max_once];
         max_once *= 2;
     }
-    once_end->name = fullname;
+    once_end->name = (char*) fullname;
     once_end->len = strlen( fullname);
     once_end++;
 }
@@ -4843,7 +4843,7 @@ static int  mcpp_getopt(
 char *  stpcpy(
     char *          dest,
     const char *    src
-)
+        ) throw()
 /*
  * Copy the string and return the advanced pointer.
  */
