@@ -6,7 +6,7 @@
 #include <QTextStream>
 #include <QDebug>
 
-int j_preprocess(const QString fin, QString& fout,const QStringList include_args, const QString working_dir, QString* errstream) {
+int j_preprocess(QString fin, QString& fout,QStringList include_args, const QString working_dir, QString* errstream) {
 
 
     QStringList arguments(include_args);
@@ -28,7 +28,8 @@ int j_preprocess(const QString fin, QString& fout,const QStringList include_args
     if(errstream)
         *errstream = mcpp_get_mem_buffer(ERR);
 
-    fout=fin+".included";
+    fout=QDir::tempPath()+QDir::separator()+"douml"+QDir::separator()+fin.replace("[^\\w-. ]","_")+".included";
+
     QFile outputfile(fout);
     if(!outputfile.open(QIODevice::WriteOnly )) {
         fout=fin;

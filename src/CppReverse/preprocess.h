@@ -4,6 +4,6 @@
 #include <QStringList>
 #include <QTextStream>
 
-int j_preprocess(const QString fin, QString& fout,const QStringList include_args, const QString working_dir, QString* errtext=NULL);
+int j_preprocess(QString fin, QString& fout,const QStringList include_args, QString working_dir, QString* errtext=NULL);
 
 #endif // PREPROCESS_H
