@@ -268,6 +268,10 @@ int    mcpp_lib_fputc(
     OUTDEST od
 )
 {
+    if(include_nest>1) {
+        /*  Do not print out included files. Douml modification */
+        return 1;
+    }
 #if MCPP_LIB
     if (use_mem_buffers) {
         return mem_putc( c, od);
@@ -288,6 +292,10 @@ int    mcpp_lib_fputs(
     OUTDEST od
 )
 {
+    if(include_nest>1) {
+        /*  Do not print out included files. Douml modification */
+        return 1;
+    }
 #if MCPP_LIB
     if (use_mem_buffers) {
         return mem_puts( s, od);
@@ -311,6 +319,10 @@ int    mcpp_lib_fprintf(
     ...
 )
 {
+    if(include_nest>1) {
+        /*  Do not print out included files. Douml modification */
+        return 1;
+    }
     va_list ap;
     FILE *  stream = DEST2FP( od);
 
