@@ -268,7 +268,7 @@ int    mcpp_lib_fputc(
     OUTDEST od
 )
 {
-    if(include_nest>1) {
+    if(od==OUT && include_nest>1) {
         /*  Do not print out included files. Douml modification */
         return 1;
     }
@@ -292,7 +292,7 @@ int    mcpp_lib_fputs(
     OUTDEST od
 )
 {
-    if(include_nest>1) {
+    if(od==OUT && include_nest>1) {
         /*  Do not print out included files. Douml modification */
         return 1;
     }
@@ -319,7 +319,7 @@ int    mcpp_lib_fprintf(
     ...
 )
 {
-    if(include_nest>1) {
+    if(od==OUT && include_nest>1) {
         /*  Do not print out included files. Douml modification */
         return 1;
     }
