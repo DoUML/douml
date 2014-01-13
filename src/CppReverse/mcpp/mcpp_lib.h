@@ -19,6 +19,8 @@
 #define DLL_DECL
 #endif
 
+extern int douml_mcpp_output_includes;
+
 extern DLL_DECL int     mcpp_lib_main( int argc, char ** argv);
 extern DLL_DECL void    mcpp_reset_def_out_func( void);
 extern DLL_DECL void    mcpp_set_out_func(

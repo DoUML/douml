@@ -1,14 +1,14 @@
 #include "preprocess.h"
 
-#include "mcpp_lib.h"
+#include "mcpp/mcpp_lib.h"
 #include "errno.h"
 #include <QDir>
 #include <QTextStream>
 #include <QDebug>
 
-int j_preprocess(QString fin, QString& fout,QStringList include_args, const QString working_dir, QString* errstream) {
+int j_preprocess(QString fin, QString& fout,QStringList include_args, const QString working_dir, QString* errstream, bool output_includes) {
 
-
+    douml_mcpp_output_includes=output_includes;
     QStringList arguments(include_args);
     arguments << fin;
 
