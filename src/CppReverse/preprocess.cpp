@@ -28,11 +28,13 @@ int j_preprocess(QString fin, QString& fout,QStringList include_args, const QStr
     if(errstream)
         *errstream = mcpp_get_mem_buffer(ERR);
 
-    fout=QDir::tempPath()+QDir::separator()+"douml"+QDir::separator()+fin.replace("[^\\w-. ]","_")+".included";
+    QString stripped=fin.replace(QRegExp("\\W"),"_");
+    fout=QDir::tempPath()+QDir::separator()+"douml"+QDir::separator()+stripped+".included";
 
     QFile outputfile(fout);
-    if(!outputfile.open(QIODevice::WriteOnly )) {
+    if(!QDir::root().mkpath(QFileInfo(fout).absolutePath()) || !outputfile.open(QIODevice::WriteOnly )) {
         fout=fin;
+        return res;
     }
 
     QTextStream out(&outputfile);
