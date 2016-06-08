@@ -97,7 +97,16 @@ SOURCES          = UmlClassItem.cpp UmlAttribute.cpp UmlArtifact.cpp \
         ../misc/mystr.cpp \
     ../Logging/QsLogDest.cpp \
     ../Logging/QsLog.cpp \
-    ../Logging/QsDebugOutput.cpp
+    ../Logging/QsDebugOutput.cpp \
+    mcpp/system.cpp \
+    mcpp/support.cpp \
+    mcpp/preproc.cpp \
+    mcpp/mbchar.cpp \
+    mcpp/main_mpcc.cpp \
+    mcpp/expand.cpp \
+    mcpp/eval.cpp \
+    mcpp/directive.cpp \
+    preprocess.cpp
 
 
 TARGET          = cpp_reverse
@@ -128,4 +137,10 @@ UI_DIR = src/ui
 HEADERS += \
     ../Logging/QsLogDest.h \
     ../Logging/QsLog.h \
-    ../Logging/QsDebugOutput.h
+    ../Logging/QsDebugOutput.h \
+    mcpp/system.H \
+    mcpp/noconfig.H \
+    mcpp/mcpp_out.h \
+    mcpp/mcpp_lib.h \
+    mcpp/internal.H \
+    preprocess.h
