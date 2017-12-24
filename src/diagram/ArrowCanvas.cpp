@@ -1141,9 +1141,9 @@ void ArrowCanvas::init_geometry_menu(QMenu & m, int first)
     QPixmap vhv((const char **) geometry_vhv);
     MenuFactory::addItem(m, tr("None"), first);
     m.addAction(hv,"")->setData( first + HVGeometry);
-    m.addAction(vh,"")->setData(VHGeometry);
-    m.addAction(hvh,"")->setData( HVHGeometry);
-    m.addAction(vhv,"")->setData( VHVGeometry);
+    m.addAction(vh,"")->setData( first + VHGeometry);
+    m.addAction(hvh,"")->setData( first + HVHGeometry);
+    m.addAction(vhv,"")->setData( first + VHVGeometry);
     switch (geometry) {
     case NoGeometry:
         MenuFactory::findAction(m ,first)->setChecked( TRUE);
